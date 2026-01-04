@@ -1,7 +1,7 @@
 {
-  "buildCommand": "cd alston-analytics-v2026 && npm install && npm run build",
+  "buildCommand": "cd alston-analytics-v2026 && npm install --legacy-peer-deps && npm run build",
   "outputDirectory": "alston-analytics-v2026/.next",
-  "installCommand": "cd alston-analytics-v2026 && npm install",
+  "installCommand": "cd alston-analytics-v2026 && npm install --legacy-peer-deps",
   "framework": null,
   "ignoreCommand": "git diff --quiet HEAD^ HEAD alston-analytics-v2026/"
 }
