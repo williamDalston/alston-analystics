@@ -35,10 +35,15 @@ function ParticleSystem({ mousePosition }: ParticleSystemProps) {
 
   // Animate particles with wind effect based on mouse position
   useFrame((state) => {
-    if (!particlesRef.current) return;
-
+    if (!particlesRef.current || !particlesRef.current.geometry) return;
+    if (!particlesRef.current.geometry.attributes.position) return;
+    
     const time = state.clock.getElapsedTime();
-    const positions = particlesRef.current.geometry.attributes.position.array as Float32Array;
+    const positionAttr = particlesRef.current.geometry.attributes.position;
+    if (!positionAttr || !positionAttr.array) return;
+    
+    const positions = positionAttr.array as Float32Array;
+    if (!positions || positions.length !== particleCount * 3) return;
 
     for (let i = 0; i < particleCount; i++) {
       const i3 = i * 3;
@@ -61,7 +66,9 @@ function ParticleSystem({ mousePosition }: ParticleSystemProps) {
       positions[i3 + 2] = z + swayZ + windZ * 0.02;
     }
 
-    particlesRef.current.geometry.attributes.position.needsUpdate = true;
+    if (positionAttr) {
+      positionAttr.needsUpdate = true;
+    }
 
     // Slow rotation
     particlesRef.current.rotation.y = time * 0.05;

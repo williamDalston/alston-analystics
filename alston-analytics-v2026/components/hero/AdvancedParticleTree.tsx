@@ -17,42 +17,56 @@ interface ParticleSystemProps {
 function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
 
-  // Reduce particle count for better stability across devices
-  // Desktop: 5000, Mobile: will auto-reduce with GPU detection
-  const particleCount = 5000;
+  // Reduced particle count for better stability across devices
+  // Original: 5000, Reduced for stability: 3000
+  const particleCount = typeof window !== 'undefined' && window.innerWidth < 768 ? 1500 : 3000;
 
   // Store particle data for physics simulation
   const particleData = useMemo(() => {
-    const positions = new Float32Array(particleCount * 3);
-    const velocities = new Float32Array(particleCount * 3);
-    const phases = new Float32Array(particleCount); // For organic pulsing
+    try {
+      const positions = new Float32Array(particleCount * 3);
+      const velocities = new Float32Array(particleCount * 3);
+      const phases = new Float32Array(particleCount); // For organic pulsing
 
-    for (let i = 0; i < particleCount; i++) {
-      const i3 = i * 3;
+      if (!positions || !velocities || !phases) {
+        throw new Error('Failed to allocate particle arrays');
+      }
 
-      // Create organic tree-like structure with more density
-      const angle = Math.random() * Math.PI * 2;
-      const height = Math.random() * 12 - 3; // -3 to 9
-      const radius = Math.pow(Math.random(), 1.8) * (10 - height * 0.25);
+      for (let i = 0; i < particleCount; i++) {
+        const i3 = i * 3;
 
-      // Add some vertical clustering (branches)
-      const branch = Math.floor(Math.random() * 5);
-      const branchAngle = (branch / 5) * Math.PI * 2;
+        // Create organic tree-like structure with more density
+        const angle = Math.random() * Math.PI * 2;
+        const height = Math.random() * 12 - 3; // -3 to 9
+        const radius = Math.pow(Math.random(), 1.8) * (10 - height * 0.25);
 
-      positions[i3] = Math.cos(angle + branchAngle * 0.3) * radius;
-      positions[i3 + 1] = height;
-      positions[i3 + 2] = Math.sin(angle + branchAngle * 0.3) * radius;
+        // Add some vertical clustering (branches)
+        const branch = Math.floor(Math.random() * 5);
+        const branchAngle = (branch / 5) * Math.PI * 2;
 
-      // Initialize velocities with slight variation
-      velocities[i3] = (Math.random() - 0.5) * 0.01;
-      velocities[i3 + 1] = (Math.random() - 0.5) * 0.01;
-      velocities[i3 + 2] = (Math.random() - 0.5) * 0.01;
+        positions[i3] = Math.cos(angle + branchAngle * 0.3) * radius;
+        positions[i3 + 1] = height;
+        positions[i3 + 2] = Math.sin(angle + branchAngle * 0.3) * radius;
 
-      // Phase for pulsing animation
-      phases[i] = Math.random() * Math.PI * 2;
+        // Initialize velocities with slight variation
+        velocities[i3] = (Math.random() - 0.5) * 0.01;
+        velocities[i3 + 1] = (Math.random() - 0.5) * 0.01;
+        velocities[i3 + 2] = (Math.random() - 0.5) * 0.01;
+
+        // Phase for pulsing animation
+        phases[i] = Math.random() * Math.PI * 2;
+      }
+
+      return { positions, velocities, phases };
+    } catch (error) {
+      console.error('Error initializing particle data:', error);
+      // Return empty arrays as fallback
+      return {
+        positions: new Float32Array(0),
+        velocities: new Float32Array(0),
+        phases: new Float32Array(0),
+      };
     }
-
-    return { positions, velocities, phases };
   }, [particleCount]);
 
   // Curl noise approximation (simplified 3D noise)
@@ -68,13 +82,22 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
 
   // Animate particles with physics
   useFrame((state) => {
-    if (!meshRef.current) return;
+    if (!meshRef.current || !particleData) return;
 
     const time = state.clock.getElapsedTime();
+    
+    // Safety check: Ensure particleData exists
+    if (!particleData.positions || !particleData.velocities || !particleData.phases) {
+      return;
+    }
+    
     const { positions, velocities, phases } = particleData;
 
     // Safety check: Ensure arrays are defined and have correct length
     if (!positions || !velocities || !phases ||
+        typeof positions.length === 'undefined' ||
+        typeof velocities.length === 'undefined' ||
+        typeof phases.length === 'undefined' ||
         positions.length !== particleCount * 3 ||
         velocities.length !== particleCount * 3 ||
         phases.length !== particleCount) {
@@ -141,16 +164,39 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
       dummy.position.set(x, y, z);
       dummy.scale.set(scale, scale, scale);
       dummy.updateMatrix();
-      meshRef.current.setMatrixAt(i, dummy.matrix);
+      if (meshRef.current && typeof meshRef.current.setMatrixAt === 'function') {
+        try {
+          meshRef.current.setMatrixAt(i, dummy.matrix);
+        } catch (error) {
+          // Silently handle any errors during matrix update
+          console.warn('Error setting matrix at index:', i, error);
+        }
+      }
     }
 
-    meshRef.current.instanceMatrix.needsUpdate = true;
+    if (meshRef.current && meshRef.current.instanceMatrix) {
+      meshRef.current.instanceMatrix.needsUpdate = true;
+    }
 
     // Gentle rotation
-    meshRef.current.rotation.y = time * 0.03;
+    if (meshRef.current) {
+      meshRef.current.rotation.y = time * 0.03;
+    }
   });
 
-  const geometry = useMemo(() => new THREE.SphereGeometry(1, 8, 8), []);
+  const geometry = useMemo(() => {
+    try {
+      return new THREE.SphereGeometry(1, 8, 8);
+    } catch (error) {
+      console.error('Error creating geometry:', error);
+      return new THREE.SphereGeometry(1, 8, 8);
+    }
+  }, []);
+
+  // Don't render if particleData is invalid
+  if (!particleData || !particleData.positions || particleData.positions.length === 0) {
+    return null;
+  }
 
   return (
     <instancedMesh ref={meshRef} args={[geometry, undefined, particleCount]}>
@@ -281,10 +327,23 @@ export function AdvancedParticleTree() {
           alpha: false,
           powerPreference: 'high-performance',
           preserveDrawingBuffer: false,
+          failIfMajorPerformanceCaveat: false,
         }}
         onCreated={({ gl }) => {
           // Disable automatic context loss recovery to prevent errors
-          gl.domElement.addEventListener('webglcontextlost', (e) => e.preventDefault(), false);
+          const canvas = gl.domElement;
+          if (canvas) {
+            canvas.addEventListener('webglcontextlost', (e) => {
+              e.preventDefault();
+              console.warn('WebGL context lost');
+            }, false);
+            canvas.addEventListener('webglcontextrestored', () => {
+              console.log('WebGL context restored');
+            }, false);
+          }
+        }}
+        onError={(error) => {
+          console.error('Canvas error:', error);
         }}
       >
         {/* Volumetric atmosphere */}

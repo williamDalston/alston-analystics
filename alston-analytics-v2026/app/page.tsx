@@ -1,11 +1,42 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Suspense } from 'react';
+import { Suspense, Component, ErrorInfo, ReactNode } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 
-// Use the advanced particle tree with HDR Bloom and 10k particles
+// Error Boundary for ParticleTree components
+class ErrorBoundary extends Component<
+  { children: ReactNode; fallback?: ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: ReactNode; fallback?: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('ParticleTree error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || (
+        <div className="w-full h-full bg-deep-void flex items-center justify-center">
+          <div className="text-soft-clay/50 font-mono text-sm">Visualization unavailable</div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Use the advanced particle tree with HDR Bloom and particles
 const AdvancedParticleTree = dynamic(() => import('@/components/hero/AdvancedParticleTree').then((mod) => mod.AdvancedParticleTree), {
   ssr: false,
   loading: () => (
@@ -13,6 +44,11 @@ const AdvancedParticleTree = dynamic(() => import('@/components/hero/AdvancedPar
       <div className="text-electric-moss font-mono glow-electric">Loading biosphere...</div>
     </div>
   ),
+});
+
+// Fallback to simpler particle tree if advanced fails
+const ParticleTree = dynamic(() => import('@/components/hero/ParticleTree').then((mod) => mod.ParticleTree), {
+  ssr: false,
 });
 
 const ServiceBentoGrid = dynamic(() => import('@/components/sections/ServiceBentoGrid').then((mod) => mod.ServiceBentoGrid));
@@ -26,7 +62,9 @@ export default function HomePage() {
         {/* Advanced 3D Bioluminescent Background */}
         <div className="absolute inset-0 z-0">
           <Suspense fallback={<div className="w-full h-full bg-deep-void" />}>
-            <AdvancedParticleTree />
+            <ErrorBoundary fallback={<ParticleTree />}>
+              <AdvancedParticleTree />
+            </ErrorBoundary>
           </Suspense>
         </div>
 
