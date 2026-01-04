@@ -179,6 +179,148 @@ body {
   }
 }
 
+/* Shimmer effect for skeleton loading */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Shake animation for errors */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+/* ============================================
+   INTERACTION STATES & UTILITIES
+   ============================================ */
+
+/* Button States */
+.btn-primary,
+.btn-secondary {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 5px 15px rgba(204, 255, 0, 0.15);
+}
+
+.btn-primary:disabled,
+.btn-primary[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.5);
+}
+
+/* Loading State */
+.btn-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+  cursor: wait;
+}
+
+.btn-loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid var(--electric-moss);
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Form Input States */
+.form-input {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--electric-moss);
+  box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.1);
+}
+
+.form-input[aria-invalid="true"] {
+  border-color: var(--signal-red);
+  box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.1);
+  animation: shake 0.3s ease-in-out;
+}
+
+.form-input[aria-valid="true"] {
+  border-color: var(--electric-moss);
+  box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.1);
+}
+
+/* Focus-within for form groups */
+.form-group:focus-within .form-label {
+  color: var(--electric-moss);
+  transform: translateY(-2px);
+}
+
+/* Card Interaction States */
+.card-interactive {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.card-interactive:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(204, 255, 0, 0.1);
+}
+
+/* Skeleton Loading */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(15, 23, 42, 0.4) 25%,
+    rgba(15, 23, 42, 0.6) 50%,
+    rgba(15, 23, 42, 0.4) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* Success State Animation */
+@keyframes successPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(204, 255, 0, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(204, 255, 0, 0);
+  }
+}
+
+.success-indicator {
+  animation: successPulse 1.5s ease-in-out;
+}
+
 /* ============================================
    SMOOTH SCROLL
    ============================================ */
