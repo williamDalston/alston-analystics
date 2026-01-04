@@ -54,15 +54,15 @@ export default function PortfolioPage() {
                   Reduction in reporting time
                 </div>
               </div>
-              <div className="glass-heavy rounded-xl p-6">
-                <div className="text-4xl font-bold text-data-cyan mb-2">$2.4M</div>
-                <div className="text-soft-clay/70 font-sans">
+              <div className="glass-heavy rounded-xl p-4 sm:p-6">
+                <div className="text-3xl sm:text-4xl font-bold text-data-cyan mb-2">$2.4M</div>
+                <div className="text-sm sm:text-base text-soft-clay/70 font-sans">
                   Annual cost savings identified
                 </div>
               </div>
-              <div className="glass-heavy rounded-xl p-6">
-                <div className="text-4xl font-bold text-electric-moss mb-2">Real-time</div>
-                <div className="text-soft-clay/70 font-sans">
+              <div className="glass-heavy rounded-xl p-4 sm:p-6">
+                <div className="text-3xl sm:text-4xl font-bold text-electric-moss mb-2">Real-time</div>
+                <div className="text-sm sm:text-base text-soft-clay/70 font-sans">
                   Decision-making capability
                 </div>
               </div>
@@ -95,22 +95,22 @@ export default function PortfolioPage() {
               afterLabel="Unified Intelligence"
             />
 
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="glass-heavy rounded-xl p-6">
-                <div className="text-4xl font-bold text-electric-moss mb-2">15+</div>
-                <div className="text-soft-clay/70 font-sans">
+            <div className="mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+              <div className="glass-heavy rounded-xl p-4 sm:p-6">
+                <div className="text-3xl sm:text-4xl font-bold text-electric-moss mb-2">15+</div>
+                <div className="text-sm sm:text-base text-soft-clay/70 font-sans">
                   Data sources integrated
                 </div>
               </div>
-              <div className="glass-heavy rounded-xl p-6">
-                <div className="text-4xl font-bold text-data-cyan mb-2">60%</div>
-                <div className="text-soft-clay/70 font-sans">
+              <div className="glass-heavy rounded-xl p-4 sm:p-6">
+                <div className="text-3xl sm:text-4xl font-bold text-data-cyan mb-2">60%</div>
+                <div className="text-sm sm:text-base text-soft-clay/70 font-sans">
                   Faster strategic insights
                 </div>
               </div>
-              <div className="glass-heavy rounded-xl p-6">
-                <div className="text-4xl font-bold text-electric-moss mb-2">100%</div>
-                <div className="text-soft-clay/70 font-sans">
+              <div className="glass-heavy rounded-xl p-4 sm:p-6">
+                <div className="text-3xl sm:text-4xl font-bold text-electric-moss mb-2">100%</div>
+                <div className="text-sm sm:text-base text-soft-clay/70 font-sans">
                   Executive adoption rate
                 </div>
               </div>
