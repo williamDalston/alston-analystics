@@ -10,7 +10,8 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       lerp: 0.12,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      wheelMultiplier: 1,
+      touchMultiplier: 0.7,
+      wheelMultiplier: 0.9,
     });
 
     function raf(time: number) {

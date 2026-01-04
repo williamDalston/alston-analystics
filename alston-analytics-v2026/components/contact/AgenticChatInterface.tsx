@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Send, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 
@@ -246,7 +246,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     setMessages((prev) => [...prev, response]);
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = useCallback(async () => {
     if (!input.trim()) return;
 
     const userMessage: Message = {
@@ -284,7 +284,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
       content: aiResponse,
     };
     setMessages((prev) => [...prev, response]);
-  };
+  }, [input, currentStep]);
 
   const handleEmailSubmit = () => {
     setEmailError('');
@@ -598,7 +598,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
               You can provide your email below, or continue chatting:
             </p>
             <div className="flex gap-2">
-              <motion.input
+              <input
                 id="email-input"
                 type="email"
                 value={emailInput}
@@ -609,11 +609,9 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
                 onKeyPress={(e) => e.key === 'Enter' && !isRateLimited && handleEmailSubmit()}
                 placeholder="you@organization.com (optional)"
                 disabled={isRateLimited}
-                className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed chat-input-snappy"
                 aria-invalid={emailError ? 'true' : 'false'}
                 aria-describedby={emailError ? 'email-error' : undefined}
-                whileFocus={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
               />
               <motion.button
                 onClick={handleEmailSubmit}
@@ -652,18 +650,19 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
             <div className="pt-2 border-t border-soft-clay/10">
               <div className="flex gap-2 sm:gap-3">
                 <label htmlFor="chat-input" className="sr-only">Type your message</label>
-                <motion.input
+                <input
                   id="chat-input"
                   type="text"
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
+                  onChange={(e) => {
+                    // Direct state update for instant typing response
+                    setInput(e.target.value);
+                  }}
                   onKeyPress={(e) => e.key === 'Enter' && !isLoading && !isRateLimited && handleSendMessage()}
                   placeholder="Or continue chatting..."
                   disabled={isLoading || isRateLimited}
-                  className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed chat-input-snappy"
                   aria-label="Chat message input"
-                  whileFocus={{ scale: isRateLimited ? 1 : 1.02 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
                 />
                 <motion.button
                   onClick={handleSendMessage}
@@ -697,7 +696,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
         ) : (
           <div className="flex gap-2 sm:gap-3">
             <label htmlFor="chat-input" className="sr-only">Type your message</label>
-            <motion.input
+            <input
               id="chat-input"
               type="text"
               value={input}
@@ -705,10 +704,8 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
               onKeyPress={(e) => e.key === 'Enter' && !isLoading && !isRateLimited && handleSendMessage()}
               placeholder={isRateLimited ? "Rate limited - please wait..." : "Type your message..."}
               disabled={isLoading || isRateLimited}
-              className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed chat-input-snappy"
               aria-label="Chat message input"
-              whileFocus={{ scale: isRateLimited ? 1 : 1.02 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
             />
             <motion.button
               onClick={handleSendMessage}

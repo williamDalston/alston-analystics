@@ -1,18 +1,20 @@
 'use client';
 
 import { useRef, useMemo } from 'react';
+import { useReducedMotion } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Sphere } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface ParticleSystemProps {
   mousePosition: { x: number; y: number };
+  reduceMotion: boolean;
 }
 
-function ParticleSystem({ mousePosition }: ParticleSystemProps) {
+function ParticleSystem({ mousePosition, reduceMotion }: ParticleSystemProps) {
   const particlesRef = useRef<THREE.Points>(null);
-  // Slightly lower count to keep frame rate smoother on mid-tier devices
-  const particleCount = 1800;
+  // Adjust particle count by viewport to keep frame rate smooth
+  const particleCount = typeof window !== 'undefined' && window.innerWidth < 768 ? 900 : 1600;
 
   // Generate particle positions in a tree-like structure
   const positions = useMemo(() => {
@@ -53,14 +55,16 @@ function ParticleSystem({ mousePosition }: ParticleSystemProps) {
       const z = positions[i3 + 2];
 
       // Gentle swaying motion with moderated amplitude for smoothness
-      const swayX = Math.sin(time * 0.5 + y * 0.1) * 0.02;
-      const swayZ = Math.cos(time * 0.5 + y * 0.1) * 0.02;
-      const swayY = Math.sin(time * 0.3 + y * 0.2) * 0.008;
+      const swayScale = reduceMotion ? 0.5 : 1;
+      const swayX = Math.sin(time * 0.5 + y * 0.1) * 0.02 * swayScale;
+      const swayZ = Math.cos(time * 0.5 + y * 0.1) * 0.02 * swayScale;
+      const swayY = Math.sin(time * 0.3 + y * 0.2) * 0.008 * swayScale;
 
       // Mouse influence (wind effect) dialed back for steadier motion
-      const windX = mousePosition.x * 0.6;
-      const windZ = mousePosition.y * 0.6;
-      const windY = (mousePosition.x + mousePosition.y) * 0.2;
+      const windScale = reduceMotion ? 0.25 : 0.6;
+      const windX = mousePosition.x * windScale;
+      const windZ = mousePosition.y * windScale;
+      const windY = (mousePosition.x + mousePosition.y) * 0.2 * windScale;
 
       positions[i3] = x + swayX + windX * 0.02;
       positions[i3 + 1] = y + swayY + windY * 0.01;
@@ -97,6 +101,7 @@ function ParticleSystem({ mousePosition }: ParticleSystemProps) {
 
 export function ParticleTree() {
   const mousePositionRef = useRef({ x: 0, y: 0 });
+  const prefersReducedMotion = useReducedMotion();
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -119,7 +124,10 @@ export function ParticleTree() {
         <pointLight position={[10, 10, 10]} intensity={1} color="#00F0FF" />
         <pointLight position={[-10, -10, -10]} intensity={0.5} color="#CCFF00" />
 
-        <ParticleSystem mousePosition={mousePositionRef.current} />
+        <ParticleSystem
+          mousePosition={mousePositionRef.current}
+          reduceMotion={!!prefersReducedMotion}
+        />
 
         {/* Enhanced glow spheres at the base */}
         <Sphere args={[0.6, 32, 32]} position={[0, -2, 0]}>
@@ -135,8 +143,8 @@ export function ParticleTree() {
         <OrbitControls
           enableZoom={false}
           enablePan={false}
-          autoRotate
-          autoRotateSpeed={0.5}
+          autoRotate={!prefersReducedMotion}
+          autoRotateSpeed={0.35}
           minPolarAngle={Math.PI / 3}
           maxPolarAngle={Math.PI / 1.5}
         />

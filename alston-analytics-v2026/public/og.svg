@@ -1,0 +1,27 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#050A0E"/>
+      <stop offset="1" stop-color="#0B1321"/>
+    </linearGradient>
+    <linearGradient id="g1" x1="200" y1="80" x2="900" y2="520" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#CCFF00" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#00F0FF" stop-opacity="0.4"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(950 120) scale(260)">
+      <stop stop-color="#CCFF00" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#CCFF00" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="950" cy="120" r="260" fill="url(#glow)"/>
+  <path d="M180 470C340 360 520 320 760 360C860 380 980 420 1100 470" stroke="url(#g1)" stroke-width="6" stroke-linecap="round" opacity="0.45"/>
+  <path d="M180 420C340 310 520 270 760 310C860 330 980 370 1100 420" stroke="url(#g1)" stroke-width="3" stroke-linecap="round" opacity="0.35"/>
+  <circle cx="320" cy="260" r="6" fill="#CCFF00"/>
+  <circle cx="560" cy="200" r="4" fill="#00F0FF"/>
+  <circle cx="780" cy="260" r="8" fill="#CCFF00"/>
+  <circle cx="980" cy="220" r="5" fill="#00F0FF"/>
+  <text x="180" y="180" fill="#CCFF00" font-family="'Geist', 'Inter', 'Segoe UI', sans-serif" font-size="62" font-weight="700">Alston Analytics</text>
+  <text x="180" y="240" fill="#E2D1C3" font-family="'Geist', 'Inter', 'Segoe UI', sans-serif" font-size="30" font-weight="500">Data is organic. We prune the chaos.</text>
+  <text x="180" y="520" fill="#94A3B8" font-family="'Geist Mono', 'JetBrains Mono', monospace" font-size="20">Strategic consulting · Power BI architecture · Sovereign thinking</text>
+</svg>

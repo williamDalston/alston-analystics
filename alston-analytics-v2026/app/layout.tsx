@@ -53,6 +53,15 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "Alston Analytics",
+    url: "https://alstonanalytics.com",
+    images: [
+      {
+        url: '/og.svg',
+        width: 1200,
+        height: 630,
+        alt: 'Alston Analytics — Data is organic',
+      },
+    ],
   },
   icons: {
     icon: '/favicon.svg',
