@@ -5,8 +5,14 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 
-const ParticleTree = dynamic(() => import('@/components/hero/ParticleTree').then((mod) => mod.ParticleTree), {
+// Use the advanced particle tree with HDR Bloom and 10k particles
+const AdvancedParticleTree = dynamic(() => import('@/components/hero/AdvancedParticleTree').then((mod) => mod.AdvancedParticleTree), {
   ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-deep-void flex items-center justify-center">
+      <div className="text-electric-moss font-mono glow-electric">Loading biosphere...</div>
+    </div>
+  ),
 });
 
 const ServiceBentoGrid = dynamic(() => import('@/components/sections/ServiceBentoGrid').then((mod) => mod.ServiceBentoGrid));
@@ -17,10 +23,10 @@ export default function HomePage() {
     <main className="relative min-h-screen">
       {/* Hero Section: The Signal in the Noise */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* 3D Background */}
+        {/* Advanced 3D Bioluminescent Background */}
         <div className="absolute inset-0 z-0">
           <Suspense fallback={<div className="w-full h-full bg-deep-void" />}>
-            <ParticleTree />
+            <AdvancedParticleTree />
           </Suspense>
         </div>
 

@@ -6,13 +6,24 @@
    ============================================ */
 
 :root {
-  /* Core Palette: Abyssal Bioluminescence */
-  --deep-void: #050A0E;
+  /* Core Palette: Abyssal Bioluminescence (Enhanced Manifesto Palette) */
+  --phantom-black: #000000;
+  --deep-void: #02040A;          /* Deepest Midnight */
   --glass-surface: #0F172A;
-  --electric-moss: #CCFF00;
-  --data-cyan: #00F0FF;
-  --soft-clay: #E2D1C3;
-  --signal-red: #FF4D4D;
+
+  /* Bioluminescent Spectrum */
+  --electric-moss: #CCFF00;      /* The Growth (Foxfire) */
+  --neon-green: #39FF14;         /* Positive metrics */
+  --mint: #98FF98;               /* Growth gradients */
+  --data-cyan: #00F0FF;          /* The Pulse (Jellyfish) */
+  --teal: #008080;               /* Calm data flow */
+  --soft-clay: #E2D1C3;          /* Human warmth */
+  --signal-red: #FF4D4D;         /* Critical warnings */
+  --deep-amber: #FFBF00;         /* Alerts (thermal vents) */
+  --orange-red: #FF4500;         /* Warning gradients */
+  --blue-violet: #8A2BE2;        /* AI Intelligence */
+  --magenta: #FF00FF;            /* Synthetic cognition */
+  --glacial-ice: #F0F8FF;        /* Structure UI */
 
   /* Semantic Mappings */
   --background: var(--deep-void);
@@ -20,12 +31,16 @@
   --primary: var(--electric-moss);
   --accent: var(--data-cyan);
   --error: var(--signal-red);
+  --ai-color: var(--blue-violet);
+  --growth-color: var(--neon-green);
+  --warning-color: var(--deep-amber);
 
-  /* Glass Morphism Variables */
+  /* Glass Morphism Variables (Glassmorphism 2.0) */
   --glass-blur: 16px;
   --glass-opacity: 0.4;
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-glow: rgba(255, 255, 255, 0.05);
+  --glass-ior: 1.5; /* Index of refraction for physically-based glass */
 }
 
 @theme inline {
@@ -97,15 +112,71 @@ body {
 
 .glow-electric {
   text-shadow:
-    0 0 10px rgba(204, 255, 0, 0.5),
-    0 0 20px rgba(204, 255, 0, 0.3),
-    0 0 30px rgba(204, 255, 0, 0.2);
+    0 0 10px rgba(204, 255, 0, 0.6),
+    0 0 20px rgba(204, 255, 0, 0.4),
+    0 0 40px rgba(204, 255, 0, 0.2),
+    0 0 60px rgba(204, 255, 0, 0.1);
 }
 
 .glow-data {
   text-shadow:
-    0 0 10px rgba(0, 240, 255, 0.5),
-    0 0 20px rgba(0, 240, 255, 0.3);
+    0 0 10px rgba(0, 240, 255, 0.6),
+    0 0 20px rgba(0, 240, 255, 0.4),
+    0 0 40px rgba(0, 240, 255, 0.2);
+}
+
+.glow-ai {
+  text-shadow:
+    0 0 10px rgba(138, 43, 226, 0.6),
+    0 0 20px rgba(138, 43, 226, 0.4),
+    0 0 40px rgba(138, 43, 226, 0.2);
+}
+
+.glow-warning {
+  text-shadow:
+    0 0 10px rgba(255, 191, 0, 0.6),
+    0 0 20px rgba(255, 191, 0, 0.4);
+}
+
+/* Pulsing glow animation for interactive elements */
+@keyframes pulse-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px rgba(204, 255, 0, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(204, 255, 0, 0.8));
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Gradient animation for dynamic text */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 3s ease infinite;
+}
+
+/* Grid movement for background */
+@keyframes gridMove {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(50px);
+  }
 }
 
 /* ============================================
