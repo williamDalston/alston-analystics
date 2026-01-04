@@ -20,22 +20,52 @@ export default function ContactPage() {
               transition={{ duration: 0.6 }}
               className="text-center"
             >
-              <h1 className="text-6xl md:text-7xl font-bold text-electric-moss glow-electric mb-6">
-                The Command Line
-              </h1>
+              <motion.h1
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: "spring", stiffness: 100 }}
+                className="text-6xl md:text-7xl font-bold mb-6 relative inline-block"
+              >
+                <span className="relative">
+                  <span className="absolute inset-0 blur-3xl bg-electric-moss/50 opacity-50 animate-pulse" />
+                  <span className="relative bg-gradient-to-r from-electric-moss via-data-cyan to-electric-moss bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient glow-electric">
+                    The Command Line
+                  </span>
+                </span>
+              </motion.h1>
 
-              <p className="text-soft-clay/70 text-xl font-sans max-w-2xl mx-auto mb-12">
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-soft-clay/70 text-xl font-sans max-w-2xl mx-auto mb-12"
+              >
                 We don't do discovery calls. We do strategic dialogues.
                 Tell me what you're building.
-              </p>
+              </motion.p>
 
               <motion.button
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setChatStarted(true)}
-                className="glass-heavy px-12 py-5 rounded-full text-electric-moss font-mono font-bold hover:bg-electric-moss/10 transition-all duration-300 inline-block glow-electric text-lg"
+                className="group relative btn-primary glass-heavy px-12 py-5 rounded-full text-electric-moss font-mono font-bold hover:bg-electric-moss/10 transition-all duration-300 inline-block glow-electric text-lg focus:outline-none focus:ring-2 focus:ring-electric-moss/50 overflow-hidden"
+                aria-label="Start a conversation with Alston Analytics"
               >
-                Initialize Conversation
+                <span className="relative z-10 flex items-center gap-2">
+                  Initialize Conversation
+                  <motion.span
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                  >
+                    →
+                  </motion.span>
+                </span>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-electric-moss/20 to-data-cyan/20 opacity-0 group-hover:opacity-100"
+                  initial={{ x: '-100%' }}
+                  whileHover={{ x: '100%' }}
+                  transition={{ duration: 0.6 }}
+                />
               </motion.button>
 
               {/* Alternative Contact Methods */}
@@ -46,14 +76,18 @@ export default function ContactPage() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <a
                     href="mailto:info@alstonanalytics.com"
-                    className="text-data-cyan font-mono text-sm hover:glow-data transition-all"
+                    className="text-data-cyan font-mono text-sm hover:glow-data transition-all focus:outline-none focus:ring-2 focus:ring-data-cyan/50 rounded px-2 py-1"
+                    aria-label="Send email to info@alstonanalytics.com"
                   >
                     info@alstonanalytics.com
                   </a>
-                  <span className="hidden sm:inline text-soft-clay/30">|</span>
+                  <span className="hidden sm:inline text-soft-clay/30" aria-hidden="true">|</span>
                   <a
                     href="https://linkedin.com/in/alstonanalytics"
-                    className="text-data-cyan font-mono text-sm hover:glow-data transition-all"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-data-cyan font-mono text-sm hover:glow-data transition-all focus:outline-none focus:ring-2 focus:ring-data-cyan/50 rounded px-2 py-1"
+                    aria-label="Visit Alston Analytics LinkedIn profile (opens in new tab)"
                   >
                     LinkedIn
                   </a>

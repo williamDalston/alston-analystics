@@ -52,6 +52,10 @@ export const metadata: Metadata = {
     locale: "en_US",
     siteName: "Alston Analytics",
   },
+  icons: {
+    icon: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   twitter: {
     card: "summary_large_image",
     title: "Alston Analytics",
@@ -68,6 +72,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="lenis">
       <head>
+        {/* Preconnect to Google Fonts for faster loading */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -87,9 +95,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <a href="#main-content" className="skip-to-content">
+          Skip to main content
+        </a>
         <SmoothScrollProvider>
           <ModeToggle />
-          {children}
+          <main id="main-content">
+            {children}
+          </main>
           <FloatingDock />
         </SmoothScrollProvider>
       </body>

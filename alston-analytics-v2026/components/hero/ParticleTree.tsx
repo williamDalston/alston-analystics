@@ -11,7 +11,7 @@ interface ParticleSystemProps {
 
 function ParticleSystem({ mousePosition }: ParticleSystemProps) {
   const particlesRef = useRef<THREE.Points>(null);
-  const particleCount = 2000;
+  const particleCount = 3000; // Increased for more visual interest
 
   // Generate particle positions in a tree-like structure
   const positions = useMemo(() => {
@@ -46,16 +46,19 @@ function ParticleSystem({ mousePosition }: ParticleSystemProps) {
       const y = positions[i3 + 1];
       const z = positions[i3 + 2];
 
-      // Gentle swaying motion
-      const swayX = Math.sin(time * 0.5 + y * 0.1) * 0.02;
-      const swayZ = Math.cos(time * 0.5 + y * 0.1) * 0.02;
+      // Enhanced swaying motion with more variation
+      const swayX = Math.sin(time * 0.5 + y * 0.1) * 0.03;
+      const swayZ = Math.cos(time * 0.5 + y * 0.1) * 0.03;
+      const swayY = Math.sin(time * 0.3 + y * 0.2) * 0.01;
 
-      // Mouse influence (wind effect)
-      const windX = mousePosition.x * 0.5;
-      const windZ = mousePosition.y * 0.5;
+      // Stronger mouse influence (wind effect)
+      const windX = mousePosition.x * 1.0;
+      const windZ = mousePosition.y * 1.0;
+      const windY = (mousePosition.x + mousePosition.y) * 0.3;
 
-      positions[i3] = x + swayX + windX * 0.01;
-      positions[i3 + 2] = z + swayZ + windZ * 0.01;
+      positions[i3] = x + swayX + windX * 0.02;
+      positions[i3 + 1] = y + swayY + windY * 0.01;
+      positions[i3 + 2] = z + swayZ + windZ * 0.02;
     }
 
     particlesRef.current.geometry.attributes.position.needsUpdate = true;
@@ -64,20 +67,19 @@ function ParticleSystem({ mousePosition }: ParticleSystemProps) {
     particlesRef.current.rotation.y = time * 0.05;
   });
 
+  const geometry = useMemo(() => {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    return geo;
+  }, [positions]);
+
   return (
-    <points ref={particlesRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[positions, 3]}
-          count={particleCount}
-        />
-      </bufferGeometry>
+    <points ref={particlesRef} geometry={geometry}>
       <pointsMaterial
-        size={0.05}
+        size={0.06}
         color="#CCFF00"
         transparent
-        opacity={0.6}
+        opacity={0.8}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
       />
@@ -111,8 +113,14 @@ export function ParticleTree() {
 
         <ParticleSystem mousePosition={mousePositionRef.current} />
 
-        {/* Optional: Add a subtle glow sphere at the base */}
-        <Sphere args={[0.5, 32, 32]} position={[0, -2, 0]}>
+        {/* Enhanced glow spheres at the base */}
+        <Sphere args={[0.6, 32, 32]} position={[0, -2, 0]}>
+          <meshBasicMaterial color="#CCFF00" transparent opacity={0.3} />
+        </Sphere>
+        <Sphere args={[0.3, 32, 32]} position={[-2, -1, 1]}>
+          <meshBasicMaterial color="#00F0FF" transparent opacity={0.2} />
+        </Sphere>
+        <Sphere args={[0.3, 32, 32]} position={[2, -1, -1]}>
           <meshBasicMaterial color="#CCFF00" transparent opacity={0.2} />
         </Sphere>
 

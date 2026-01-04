@@ -52,31 +52,63 @@ function ServiceCard({ title, description, icon, className }: ServiceCardProps) 
         rotateY,
         transformStyle: 'preserve-3d',
       }}
+      whileHover={{ y: -8, scale: 1.02 }}
       className={`glass-surface rounded-3xl p-8 relative overflow-hidden group cursor-pointer ${className}`}
     >
-      {/* Icon */}
-      <div className="relative z-10 mb-6 text-electric-moss w-12 h-12">
-        {icon}
-      </div>
+      {/* Animated gradient background */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-br from-electric-moss/10 via-transparent to-data-cyan/10 opacity-0 group-hover:opacity-100"
+        animate={{
+          backgroundPosition: ['0% 0%', '100% 100%'],
+        }}
+        transition={{ duration: 3, repeat: Infinity, repeatType: 'reverse' }}
+      />
 
-      {/* Title */}
-      <h3 className="relative z-10 text-2xl font-bold text-soft-clay mb-3 glow-electric group-hover:text-electric-moss transition-colors">
+      {/* Animated border */}
+      <motion.div
+        className="absolute inset-0 rounded-3xl border-2 border-electric-moss/0 group-hover:border-electric-moss/50"
+        animate={{
+          boxShadow: [
+            '0 0 0px rgba(204, 255, 0, 0)',
+            '0 0 30px rgba(204, 255, 0, 0.3)',
+            '0 0 0px rgba(204, 255, 0, 0)',
+          ],
+        }}
+        transition={{ duration: 2, repeat: Infinity }}
+      />
+
+      {/* Icon with animation */}
+      <motion.div
+        className="relative z-10 mb-6 text-electric-moss w-12 h-12"
+        whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {icon}
+      </motion.div>
+
+      {/* Title with gradient on hover */}
+      <h3 className="relative z-10 text-2xl font-bold text-soft-clay mb-3 transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-electric-moss group-hover:via-data-cyan group-hover:to-electric-moss group-hover:bg-clip-text group-hover:text-transparent">
         {title}
       </h3>
 
       {/* Description */}
-      <p className="relative z-10 text-soft-clay/70 font-sans leading-relaxed">
+      <p className="relative z-10 text-soft-clay/70 font-sans leading-relaxed group-hover:text-soft-clay transition-colors">
         {description}
       </p>
 
-      {/* Hover Glow Effect */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-electric-moss/5 to-data-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{ transform: 'translateZ(-1px)' }}
-      />
+      {/* Decorative corner accent */}
+      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-electric-moss/20 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-      {/* Border Glow */}
-      <div className="absolute inset-0 rounded-3xl border border-electric-moss/0 group-hover:border-electric-moss/30 transition-all duration-500" />
+      {/* Arrow indicator on hover */}
+      <motion.div
+        className="absolute bottom-6 right-6 text-electric-moss opacity-0 group-hover:opacity-100"
+        initial={{ x: -10, opacity: 0 }}
+        whileHover={{ x: 0, opacity: 1 }}
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+      </motion.div>
     </motion.div>
   );
 }
@@ -91,11 +123,32 @@ export function ServiceBentoGrid() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="mb-16 text-center"
+          className="mb-16 text-center relative"
         >
-          <h2 className="text-5xl font-bold text-electric-moss glow-electric mb-4">
-            What We Do
-          </h2>
+          {/* Decorative lines */}
+          <div className="absolute left-1/2 -translate-x-1/2 top-0 w-px h-16 bg-gradient-to-b from-electric-moss/50 to-transparent" />
+          <motion.div
+            className="absolute left-1/2 -translate-x-1/2 top-0 w-16 h-px bg-gradient-to-r from-transparent via-electric-moss/50 to-transparent"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            transition={{ duration: 1, delay: 0.3 }}
+            viewport={{ once: true }}
+          />
+          
+          <motion.h2
+            className="text-5xl font-bold mb-4 relative inline-block"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <span className="relative">
+              <span className="absolute inset-0 blur-2xl bg-electric-moss/30" />
+              <span className="relative bg-gradient-to-r from-electric-moss via-data-cyan to-electric-moss bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient glow-electric">
+                What We Do
+              </span>
+            </span>
+          </motion.h2>
           <p className="text-soft-clay/70 text-lg font-sans max-w-2xl mx-auto">
             Three pillars of transformation. Each engineered for executive clarity.
           </p>

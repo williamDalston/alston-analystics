@@ -62,10 +62,13 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-mono), 'JetBrains Mono', monospace;
+  font-family: var(--font-geist-mono), 'JetBrains Mono', 'Courier New', 'Courier', monospace;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
+  font-kerning: normal;
 }
 
 /* ============================================
@@ -160,4 +163,422 @@ html.lenis, html.lenis body {
   animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
+}
+
+/* ============================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================ */
+
+/* Focus States - Visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--electric-moss);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--electric-moss);
+  outline-offset: 3px;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--electric-moss);
+  outline-offset: 2px;
+  ring: 2px;
+  ring-color: var(--electric-moss);
+  ring-opacity: 0.3;
+}
+
+/* Skip to content link for screen readers */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--electric-moss);
+  color: var(--deep-void);
+  padding: 8px 16px;
+  z-index: 100;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* Minimum touch target size (44x44px for mobile) */
+button,
+a[role="button"],
+input[type="submit"],
+input[type="button"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+@media (min-width: 768px) {
+  button,
+  a[role="button"] {
+    min-height: auto;
+    min-width: auto;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .animate-pulse,
+  .animate-spin {
+    animation: none !important;
+  }
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   BUTTON IMPROVEMENTS
+   ============================================ */
+
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(204, 255, 0, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-primary:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 10px 30px rgba(204, 255, 0, 0.2),
+    0 0 20px rgba(204, 255, 0, 0.1);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Loading state */
+.btn-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--electric-moss);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   FORM IMPROVEMENTS
+   ============================================ */
+
+.form-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--soft-clay);
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  color: var(--soft-clay);
+  font-family: var(--font-geist-mono), 'JetBrains Mono', monospace;
+  transition: all 0.3s;
+}
+
+.form-input:focus {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: var(--electric-moss);
+  box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.1);
+}
+
+.form-input:invalid {
+  border-color: var(--signal-red);
+}
+
+.form-error {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--signal-red);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-success {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--electric-moss);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ============================================
+   RESPONSIVE TYPOGRAPHY
+   ============================================ */
+
+h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+p {
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: clamp(2rem, 8vw, 3rem);
+  }
+  
+  h2 {
+    font-size: clamp(1.75rem, 7vw, 2.5rem);
+  }
+  
+  h3 {
+    font-size: clamp(1.25rem, 6vw, 1.75rem);
+  }
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--deep-void);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(204, 255, 0, 0.2);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(204, 255, 0, 0.3);
+}
+
+/* ============================================
+   ANIMATIONS & KEYFRAMES
+   ============================================ */
+
+@keyframes gridMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 3s ease infinite;
+  background-size: 200% auto;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.5;
+    box-shadow: 0 0 20px rgba(204, 255, 0, 0.3);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 40px rgba(204, 255, 0, 0.6);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(204, 255, 0, 0.1),
+    transparent
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ============================================
+   ENHANCED VISUAL EFFECTS
+   ============================================ */
+
+/* Text gradient animation */
+.text-gradient-animate {
+  background: linear-gradient(
+    90deg,
+    var(--electric-moss),
+    var(--data-cyan),
+    var(--electric-moss)
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient 3s linear infinite;
+}
+
+/* Enhanced glow on hover */
+.hover-glow {
+  transition: all 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow:
+    0 0 20px rgba(204, 255, 0, 0.4),
+    0 0 40px rgba(204, 255, 0, 0.2),
+    inset 0 0 20px rgba(204, 255, 0, 0.1);
+}
+
+/* Shimmer effect */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.shimmer:hover::before {
+  left: 100%;
+}
+
+/* Parallax effect helper */
+.parallax-slow {
+  will-change: transform;
+  transition: transform 0.1s ease-out;
+}
+
+/* Magnetic hover effect */
+.magnetic {
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }

@@ -31,14 +31,20 @@ export function FloatingDock() {
     >
       <div className="glass-heavy rounded-full px-6 py-3 flex items-center gap-2">
         {dockItems.map((item, index) => (
-          <Link key={item.href} href={item.href}>
+          <Link 
+            key={item.href} 
+            href={item.href}
+            aria-label={`Navigate to ${item.label}`}
+            className="focus:outline-none focus:ring-2 focus:ring-electric-moss/50 rounded-full"
+          >
             <motion.div
               className={cn(
                 "relative flex items-center justify-center",
                 "w-12 h-12 rounded-full",
                 "text-soft-clay hover:text-electric-moss",
                 "transition-colors duration-300",
-                "cursor-pointer group"
+                "cursor-pointer group",
+                "focus-within:ring-2 focus-within:ring-electric-moss/50"
               )}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
