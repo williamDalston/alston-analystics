@@ -45,10 +45,10 @@ export default function ContactPage() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <a
-                    href="mailto:hello@alstonanalytics.com"
+                    href="mailto:info@alstonanalytics.com"
                     className="text-data-cyan font-mono text-sm hover:glow-data transition-all"
                   >
-                    hello@alstonanalytics.com
+                    info@alstonanalytics.com
                   </a>
                   <span className="hidden sm:inline text-soft-clay/30">|</span>
                   <a
