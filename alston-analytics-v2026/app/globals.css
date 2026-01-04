@@ -206,16 +206,16 @@ body {
    INTERACTION STATES & UTILITIES
    ============================================ */
 
-/* Button States */
+/* Button States - Snappier, more responsive */
 .btn-primary,
 .btn-secondary {
   position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-primary:active:not(:disabled) {
-  transform: translateY(1px);
-  box-shadow: 0 5px 15px rgba(204, 255, 0, 0.15);
+  transform: translateY(0.5px) scale(0.98);
+  box-shadow: 0 3px 10px rgba(79, 195, 247, 0.2);
 }
 
 .btn-primary:disabled,
@@ -253,9 +253,9 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* Form Input States */
+/* Form Input States - Snappier */
 .form-input {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .form-input:focus {
@@ -281,17 +281,17 @@ body {
   transform: translateY(-2px);
 }
 
-/* Card Interaction States */
+/* Card Interaction States - Snappier */
 .card-interactive {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
 }
 
 .card-interactive:hover {
-  transform: translateY(-4px) scale(1.01);
+  transform: translateY(-3px) scale(1.005);
   box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.3),
-    0 0 30px rgba(204, 255, 0, 0.1);
+    0 15px 35px rgba(0, 0, 0, 0.3),
+    0 0 25px rgba(79, 195, 247, 0.15);
 }
 
 /* Skeleton Loading */

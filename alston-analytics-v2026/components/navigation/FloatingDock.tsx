@@ -71,10 +71,10 @@ export function FloatingDock() {
                 {isActive && (
                   <motion.div
                     layoutId="active-page"
-                    className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-electric-moss shadow-[0_0_10px_rgba(204,255,0,0.8)]"
+                    className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-electric-moss shadow-[0_0_12px_rgba(79,195,247,0.9)]"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    transition={{ type: "spring", stiffness: 600, damping: 30, mass: 0.4 }}
                   />
                 )}
 
@@ -99,12 +99,12 @@ export function FloatingDock() {
                   <motion.div
                     layoutId={isActive ? "active-glow" : "dock-glow"}
                     className={cn(
-                      "absolute inset-0 rounded-full blur-xl",
-                      isActive ? "bg-electric-moss/30" : "bg-electric-moss/20"
+                      "absolute inset-0 rounded-full blur-lg",
+                      isActive ? "bg-cyan-400/25" : "bg-cyan-400/15"
                     )}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.15 }}
                   />
                 )}
               </motion.div>
