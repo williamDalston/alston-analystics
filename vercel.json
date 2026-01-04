@@ -1,6 +1,7 @@
 {
-  "buildCommand": "npm run build",
-  "framework": "nextjs",
-  "rootDirectory": "alston-analytics-v2026"
+  "buildCommand": "cd alston-analytics-v2026 && npm install && npm run build",
+  "outputDirectory": "alston-analytics-v2026/.next",
+  "installCommand": "cd alston-analytics-v2026 && npm install",
+  "framework": "nextjs"
 }
 
