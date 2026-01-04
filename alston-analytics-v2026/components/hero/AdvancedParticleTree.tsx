@@ -11,15 +11,15 @@ interface ParticleSystemProps {
 }
 
 /**
- * Advanced GPGPU-style particle system using InstancedMesh
- * Implements bioluminescent visual language with HDR emissive materials
+ * Modern Network Particle System with Dynamic Connections
+ * Implements neural network visualization with sophisticated visual effects
  */
 function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
+  const linesRef = useRef<THREE.LineSegments>(null);
 
-  // Reduced particle count for better stability across devices
-  // Original: 5000, Reduced for stability: 3000
-  const particleCount = typeof window !== 'undefined' && window.innerWidth < 768 ? 1500 : 3000;
+  // Optimized particle count for network visualization
+  const particleCount = typeof window !== 'undefined' && window.innerWidth < 768 ? 800 : 1200;
 
   // Store particle data for physics simulation
   const particleData = useMemo(() => {
@@ -35,18 +35,24 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
       for (let i = 0; i < particleCount; i++) {
         const i3 = i * 3;
 
-        // Create organic tree-like structure with more density
-        const angle = Math.random() * Math.PI * 2;
-        const height = Math.random() * 12 - 3; // -3 to 9
-        const radius = Math.pow(Math.random(), 1.8) * (10 - height * 0.25);
+        // Create modern 3D network distribution with clustering
+        const cluster = Math.floor(Math.random() * 5); // 5 main clusters
+        const clusterAngle = (cluster / 5) * Math.PI * 2;
+        const clusterRadius = 6 + Math.random() * 3;
 
-        // Add some vertical clustering (branches)
-        const branch = Math.floor(Math.random() * 5);
-        const branchAngle = (branch / 5) * Math.PI * 2;
+        // Add randomness within cluster
+        const localAngle = Math.random() * Math.PI * 2;
+        const localRadius = Math.random() * 2.5;
+        const localHeight = (Math.random() - 0.5) * 3;
 
-        positions[i3] = Math.cos(angle + branchAngle * 0.3) * radius;
-        positions[i3 + 1] = height;
-        positions[i3 + 2] = Math.sin(angle + branchAngle * 0.3) * radius;
+        // Position nodes in spherical clusters
+        const baseX = Math.cos(clusterAngle) * clusterRadius;
+        const baseZ = Math.sin(clusterAngle) * clusterRadius;
+        const baseY = Math.sin(clusterAngle * 0.5) * 2;
+
+        positions[i3] = baseX + Math.cos(localAngle) * localRadius;
+        positions[i3 + 1] = baseY + localHeight;
+        positions[i3 + 2] = baseZ + Math.sin(localAngle) * localRadius;
 
         // Initialize velocities with slight variation
         velocities[i3] = (Math.random() - 0.5) * 0.01;
@@ -92,18 +98,23 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
     };
   };
 
-  // Animate particles with physics
+  // Animate particles with physics and update connections
   useFrame((state) => {
     if (!meshRef.current || !particleData) return;
 
     const time = state.clock.getElapsedTime();
-    
+
     // Safety check: Ensure particleData exists
     if (!particleData.positions || !particleData.velocities || !particleData.phases) {
       return;
     }
-    
+
     const { positions, velocities, phases } = particleData;
+
+    // Dynamic connection lines
+    const linePositions: number[] = [];
+    const lineColors: number[] = [];
+    const maxConnectionDistance = 3.5; // Connection threshold
 
     // Safety check: Ensure arrays are defined and have correct length
     if (!positions || !velocities || !phases ||
@@ -169,9 +180,33 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
       positions[i3 + 1] = y;
       positions[i3 + 2] = z;
 
-      // Pulsing scale based on phase
-      const pulse = 1 + Math.sin(time * 2 + phases[i]) * 0.3;
-      const scale = 0.08 * pulse;
+      // Check connections to nearby particles (optimized - check subset)
+      if (i % 3 === 0) { // Only check every 3rd particle for performance
+        for (let j = i + 1; j < Math.min(i + 50, particleCount); j++) {
+          const j3 = j * 3;
+          const dx = positions[j3] - x;
+          const dy = positions[j3 + 1] - y;
+          const dz = positions[j3 + 2] - z;
+          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+          if (dist < maxConnectionDistance) {
+            // Add line segment
+            linePositions.push(x, y, z, positions[j3], positions[j3 + 1], positions[j3 + 2]);
+
+            // Color based on distance (closer = brighter)
+            const intensity = 1 - (dist / maxConnectionDistance);
+            const r = 0.31 * intensity; // Cyan red component
+            const g = 0.76 * intensity; // Cyan green component
+            const b = 0.97 * intensity; // Cyan blue component
+
+            lineColors.push(r, g, b, r, g, b);
+          }
+        }
+      }
+
+      // Pulsing scale based on phase - larger nodes
+      const pulse = 1 + Math.sin(time * 2 + phases[i]) * 0.2;
+      const scale = 0.12 * pulse;
 
       dummy.position.set(x, y, z);
       dummy.scale.set(scale, scale, scale);
@@ -186,6 +221,15 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
       }
     }
 
+    // Update connection lines
+    if (linesRef.current && linePositions.length > 0) {
+      const geometry = linesRef.current.geometry;
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(lineColors, 3));
+      geometry.attributes.position.needsUpdate = true;
+      geometry.attributes.color.needsUpdate = true;
+    }
+
     if (meshRef.current && meshRef.current.instanceMatrix) {
       meshRef.current.instanceMatrix.needsUpdate = true;
     }
@@ -198,11 +242,20 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
 
   const geometry = useMemo(() => {
     try {
-      return new THREE.SphereGeometry(1, 8, 8);
+      // More detailed sphere for better visuals
+      return new THREE.SphereGeometry(1, 16, 16);
     } catch (error) {
       console.error('Error creating geometry:', error);
-      return new THREE.SphereGeometry(1, 8, 8);
+      return new THREE.SphereGeometry(1, 16, 16);
     }
+  }, []);
+
+  const lineGeometry = useMemo(() => {
+    const geo = new THREE.BufferGeometry();
+    // Initialize with empty arrays - will be updated in animation loop
+    geo.setAttribute('position', new THREE.Float32BufferAttribute([], 3));
+    geo.setAttribute('color', new THREE.Float32BufferAttribute([], 3));
+    return geo;
   }, []);
 
   // Don't render if particleData is invalid
@@ -211,19 +264,33 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
   }
 
   return (
-    <instancedMesh ref={meshRef} args={[geometry, undefined, particleCount]}>
-      {/* HDR Emissive Material - Refined color palette */}
-      <meshStandardMaterial
-        color="#E8F4F8"
-        emissive="#4FC3F7"
-        emissiveIntensity={8} // Reduced for more elegant glow
-        toneMapped={false}
-        transparent
-        opacity={0.85}
-        metalness={0.2}
-        roughness={0.3}
-      />
-    </instancedMesh>
+    <>
+      {/* Connection lines - rendered first for depth sorting */}
+      <lineSegments ref={linesRef} geometry={lineGeometry}>
+        <lineBasicMaterial
+          vertexColors
+          transparent
+          opacity={0.4}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </lineSegments>
+
+      {/* Network nodes */}
+      <instancedMesh ref={meshRef} args={[geometry, undefined, particleCount]}>
+        {/* Modern glass-like material with depth */}
+        <meshStandardMaterial
+          color="#E8F4F8"
+          emissive="#4FC3F7"
+          emissiveIntensity={10}
+          toneMapped={false}
+          transparent
+          opacity={0.9}
+          metalness={0.5}
+          roughness={0.1}
+        />
+      </instancedMesh>
+    </>
   );
 }
 

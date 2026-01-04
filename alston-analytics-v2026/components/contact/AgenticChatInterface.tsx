@@ -41,7 +41,10 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     return emailRegex.test(email);
   };
 
+  const [apiError, setApiError] = useState<string | null>(null);
+
   const callChatAPI = async (userMessage: string, conversationContext: string) => {
+    setApiError(null);
     try {
       // Build messages array for API (including existing messages)
       const apiMessages = [
@@ -65,7 +68,9 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(errorData.error || 'Failed to get AI response');
+        const errorMessage = errorData.error || 'Failed to get AI response';
+        setApiError(errorMessage);
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -245,8 +250,13 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
-        <AnimatePresence>
+      <div 
+        className="flex-1 overflow-y-auto p-6 space-y-4"
+        role="log"
+        aria-live="polite"
+        aria-label="Chat messages"
+      >
+        <AnimatePresence mode="sync">
           {messages.map((message, index) => (
             <motion.div
               key={message.id}
@@ -282,6 +292,56 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
               </div>
             </motion.div>
           ))}
+          
+          {/* Error Message */}
+          {apiError && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="flex justify-center"
+              role="alert"
+              aria-live="assertive"
+            >
+              <div className="glass-heavy rounded-2xl px-5 py-3 border border-signal-red/30 bg-signal-red/10">
+                <div className="flex items-center gap-2 text-signal-red text-sm font-mono">
+                  <AlertCircle className="w-4 h-4" />
+                  <span>Connection error. Please try again.</span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+          
+          {/* Typing Indicator */}
+          {isLoading && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="flex justify-start"
+              aria-label="AI is typing"
+            >
+              <div className="glass-heavy rounded-2xl px-5 py-3">
+                <div className="flex gap-1 items-center">
+                  <motion.div
+                    className="w-2 h-2 rounded-full bg-electric-moss"
+                    animate={{ y: [0, -4, 0] }}
+                    transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+                  />
+                  <motion.div
+                    className="w-2 h-2 rounded-full bg-electric-moss"
+                    animate={{ y: [0, -4, 0] }}
+                    transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
+                  />
+                  <motion.div
+                    className="w-2 h-2 rounded-full bg-electric-moss"
+                    animate={{ y: [0, -4, 0] }}
+                    transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
 
