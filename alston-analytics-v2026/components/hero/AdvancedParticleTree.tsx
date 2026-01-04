@@ -69,15 +69,27 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
     }
   }, [particleCount]);
 
-  // Curl noise approximation (simplified 3D noise)
+  // Enhanced curl noise for ultra-smooth fluid motion
   const curlNoise3D = (x: number, y: number, z: number, time: number) => {
-    // Simplified curl noise - full implementation would use GLSL
-    const scale = 0.5;
-    const nx = Math.sin(x * scale + time * 0.1) * Math.cos(y * scale);
-    const ny = Math.sin(y * scale + time * 0.1) * Math.cos(z * scale);
-    const nz = Math.sin(z * scale + time * 0.1) * Math.cos(x * scale);
+    // Multi-octave curl noise for organic, flowing movement
+    const scale = 0.3;
+    const timeScale = 0.15;
 
-    return { x: nx, y: ny, z: nz };
+    // First octave - broad sweeping motion
+    const nx1 = Math.sin(x * scale + time * timeScale) * Math.cos(y * scale * 0.8);
+    const ny1 = Math.sin(y * scale + time * timeScale) * Math.cos(z * scale * 0.8);
+    const nz1 = Math.sin(z * scale + time * timeScale) * Math.cos(x * scale * 0.8);
+
+    // Second octave - finer detail
+    const nx2 = Math.sin(x * scale * 2.1 + time * timeScale * 1.3) * 0.5;
+    const ny2 = Math.sin(y * scale * 2.1 + time * timeScale * 1.3) * 0.5;
+    const nz2 = Math.sin(z * scale * 2.1 + time * timeScale * 1.3) * 0.5;
+
+    return {
+      x: nx1 + nx2,
+      y: ny1 + ny2,
+      z: nz1 + nz2
+    };
   };
 
   // Animate particles with physics
@@ -113,24 +125,24 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
       let y = positions[i3 + 1];
       let z = positions[i3 + 2];
 
-      // Apply curl noise for organic flow
-      const curl = curlNoise3D(x * 0.1, y * 0.1, z * 0.1, time);
+      // Apply enhanced curl noise for ultra-smooth flow
+      const curl = curlNoise3D(x * 0.08, y * 0.08, z * 0.08, time);
 
-      // Magnetic cursor effect
+      // Refined magnetic cursor effect with smoother falloff
       const dx = mousePosition.x * 10 - x;
       const dy = mousePosition.y * 5 - y;
       const distance = Math.sqrt(dx * dx + dy * dy);
-      const magneticForce = Math.max(0, 1 - distance / 15) * 0.05;
+      const magneticForce = Math.max(0, 1 - distance / 20) * 0.03;
 
-      // Update velocities with forces
-      velocities[i3] += curl.x * 0.005 + dx * magneticForce * 0.01;
-      velocities[i3 + 1] += curl.y * 0.003 + dy * magneticForce * 0.01;
-      velocities[i3 + 2] += curl.z * 0.005;
+      // Update velocities with smoother forces
+      velocities[i3] += curl.x * 0.008 + dx * magneticForce * 0.015;
+      velocities[i3 + 1] += curl.y * 0.006 + dy * magneticForce * 0.015;
+      velocities[i3 + 2] += curl.z * 0.008;
 
-      // Apply drag (fluid resistance)
-      velocities[i3] *= 0.98;
-      velocities[i3 + 1] *= 0.98;
-      velocities[i3 + 2] *= 0.98;
+      // Higher drag for smoother, more fluid motion
+      velocities[i3] *= 0.95;
+      velocities[i3 + 1] *= 0.95;
+      velocities[i3 + 2] *= 0.95;
 
       // Update positions
       x += velocities[i3];
@@ -200,14 +212,16 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
 
   return (
     <instancedMesh ref={meshRef} args={[geometry, undefined, particleCount]}>
-      {/* HDR Emissive Material - Key for bloom effect */}
+      {/* HDR Emissive Material - Refined color palette */}
       <meshStandardMaterial
-        color="#CCFF00"
-        emissive="#CCFF00"
-        emissiveIntensity={15} // HDR value > 1.0
-        toneMapped={false} // Critical: Allows HDR values to pass to bloom
+        color="#E8F4F8"
+        emissive="#4FC3F7"
+        emissiveIntensity={8} // Reduced for more elegant glow
+        toneMapped={false}
         transparent
-        opacity={0.9}
+        opacity={0.85}
+        metalness={0.2}
+        roughness={0.3}
       />
     </instancedMesh>
   );
@@ -237,41 +251,47 @@ function BioluminescentSpheres() {
 
   return (
     <>
-      {/* Primary glow sphere */}
+      {/* Primary glow sphere - elegant cyan */}
       <mesh ref={sphere1Ref} position={[0, -2, 0]}>
         <sphereGeometry args={[0.8, 32, 32]} />
         <meshStandardMaterial
-          color="#CCFF00"
-          emissive="#CCFF00"
-          emissiveIntensity={20}
-          toneMapped={false}
-          transparent
-          opacity={0.4}
-        />
-      </mesh>
-
-      {/* Secondary cyan accents */}
-      <mesh ref={sphere2Ref} position={[-3, -1, 1.5]}>
-        <sphereGeometry args={[0.4, 32, 32]} />
-        <meshStandardMaterial
-          color="#00F0FF"
-          emissive="#00F0FF"
+          color="#B3E5FC"
+          emissive="#4FC3F7"
           emissiveIntensity={12}
           toneMapped={false}
           transparent
-          opacity={0.3}
+          opacity={0.35}
+          metalness={0.3}
+          roughness={0.2}
+        />
+      </mesh>
+
+      {/* Secondary warm accents */}
+      <mesh ref={sphere2Ref} position={[-3, -1, 1.5]}>
+        <sphereGeometry args={[0.4, 32, 32]} />
+        <meshStandardMaterial
+          color="#FFE0B2"
+          emissive="#FFA726"
+          emissiveIntensity={8}
+          toneMapped={false}
+          transparent
+          opacity={0.25}
+          metalness={0.2}
+          roughness={0.3}
         />
       </mesh>
 
       <mesh ref={sphere3Ref} position={[3, -1, -1.5]}>
         <sphereGeometry args={[0.4, 32, 32]} />
         <meshStandardMaterial
-          color="#00F0FF"
-          emissive="#00F0FF"
-          emissiveIntensity={12}
+          color="#E1BEE7"
+          emissive="#AB47BC"
+          emissiveIntensity={8}
           toneMapped={false}
           transparent
-          opacity={0.3}
+          opacity={0.25}
+          metalness={0.2}
+          roughness={0.3}
         />
       </mesh>
     </>
@@ -349,11 +369,11 @@ export function AdvancedParticleTree() {
         {/* Volumetric atmosphere */}
         <fog attach="fog" args={['#000000', 10, 30]} />
 
-        {/* Lighting setup for depth */}
-        <ambientLight intensity={0.2} />
-        <pointLight position={[0, 5, 0]} intensity={1.5} color="#CCFF00" distance={20} decay={2} />
-        <pointLight position={[-10, 0, 5]} intensity={0.8} color="#00F0FF" distance={15} decay={2} />
-        <pointLight position={[10, 0, -5]} intensity={0.8} color="#00F0FF" distance={15} decay={2} />
+        {/* Refined lighting for elegant depth */}
+        <ambientLight intensity={0.15} />
+        <pointLight position={[0, 5, 0]} intensity={2.0} color="#4FC3F7" distance={25} decay={2} />
+        <pointLight position={[-10, 0, 5]} intensity={1.0} color="#FFA726" distance={18} decay={2} />
+        <pointLight position={[10, 0, -5]} intensity={1.0} color="#AB47BC" distance={18} decay={2} />
 
         {/* Environment for subtle reflections */}
         <Environment preset="night" />
@@ -374,14 +394,14 @@ export function AdvancedParticleTree() {
           maxPolarAngle={Math.PI / 1.5}
         />
 
-        {/* HDR Bloom Post-Processing - The Secret Sauce */}
-        <EffectComposer>
+        {/* Refined HDR Bloom - Crisp and elegant */}
+        <EffectComposer multisampling={8}>
           <Bloom
-            intensity={2.0}           // Bloom strength
-            luminanceThreshold={0.9}  // Only bloom bright pixels (HDR > 0.9)
-            luminanceSmoothing={0.9}  // Smooth transition
-            mipmapBlur              // High-quality blur
-            radius={0.8}             // Glow spread
+            intensity={1.5}           // Reduced for crisp, refined glow
+            luminanceThreshold={0.85} // Tighter threshold for sharper particles
+            luminanceSmoothing={0.95} // Smoother gradient
+            mipmapBlur               // High-quality blur
+            radius={0.6}              // Tighter glow spread for crispness
           />
         </EffectComposer>
       </Canvas>

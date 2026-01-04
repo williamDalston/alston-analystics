@@ -55,13 +55,14 @@ export function FloatingDock() {
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
                 animate={{
-                  scale: isActive ? 1.2 : hoveredIndex === index ? 1.3 : 1,
-                  y: isActive ? -4 : hoveredIndex === index ? -8 : 0,
+                  scale: isActive ? 1.15 : hoveredIndex === index ? 1.25 : 1,
+                  y: isActive ? -3 : hoveredIndex === index ? -6 : 0,
                 }}
                 transition={{
                   type: "spring",
-                  stiffness: 300,
-                  damping: 20,
+                  stiffness: 500,
+                  damping: 25,
+                  mass: 0.5,
                 }}
               >
                 {item.icon}

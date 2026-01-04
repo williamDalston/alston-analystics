@@ -41,7 +41,43 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     return emailRegex.test(email);
   };
 
-  const handleOptionClick = (option: string) => {
+  const callChatAPI = async (userMessage: string, conversationContext: string) => {
+    try {
+      // Build messages array for API (including existing messages)
+      const apiMessages = [
+        ...messages.map((msg) => ({
+          role: msg.role,
+          content: msg.content,
+        })),
+        { role: 'user' as const, content: userMessage },
+      ];
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: apiMessages,
+          conversationContext,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(errorData.error || 'Failed to get AI response');
+      }
+
+      const data = await response.json();
+      return data.message;
+    } catch (error) {
+      console.error('Chat API error:', error);
+      // Fallback to default responses if API fails
+      return null;
+    }
+  };
+
+  const handleOptionClick = async (option: string) => {
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -52,8 +88,11 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
 
-    // Simulate AI response based on option
-    setTimeout(() => {
+    // Call real API
+    const aiResponse = await callChatAPI(option, currentStep);
+
+    if (!aiResponse) {
+      // Fallback to default responses if API fails
       setIsLoading(false);
       let response: Message;
 
@@ -85,10 +124,30 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
       }
 
       setMessages((prev) => [...prev, response]);
-    }, 1000);
+      return;
+    }
+
+    // Use AI response
+    setIsLoading(false);
+    const response: Message = {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant',
+      content: aiResponse,
+    };
+
+    // Update step based on option (for flow control)
+    if (option === 'Strategic Consulting') {
+      setCurrentStep('consulting');
+    } else if (option === 'Power BI Dashboard') {
+      setCurrentStep('powerbi');
+    } else {
+      setCurrentStep('exploring');
+    }
+
+    setMessages((prev) => [...prev, response]);
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!input.trim()) return;
 
     const userMessage: Message = {
@@ -98,12 +157,17 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     };
 
     setMessages((prev) => [...prev, userMessage]);
+    const messageText = input;
     setInput('');
     setIsLoading(true);
 
-    // Simulate response
-    setTimeout(() => {
-      setIsLoading(false);
+    // Call real API
+    const aiResponse = await callChatAPI(messageText, currentStep);
+
+    setIsLoading(false);
+
+    if (!aiResponse) {
+      // Fallback response if API fails
       const response: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -111,7 +175,16 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
           "Noted. I'm forwarding this to Alston directly. You'll hear back within 24 hours. What's the best email to reach you?",
       };
       setMessages((prev) => [...prev, response]);
-    }, 1500);
+      return;
+    }
+
+    // Use AI response
+    const response: Message = {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant',
+      content: aiResponse,
+    };
+    setMessages((prev) => [...prev, response]);
   };
 
   const handleEmailSubmit = () => {
