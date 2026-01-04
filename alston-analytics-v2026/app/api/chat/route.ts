@@ -80,11 +80,33 @@ Respond naturally and helpfully. You can discuss anything about Alston Analytics
     });
 
     if (!response.ok) {
-      const errorData = await response.text();
+      const errorData = await response.text().catch(() => 'Unknown error');
+      let errorMessage = 'Failed to get AI response';
+      let statusCode = response.status;
+
+      // Handle specific error cases
+      if (response.status === 429) {
+        errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
+        // Parse retry-after header if available
+        const retryAfter = response.headers.get('retry-after');
+        if (retryAfter) {
+          errorMessage += ` Please wait ${retryAfter} seconds.`;
+        }
+      } else if (response.status === 401) {
+        errorMessage = 'Authentication failed. Please contact support.';
+      } else if (response.status === 500 || response.status >= 502) {
+        errorMessage = 'Service temporarily unavailable. Please try again in a moment.';
+      }
+
       console.error('OpenAI API error:', response.status, errorData);
       return NextResponse.json(
-        { error: 'Failed to get AI response', details: errorData },
-        { status: response.status }
+        { 
+          error: errorMessage, 
+          details: errorData,
+          statusCode: response.status,
+          retryAfter: response.headers.get('retry-after'),
+        },
+        { status: statusCode }
       );
     }
 

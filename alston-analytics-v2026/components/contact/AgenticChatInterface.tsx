@@ -36,8 +36,12 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [isRateLimited, setIsRateLimited] = useState(false);
+  const [retryAfter, setRetryAfter] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const lastRequestTimeRef = useRef<number>(0);
+  const requestDebounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -61,8 +65,39 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     }
   }, []);
 
-  const callChatAPI = async (userMessage: string, conversationContext: string) => {
+  // Cleanup debounce timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (requestDebounceTimeoutRef.current) {
+        clearTimeout(requestDebounceTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const callChatAPI = async (userMessage: string, conversationContext: string, retryCount = 0): Promise<string | null> => {
     setApiError(null);
+    
+    // Debounce: Prevent requests if less than 1 second since last request
+    const now = Date.now();
+    const timeSinceLastRequest = now - lastRequestTimeRef.current;
+    if (timeSinceLastRequest < 1000 && retryCount === 0) {
+      // Clear any existing timeout
+      if (requestDebounceTimeoutRef.current) {
+        clearTimeout(requestDebounceTimeoutRef.current);
+      }
+      
+      // Wait and retry
+      return new Promise((resolve) => {
+        requestDebounceTimeoutRef.current = setTimeout(async () => {
+          lastRequestTimeRef.current = Date.now();
+          const result = await callChatAPI(userMessage, conversationContext, 0);
+          resolve(result);
+        }, 1000 - timeSinceLastRequest);
+      });
+    }
+    
+    lastRequestTimeRef.current = Date.now();
+    
     try {
       // Build messages array for API (including existing messages)
       const apiMessages = [
@@ -86,16 +121,57 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        const statusCode = errorData.statusCode || response.status;
         const errorMessage = errorData.error || 'Failed to get AI response';
-        setApiError(errorMessage);
-        throw new Error(errorMessage);
+        
+        // Handle rate limiting (429)
+        if (statusCode === 429) {
+          setIsRateLimited(true);
+          const retryAfterValue = errorData.retryAfter ? parseInt(errorData.retryAfter, 10) : 60;
+          setRetryAfter(retryAfterValue);
+          
+          // Auto-retry after the retry period (with exponential backoff)
+          if (retryCount < 2) {
+            const delay = retryAfterValue * 1000 * (retryCount + 1);
+            setTimeout(() => {
+              setIsRateLimited(false);
+              setRetryAfter(null);
+            }, delay);
+            
+            // Show user-friendly message
+            setApiError(`${errorMessage} Retrying automatically...`);
+            
+            // Retry after delay
+            return new Promise((resolve) => {
+              setTimeout(async () => {
+                const result = await callChatAPI(userMessage, conversationContext, retryCount + 1);
+                resolve(result);
+              }, delay);
+            });
+          } else {
+            setApiError(errorMessage);
+            return null;
+          }
+        } else {
+          setApiError(errorMessage);
+          throw new Error(errorMessage);
+        }
       }
 
+      // Success - clear rate limit state
+      setIsRateLimited(false);
+      setRetryAfter(null);
+      
       const data = await response.json();
       return data.message;
     } catch (error) {
       console.error('Chat API error:', error);
-      // Fallback to default responses if API fails
+      
+      // Only show error if not already handled
+      if (!isRateLimited) {
+        setApiError(error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.');
+      }
+      
       return null;
     }
   };
@@ -352,11 +428,12 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
                     {message.options.map((option, optIndex) => (
                       <motion.button
                         key={option}
-                        onClick={() => handleOptionClick(option)}
-                        className="w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg glass-surface hover:bg-electric-moss/10 transition-all text-xs sm:text-sm font-mono text-soft-clay border border-transparent hover:border-electric-moss/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 focus:border-electric-moss/50 relative overflow-hidden group"
+                        onClick={() => !isRateLimited && handleOptionClick(option)}
+                        disabled={isRateLimited}
+                        className="w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg glass-surface hover:bg-electric-moss/10 transition-all text-xs sm:text-sm font-mono text-soft-clay border border-transparent hover:border-electric-moss/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 focus:border-electric-moss/50 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label={`Select option: ${option}`}
-                        whileHover={{ scale: 1.02, x: 4 }}
-                        whileTap={{ scale: 0.98 }}
+                        whileHover={!isRateLimited ? { scale: 1.02, x: 4 } : {}}
+                        whileTap={!isRateLimited ? { scale: 0.98 } : {}}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ 
@@ -404,24 +481,37 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
               aria-live="assertive"
             >
               <motion.div 
-                className="glass-heavy rounded-2xl px-5 py-3 border border-signal-red/30 bg-signal-red/10"
+                className={`glass-heavy rounded-2xl px-5 py-3 border ${
+                  isRateLimited 
+                    ? 'border-yellow-500/30 bg-yellow-500/10' 
+                    : 'border-signal-red/30 bg-signal-red/10'
+                }`}
                 animate={{ 
                   boxShadow: [
-                    '0 0 0px rgba(255, 77, 77, 0.2)',
-                    '0 0 20px rgba(255, 77, 77, 0.3)',
-                    '0 0 0px rgba(255, 77, 77, 0.2)',
+                    `0 0 0px rgba(${isRateLimited ? '234, 179, 8' : '255, 77, 77'}, 0.2)`,
+                    `0 0 20px rgba(${isRateLimited ? '234, 179, 8' : '255, 77, 77'}, 0.3)`,
+                    `0 0 0px rgba(${isRateLimited ? '234, 179, 8' : '255, 77, 77'}, 0.2)`,
                   ]
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                <div className="flex items-center gap-2 text-signal-red text-sm font-mono">
+                <div className={`flex items-center gap-2 text-sm font-mono ${
+                  isRateLimited ? 'text-yellow-400' : 'text-signal-red'
+                }`}>
                   <motion.div
                     animate={{ rotate: [0, -10, 10, -10, 0] }}
                     transition={{ duration: 0.5 }}
                   >
                     <AlertCircle className="w-4 h-4" />
                   </motion.div>
-                  <span>Connection error. Please try again.</span>
+                  <div className="flex flex-col gap-1">
+                    <span>{apiError}</span>
+                    {isRateLimited && retryAfter && (
+                      <span className="text-xs opacity-75">
+                        Waiting {retryAfter} seconds before retry...
+                      </span>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             </motion.div>
@@ -569,21 +659,21 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
-              placeholder="Type your message..."
-              disabled={isLoading}
+              onKeyPress={(e) => e.key === 'Enter' && !isLoading && !isRateLimited && handleSendMessage()}
+              placeholder={isRateLimited ? "Rate limited - please wait..." : "Type your message..."}
+              disabled={isLoading || isRateLimited}
               className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Chat message input"
-              whileFocus={{ scale: 1.02 }}
+              whileFocus={{ scale: isRateLimited ? 1 : 1.02 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
             />
             <motion.button
               onClick={handleSendMessage}
-              disabled={!input.trim() || isLoading}
+              disabled={!input.trim() || isLoading || isRateLimited}
               className={`glass-surface rounded-full p-2.5 sm:p-3 text-electric-moss hover:bg-electric-moss/10 transition-all focus:outline-none focus:ring-2 focus:ring-electric-moss/50 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 relative overflow-hidden group ${isLoading ? 'btn-loading' : ''}`}
-              aria-label="Send message"
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              whileTap={{ scale: 0.9 }}
+              aria-label={isRateLimited ? "Rate limited - please wait" : "Send message"}
+              whileHover={!isRateLimited ? { scale: 1.1, rotate: 5 } : {}}
+              whileTap={!isRateLimited ? { scale: 0.9 } : {}}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
               {isLoading ? (
