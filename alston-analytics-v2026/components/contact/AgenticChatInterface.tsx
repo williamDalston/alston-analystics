@@ -594,8 +594,10 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
       >
         {messages.some(m => m.content.includes("What's the best email")) && !submitSuccess ? (
           <div className="space-y-3">
-            <div>
-              <label htmlFor="email-input" className="sr-only">Email Address</label>
+            <p className="text-xs sm:text-sm text-soft-clay/70 font-mono mb-2">
+              You can provide your email below, or continue chatting:
+            </p>
+            <div className="flex gap-2">
               <motion.input
                 id="email-input"
                 type="email"
@@ -604,52 +606,93 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
                   setEmailInput(e.target.value);
                   setEmailError('');
                 }}
-                onKeyPress={(e) => e.key === 'Enter' && handleEmailSubmit()}
-                placeholder="you@organization.com"
-                className="w-full bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all duration-300"
+                onKeyPress={(e) => e.key === 'Enter' && !isRateLimited && handleEmailSubmit()}
+                placeholder="you@organization.com (optional)"
+                disabled={isRateLimited}
+                className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-invalid={emailError ? 'true' : 'false'}
                 aria-describedby={emailError ? 'email-error' : undefined}
                 whileFocus={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
               />
-              {emailError && (
-                <motion.div 
-                  id="email-error" 
-                  className="mt-2 flex items-center gap-2 text-signal-red text-xs sm:text-sm font-mono" 
-                  role="alert"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                >
-                  <motion.div
-                    animate={{ rotate: [0, -10, 10, 0] }}
-                    transition={{ duration: 0.4 }}
-                  >
-                    <AlertCircle className="w-4 h-4" />
-                  </motion.div>
-                  <span>{emailError}</span>
-                </motion.div>
-              )}
+              <motion.button
+                onClick={handleEmailSubmit}
+                disabled={isSubmitting || isRateLimited || !emailInput.trim()}
+                className={`glass-surface rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-electric-moss hover:bg-electric-moss/10 transition-all font-mono font-bold text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-electric-moss/50 relative overflow-hidden group flex-shrink-0 ${isSubmitting ? 'btn-loading opacity-70' : ''} disabled:opacity-50 disabled:cursor-not-allowed`}
+                aria-label="Submit email address"
+                whileHover={!isSubmitting && !isRateLimited && emailInput.trim() ? { scale: 1.05 } : {}}
+                whileTap={!isSubmitting && !isRateLimited && emailInput.trim() ? { scale: 0.95 } : {}}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              >
+                {isSubmitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <span>Submit</span>
+                )}
+              </motion.button>
             </div>
-            <motion.button
-              onClick={handleEmailSubmit}
-              disabled={isSubmitting}
-              className={`w-full glass-surface rounded-full px-5 sm:px-6 py-2.5 sm:py-3 text-electric-moss hover:bg-electric-moss/10 transition-all font-mono font-bold text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-electric-moss/50 relative overflow-hidden group ${isSubmitting ? 'btn-loading opacity-70' : ''}`}
-              aria-label="Submit email address"
-              whileHover={{ scale: isSubmitting ? 1 : 1.02, y: -1 }}
-              whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            >
-              <span className="relative z-10">{isSubmitting ? 'Sending...' : 'Submit Email'}</span>
-              {!isSubmitting && (
+            {emailError && (
+              <motion.div 
+                id="email-error" 
+                className="flex items-center gap-2 text-signal-red text-xs sm:text-sm font-mono" 
+                role="alert"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              >
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-electric-moss/10 to-data-cyan/10 opacity-0 group-hover:opacity-100"
-                  initial={{ x: '-100%' }}
-                  whileHover={{ x: '100%' }}
-                  transition={{ duration: 0.5 }}
+                  animate={{ rotate: [0, -10, 10, 0] }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <AlertCircle className="w-4 h-4" />
+                </motion.div>
+                <span>{emailError}</span>
+              </motion.div>
+            )}
+            <div className="pt-2 border-t border-soft-clay/10">
+              <div className="flex gap-2 sm:gap-3">
+                <label htmlFor="chat-input" className="sr-only">Type your message</label>
+                <motion.input
+                  id="chat-input"
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && !isLoading && !isRateLimited && handleSendMessage()}
+                  placeholder="Or continue chatting..."
+                  disabled={isLoading || isRateLimited}
+                  className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Chat message input"
+                  whileFocus={{ scale: isRateLimited ? 1 : 1.02 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
                 />
-              )}
-            </motion.button>
+                <motion.button
+                  onClick={handleSendMessage}
+                  disabled={!input.trim() || isLoading || isRateLimited}
+                  className={`glass-surface rounded-full p-2.5 sm:p-3 text-electric-moss hover:bg-electric-moss/10 transition-all focus:outline-none focus:ring-2 focus:ring-electric-moss/50 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 relative overflow-hidden group ${isLoading ? 'btn-loading' : ''}`}
+                  aria-label={isRateLimited ? "Rate limited - please wait" : "Send message"}
+                  whileHover={!isRateLimited ? { scale: 1.1, rotate: 5 } : {}}
+                  whileTap={!isRateLimited ? { scale: 0.9 } : {}}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <motion.div
+                      animate={{ x: [0, 2, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      <Send className="w-5 h-5" />
+                    </motion.div>
+                  )}
+                  <motion.div
+                    className="absolute inset-0 bg-electric-moss/10 rounded-full opacity-0 group-hover:opacity-100"
+                    initial={{ scale: 0 }}
+                    whileHover={{ scale: 1.2 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </motion.button>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="flex gap-2 sm:gap-3">

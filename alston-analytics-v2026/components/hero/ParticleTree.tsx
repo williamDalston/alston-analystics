@@ -11,7 +11,8 @@ interface ParticleSystemProps {
 
 function ParticleSystem({ mousePosition }: ParticleSystemProps) {
   const particlesRef = useRef<THREE.Points>(null);
-  const particleCount = 3000; // Increased for more visual interest
+  // Slightly lower count to keep frame rate smoother on mid-tier devices
+  const particleCount = 1800;
 
   // Generate particle positions in a tree-like structure
   const positions = useMemo(() => {
@@ -51,15 +52,15 @@ function ParticleSystem({ mousePosition }: ParticleSystemProps) {
       const y = positions[i3 + 1];
       const z = positions[i3 + 2];
 
-      // Enhanced swaying motion with more variation
-      const swayX = Math.sin(time * 0.5 + y * 0.1) * 0.03;
-      const swayZ = Math.cos(time * 0.5 + y * 0.1) * 0.03;
-      const swayY = Math.sin(time * 0.3 + y * 0.2) * 0.01;
+      // Gentle swaying motion with moderated amplitude for smoothness
+      const swayX = Math.sin(time * 0.5 + y * 0.1) * 0.02;
+      const swayZ = Math.cos(time * 0.5 + y * 0.1) * 0.02;
+      const swayY = Math.sin(time * 0.3 + y * 0.2) * 0.008;
 
-      // Stronger mouse influence (wind effect)
-      const windX = mousePosition.x * 1.0;
-      const windZ = mousePosition.y * 1.0;
-      const windY = (mousePosition.x + mousePosition.y) * 0.3;
+      // Mouse influence (wind effect) dialed back for steadier motion
+      const windX = mousePosition.x * 0.6;
+      const windZ = mousePosition.y * 0.6;
+      const windY = (mousePosition.x + mousePosition.y) * 0.2;
 
       positions[i3] = x + swayX + windX * 0.02;
       positions[i3 + 1] = y + swayY + windY * 0.01;
@@ -83,10 +84,10 @@ function ParticleSystem({ mousePosition }: ParticleSystemProps) {
   return (
     <points ref={particlesRef} geometry={geometry}>
       <pointsMaterial
-        size={0.06}
+        size={0.05}
         color="#CCFF00"
         transparent
-        opacity={0.8}
+        opacity={0.7}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
       />

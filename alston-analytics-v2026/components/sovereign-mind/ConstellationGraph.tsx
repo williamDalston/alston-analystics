@@ -179,7 +179,14 @@ export function ConstellationGraph() {
           />
         ))}
 
-        <OrbitControls enableZoom={true} enablePan={true} />
+        <OrbitControls
+          enableZoom={true}
+          enablePan={true}
+          enableDamping
+          dampingFactor={0.08}
+          minDistance={6}
+          maxDistance={18}
+        />
       </Canvas>
 
       {/* Content Panel */}
