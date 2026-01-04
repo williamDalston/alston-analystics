@@ -100,7 +100,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 1, delay: 0.2, type: "spring", stiffness: 100 }}
-            className="text-6xl md:text-8xl font-bold mb-6 relative"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-4 sm:mb-6 relative"
           >
             <span className="relative inline-block">
               <span className="absolute inset-0 blur-3xl bg-electric-moss/50 opacity-50 animate-pulse" />
@@ -114,7 +114,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5, type: "spring" }}
-            className="text-2xl md:text-3xl text-soft-clay mb-4 font-bold"
+            className="text-xl sm:text-2xl md:text-3xl text-soft-clay mb-3 sm:mb-4 font-bold"
           >
             We prune the chaos.
           </motion.p>
@@ -123,7 +123,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.7, type: "spring" }}
-            className="text-lg md:text-xl text-soft-clay/70 max-w-2xl mx-auto font-sans"
+            className="text-base sm:text-lg md:text-xl text-soft-clay/70 max-w-2xl mx-auto font-sans px-4"
           >
             Alston Analytics transforms raw complexity into executive clarity.
           </motion.p>
@@ -133,7 +133,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.9 }}
-            className="mt-8 flex flex-wrap justify-center gap-6"
+            className="mt-6 sm:mt-8 flex flex-wrap justify-center gap-3 sm:gap-6 px-4"
           >
             {['AI-Powered', 'Executive-Focused', 'Zero Fluff'].map((badge, i) => (
               <motion.div
@@ -142,7 +142,7 @@ export default function HomePage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1 + i * 0.1 }}
                 whileHover={{ scale: 1.1, y: -2 }}
-                className="glass-surface px-4 py-2 rounded-full text-xs md:text-sm font-mono text-electric-moss border border-electric-moss/30"
+                className="glass-surface px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-mono text-electric-moss border border-electric-moss/30"
               >
                 {badge}
               </motion.div>
@@ -153,12 +153,12 @@ export default function HomePage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 1.1, type: "spring" }}
-            className="mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4"
           >
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href="/contact"
-                className="group relative btn-primary glass-heavy px-8 py-4 rounded-full text-electric-moss font-mono font-bold hover:bg-electric-moss/10 transition-all duration-300 inline-block glow-electric focus:outline-none focus:ring-2 focus:ring-electric-moss/50 overflow-hidden"
+                className="group relative btn-primary glass-heavy px-6 sm:px-8 py-4 rounded-full text-electric-moss font-mono font-bold hover:bg-electric-moss/10 transition-all duration-300 inline-block glow-electric focus:outline-none focus:ring-2 focus:ring-electric-moss/50 overflow-hidden text-sm sm:text-base"
                 aria-label="Book a strategic audit with Alston Analytics"
               >
                 <span className="relative z-10 flex items-center gap-2">
@@ -181,7 +181,7 @@ export default function HomePage() {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href="/portfolio"
-                className="glass-surface px-8 py-4 rounded-full text-soft-clay font-mono font-bold hover:bg-soft-clay/10 hover:border-electric-moss/30 border border-transparent transition-all duration-300 inline-block focus:outline-none focus:ring-2 focus:ring-electric-moss/50"
+                className="glass-surface px-6 sm:px-8 py-4 rounded-full text-soft-clay font-mono font-bold hover:bg-soft-clay/10 hover:border-electric-moss/30 border border-transparent transition-all duration-300 inline-block focus:outline-none focus:ring-2 focus:ring-electric-moss/50 text-sm sm:text-base"
                 aria-label="View our portfolio of work"
               >
                 View Work
@@ -195,7 +195,7 @@ export default function HomePage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 1 }}
-          className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10"
+          className="absolute bottom-20 sm:bottom-24 left-1/2 -translate-x-1/2 z-10 pb-safe"
         >
           <div className="flex flex-col items-center gap-2 text-soft-clay/50 text-sm font-mono">
             <span>Scroll</span>

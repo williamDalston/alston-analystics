@@ -22,7 +22,9 @@ export const viewport: Viewport = {
   themeColor: "#050A0E",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  maximumScale: 5, // Allow zoom for accessibility
+  userScalable: true,
+  viewportFit: "cover", // Safe area support for notched devices
 };
 
 export const metadata: Metadata = {

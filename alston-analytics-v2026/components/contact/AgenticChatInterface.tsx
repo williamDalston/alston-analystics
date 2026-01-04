@@ -20,11 +20,11 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     {
       id: '1',
       role: 'assistant',
-      content: "Hello. I am Alston's digital assistant. What are we building?",
+      content: "Hello. I'm Alston's digital assistant. You can reach us directly at info@alstonanalytics.com, but I'd be happy to chat about anything. What are you looking to build or explore?",
       options: [
         'Strategic Consulting',
         'Power BI Dashboard',
-        'Just Exploring',
+        'Learn About Alston Analytics',
       ],
     },
   ]);
@@ -35,13 +35,12 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
   const [emailError, setEmailError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
-
-  const [apiError, setApiError] = useState<string | null>(null);
 
   const callChatAPI = async (userMessage: string, conversationContext: string) => {
     setApiError(null);
@@ -232,9 +231,9 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
   };
 
   return (
-    <div className="glass-surface rounded-3xl overflow-hidden flex flex-col" style={{ height: '70vh' }}>
+    <div className="glass-surface rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 200px)', minHeight: '500px', maxHeight: '80vh' }}>
       {/* Header */}
-      <div className="glass-heavy px-6 py-4 flex items-center gap-4 border-b border-soft-clay/10">
+      <div className="glass-heavy px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-4 border-b border-soft-clay/10 flex-shrink-0">
         <button
           onClick={onBack}
           className="text-soft-clay/70 hover:text-soft-clay transition-colors focus:outline-none focus:ring-2 focus:ring-electric-moss/50 rounded p-1"
@@ -242,16 +241,16 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <div className="flex-1">
-          <h2 className="text-soft-clay font-mono font-bold">Alston Analytics AI</h2>
-          <p className="text-soft-clay/50 text-xs font-mono">Powered by strategic intent</p>
+        <div className="flex-1 min-w-0">
+          <h2 className="text-soft-clay font-mono font-bold text-sm sm:text-base truncate">Alston Analytics AI</h2>
+          <p className="text-soft-clay/50 text-xs font-mono hidden sm:block">Powered by strategic intent</p>
         </div>
         <div className="w-2 h-2 rounded-full bg-electric-moss animate-pulse" aria-label="Online" />
       </div>
 
       {/* Messages */}
       <div 
-        className="flex-1 overflow-y-auto p-6 space-y-4"
+        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4"
         role="log"
         aria-live="polite"
         aria-label="Chat messages"
@@ -266,22 +265,22 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-[80%] rounded-2xl px-5 py-3 ${
+                className={`max-w-[85%] sm:max-w-[80%] rounded-xl sm:rounded-2xl px-4 sm:px-5 py-2.5 sm:py-3 ${
                   message.role === 'user'
                     ? 'bg-electric-moss/20 text-soft-clay border border-electric-moss/30'
                     : 'glass-heavy text-soft-clay'
                 }`}
               >
-                <p className="font-sans leading-relaxed">{message.content}</p>
+                <p className="font-sans leading-relaxed text-sm sm:text-base">{message.content}</p>
 
                 {/* Options */}
                 {message.options && (
-                  <div className="mt-4 space-y-2" role="group" aria-label="Response options">
+                  <div className="mt-3 sm:mt-4 space-y-2" role="group" aria-label="Response options">
                     {message.options.map((option) => (
                       <button
                         key={option}
                         onClick={() => handleOptionClick(option)}
-                        className="w-full text-left px-4 py-3 rounded-lg glass-surface hover:bg-electric-moss/10 transition-all text-sm font-mono text-soft-clay border border-transparent hover:border-electric-moss/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 focus:border-electric-moss/50"
+                        className="w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg glass-surface hover:bg-electric-moss/10 transition-all text-xs sm:text-sm font-mono text-soft-clay border border-transparent hover:border-electric-moss/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 focus:border-electric-moss/50"
                         aria-label={`Select option: ${option}`}
                       >
                         → {option}
@@ -346,7 +345,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
       </div>
 
       {/* Input */}
-      <div className="glass-heavy px-6 py-4 border-t border-soft-clay/10">
+      <div className="glass-heavy px-4 sm:px-6 py-3 sm:py-4 border-t border-soft-clay/10 flex-shrink-0">
         {messages.some(m => m.content.includes("What's the best email")) && !submitSuccess ? (
           <div className="space-y-3">
             <div>
@@ -361,12 +360,12 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
                 }}
                 onKeyPress={(e) => e.key === 'Enter' && handleEmailSubmit()}
                 placeholder="you@organization.com"
-                className="w-full bg-glass-surface/50 rounded-full px-5 py-3 text-soft-clay font-mono placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all"
+                className="w-full bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all"
                 aria-invalid={emailError ? 'true' : 'false'}
                 aria-describedby={emailError ? 'email-error' : undefined}
               />
               {emailError && (
-                <div id="email-error" className="mt-2 flex items-center gap-2 text-signal-red text-sm font-mono" role="alert">
+                <div id="email-error" className="mt-2 flex items-center gap-2 text-signal-red text-xs sm:text-sm font-mono" role="alert">
                   <AlertCircle className="w-4 h-4" />
                   <span>{emailError}</span>
                 </div>
@@ -375,14 +374,14 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
             <button
               onClick={handleEmailSubmit}
               disabled={isSubmitting}
-              className={`w-full glass-surface rounded-full px-6 py-3 text-electric-moss hover:bg-electric-moss/10 transition-all font-mono font-bold focus:outline-none focus:ring-2 focus:ring-electric-moss/50 ${isSubmitting ? 'btn-loading opacity-70' : ''}`}
+              className={`w-full glass-surface rounded-full px-5 sm:px-6 py-2.5 sm:py-3 text-electric-moss hover:bg-electric-moss/10 transition-all font-mono font-bold text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-electric-moss/50 ${isSubmitting ? 'btn-loading opacity-70' : ''}`}
               aria-label="Submit email address"
             >
               {isSubmitting ? 'Sending...' : 'Submit Email'}
             </button>
           </div>
         ) : (
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3">
             <label htmlFor="chat-input" className="sr-only">Type your message</label>
             <input
               id="chat-input"
@@ -392,13 +391,13 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
               onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
               placeholder="Type your message..."
               disabled={isLoading}
-              className="flex-1 bg-glass-surface/50 rounded-full px-5 py-3 text-soft-clay font-mono placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Chat message input"
             />
             <button
               onClick={handleSendMessage}
               disabled={!input.trim() || isLoading}
-              className={`glass-surface rounded-full p-3 text-electric-moss hover:bg-electric-moss/10 transition-all focus:outline-none focus:ring-2 focus:ring-electric-moss/50 disabled:opacity-50 disabled:cursor-not-allowed ${isLoading ? 'btn-loading' : ''}`}
+              className={`glass-surface rounded-full p-2.5 sm:p-3 text-electric-moss hover:bg-electric-moss/10 transition-all focus:outline-none focus:ring-2 focus:ring-electric-moss/50 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 ${isLoading ? 'btn-loading' : ''}`}
               aria-label="Send message"
             >
               {isLoading ? (

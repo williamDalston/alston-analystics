@@ -20,7 +20,8 @@ export default function NotFound() {
         <div className="pt-8">
           <Link
             href="/"
-            className="glass-heavy px-8 py-4 rounded-full text-electric-moss font-mono font-bold hover:bg-electric-moss/10 transition-all duration-300 inline-block glow-electric"
+            className="glass-heavy px-8 py-4 rounded-full text-electric-moss font-mono font-bold hover:bg-electric-moss/10 transition-all duration-300 inline-block glow-electric focus:outline-none focus:ring-2 focus:ring-electric-moss/50"
+            aria-label="Return to homepage"
           >
             Return to Source
           </Link>
