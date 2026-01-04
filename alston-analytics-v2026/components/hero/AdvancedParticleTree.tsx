@@ -16,7 +16,10 @@ interface ParticleSystemProps {
  */
 function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
-  const particleCount = 10000; // 10x more particles with InstancedMesh
+
+  // Reduce particle count for better stability across devices
+  // Desktop: 5000, Mobile: will auto-reduce with GPU detection
+  const particleCount = 5000;
 
   // Store particle data for physics simulation
   const particleData = useMemo(() => {
@@ -69,6 +72,15 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
 
     const time = state.clock.getElapsedTime();
     const { positions, velocities, phases } = particleData;
+
+    // Safety check: Ensure arrays are defined and have correct length
+    if (!positions || !velocities || !phases ||
+        positions.length !== particleCount * 3 ||
+        velocities.length !== particleCount * 3 ||
+        phases.length !== particleCount) {
+      return;
+    }
+
     const dummy = new THREE.Object3D();
 
     for (let i = 0; i < particleCount; i++) {
@@ -231,6 +243,29 @@ export function AdvancedParticleTree() {
     };
   };
 
+  // Error handler for WebGL context loss
+  useEffect(() => {
+    const handleContextLost = (event: Event) => {
+      event.preventDefault();
+      console.warn('WebGL context lost. Attempting to restore...');
+    };
+
+    const handleContextRestored = () => {
+      console.log('WebGL context restored');
+    };
+
+    const canvas = document.querySelector('canvas');
+    if (canvas) {
+      canvas.addEventListener('webglcontextlost', handleContextLost);
+      canvas.addEventListener('webglcontextrestored', handleContextRestored);
+
+      return () => {
+        canvas.removeEventListener('webglcontextlost', handleContextLost);
+        canvas.removeEventListener('webglcontextrestored', handleContextRestored);
+      };
+    }
+  }, []);
+
   return (
     <div
       className="w-full h-full"
@@ -245,6 +280,11 @@ export function AdvancedParticleTree() {
           antialias: true,
           alpha: false,
           powerPreference: 'high-performance',
+          preserveDrawingBuffer: false,
+        }}
+        onCreated={({ gl }) => {
+          // Disable automatic context loss recovery to prevent errors
+          gl.domElement.addEventListener('webglcontextlost', (e) => e.preventDefault(), false);
         }}
       >
         {/* Volumetric atmosphere */}
