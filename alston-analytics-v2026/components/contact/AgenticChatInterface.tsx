@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Send, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 
@@ -36,11 +36,30 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'end',
+      });
+    }
+  }, [messages, isLoading]);
+
+  // Smooth scroll on initial load
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, []);
 
   const callChatAPI = async (userMessage: string, conversationContext: string) => {
     setApiError(null);
@@ -231,126 +250,263 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
   };
 
   return (
-    <div className="glass-surface rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 200px)', minHeight: '500px', maxHeight: '80vh' }}>
+    <motion.div 
+      className="glass-surface rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl" 
+      style={{ height: 'calc(100vh - 200px)', minHeight: '500px', maxHeight: '80vh' }}
+      initial={{ opacity: 0, scale: 0.95, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+    >
       {/* Header */}
-      <div className="glass-heavy px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-4 border-b border-soft-clay/10 flex-shrink-0">
-        <button
+      <motion.div 
+        className="glass-heavy px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-4 border-b border-soft-clay/10 flex-shrink-0"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+      >
+        <motion.button
           onClick={onBack}
-          className="text-soft-clay/70 hover:text-soft-clay transition-colors focus:outline-none focus:ring-2 focus:ring-electric-moss/50 rounded p-1"
+          className="text-soft-clay/70 hover:text-soft-clay transition-colors focus:outline-none focus:ring-2 focus:ring-electric-moss/50 rounded p-1.5"
           aria-label="Go back to contact options"
+          whileHover={{ scale: 1.1, x: -2 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
         >
           <ArrowLeft className="w-5 h-5" />
-        </button>
+        </motion.button>
         <div className="flex-1 min-w-0">
           <h2 className="text-soft-clay font-mono font-bold text-sm sm:text-base truncate">Alston Analytics AI</h2>
           <p className="text-soft-clay/50 text-xs font-mono hidden sm:block">Powered by strategic intent</p>
         </div>
-        <div className="w-2 h-2 rounded-full bg-electric-moss animate-pulse" aria-label="Online" />
-      </div>
+        <motion.div 
+          className="w-2 h-2 rounded-full bg-electric-moss shadow-[0_0_8px_rgba(204,255,0,0.8)]" 
+          aria-label="Online"
+          animate={{ 
+            scale: [1, 1.2, 1],
+            opacity: [0.8, 1, 0.8]
+          }}
+          transition={{ 
+            duration: 2, 
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </motion.div>
 
       {/* Messages */}
       <div 
-        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4"
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4 scroll-smooth"
         role="log"
         aria-live="polite"
         aria-label="Chat messages"
+        style={{
+          scrollBehavior: 'smooth',
+        }}
       >
-        <AnimatePresence mode="sync">
+        <AnimatePresence mode="popLayout">
           {messages.map((message, index) => (
             <motion.div
               key={message.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
+              initial={{ opacity: 0, y: 15, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+              transition={{ 
+                type: "spring",
+                stiffness: 300,
+                damping: 30,
+                mass: 0.5,
+                delay: index === messages.length - 1 ? 0.1 : 0
+              }}
+              layout
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div
-                className={`max-w-[85%] sm:max-w-[80%] rounded-xl sm:rounded-2xl px-4 sm:px-5 py-2.5 sm:py-3 ${
+              <motion.div
+                className={`max-w-[85%] sm:max-w-[80%] rounded-xl sm:rounded-2xl px-4 sm:px-5 py-2.5 sm:py-3 relative ${
                   message.role === 'user'
-                    ? 'bg-electric-moss/20 text-soft-clay border border-electric-moss/30'
-                    : 'glass-heavy text-soft-clay'
+                    ? 'bg-electric-moss/20 text-soft-clay border border-electric-moss/30 shadow-lg shadow-electric-moss/10'
+                    : 'glass-heavy text-soft-clay shadow-lg shadow-soft-clay/5'
                 }`}
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
-                <p className="font-sans leading-relaxed text-sm sm:text-base">{message.content}</p>
+                <motion.p 
+                  className="font-sans leading-relaxed text-sm sm:text-base"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1, duration: 0.3 }}
+                >
+                  {message.content}
+                </motion.p>
 
                 {/* Options */}
                 {message.options && (
-                  <div className="mt-3 sm:mt-4 space-y-2" role="group" aria-label="Response options">
-                    {message.options.map((option) => (
-                      <button
+                  <motion.div 
+                    className="mt-3 sm:mt-4 space-y-2" 
+                    role="group" 
+                    aria-label="Response options"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2, duration: 0.3 }}
+                  >
+                    {message.options.map((option, optIndex) => (
+                      <motion.button
                         key={option}
                         onClick={() => handleOptionClick(option)}
-                        className="w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg glass-surface hover:bg-electric-moss/10 transition-all text-xs sm:text-sm font-mono text-soft-clay border border-transparent hover:border-electric-moss/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 focus:border-electric-moss/50"
+                        className="w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg glass-surface hover:bg-electric-moss/10 transition-all text-xs sm:text-sm font-mono text-soft-clay border border-transparent hover:border-electric-moss/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 focus:border-electric-moss/50 relative overflow-hidden group"
                         aria-label={`Select option: ${option}`}
+                        whileHover={{ scale: 1.02, x: 4 }}
+                        whileTap={{ scale: 0.98 }}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ 
+                          delay: 0.3 + optIndex * 0.05,
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 25
+                        }}
                       >
-                        → {option}
-                      </button>
+                        <span className="relative z-10 flex items-center gap-2">
+                          <motion.span
+                            animate={{ x: [0, 3, 0] }}
+                            transition={{ duration: 1.5, repeat: Infinity, delay: optIndex * 0.2 }}
+                          >
+                            →
+                          </motion.span>
+                          {option}
+                        </span>
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-electric-moss/5 to-transparent opacity-0 group-hover:opacity-100"
+                          initial={{ x: '-100%' }}
+                          whileHover={{ x: '100%' }}
+                          transition={{ duration: 0.5 }}
+                        />
+                      </motion.button>
                     ))}
-                  </div>
+                  </motion.div>
                 )}
-              </div>
+              </motion.div>
             </motion.div>
           ))}
+          
+          {/* Scroll anchor */}
+          <div ref={messagesEndRef} className="h-1" />
           
           {/* Error Message */}
           {apiError && (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
               className="flex justify-center"
               role="alert"
               aria-live="assertive"
             >
-              <div className="glass-heavy rounded-2xl px-5 py-3 border border-signal-red/30 bg-signal-red/10">
+              <motion.div 
+                className="glass-heavy rounded-2xl px-5 py-3 border border-signal-red/30 bg-signal-red/10"
+                animate={{ 
+                  boxShadow: [
+                    '0 0 0px rgba(255, 77, 77, 0.2)',
+                    '0 0 20px rgba(255, 77, 77, 0.3)',
+                    '0 0 0px rgba(255, 77, 77, 0.2)',
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
                 <div className="flex items-center gap-2 text-signal-red text-sm font-mono">
-                  <AlertCircle className="w-4 h-4" />
+                  <motion.div
+                    animate={{ rotate: [0, -10, 10, -10, 0] }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <AlertCircle className="w-4 h-4" />
+                  </motion.div>
                   <span>Connection error. Please try again.</span>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           )}
           
           {/* Typing Indicator */}
           {isLoading && (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0, y: 10, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
               className="flex justify-start"
               aria-label="AI is typing"
             >
-              <div className="glass-heavy rounded-2xl px-5 py-3">
-                <div className="flex gap-1 items-center">
+              <motion.div 
+                className="glass-heavy rounded-2xl px-5 py-3 shadow-lg"
+                animate={{ 
+                  boxShadow: [
+                    '0 0 0px rgba(204, 255, 0, 0.1)',
+                    '0 0 20px rgba(204, 255, 0, 0.2)',
+                    '0 0 0px rgba(204, 255, 0, 0.1)',
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <div className="flex gap-1.5 items-center">
                   <motion.div
-                    className="w-2 h-2 rounded-full bg-electric-moss"
-                    animate={{ y: [0, -4, 0] }}
-                    transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+                    className="w-2.5 h-2.5 rounded-full bg-electric-moss shadow-[0_0_8px_rgba(204,255,0,0.6)]"
+                    animate={{ 
+                      y: [0, -6, 0],
+                      scale: [1, 1.2, 1],
+                    }}
+                    transition={{ 
+                      duration: 0.8, 
+                      repeat: Infinity, 
+                      delay: 0,
+                      ease: "easeInOut"
+                    }}
                   />
                   <motion.div
-                    className="w-2 h-2 rounded-full bg-electric-moss"
-                    animate={{ y: [0, -4, 0] }}
-                    transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
+                    className="w-2.5 h-2.5 rounded-full bg-electric-moss shadow-[0_0_8px_rgba(204,255,0,0.6)]"
+                    animate={{ 
+                      y: [0, -6, 0],
+                      scale: [1, 1.2, 1],
+                    }}
+                    transition={{ 
+                      duration: 0.8, 
+                      repeat: Infinity, 
+                      delay: 0.2,
+                      ease: "easeInOut"
+                    }}
                   />
                   <motion.div
-                    className="w-2 h-2 rounded-full bg-electric-moss"
-                    animate={{ y: [0, -4, 0] }}
-                    transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
+                    className="w-2.5 h-2.5 rounded-full bg-electric-moss shadow-[0_0_8px_rgba(204,255,0,0.6)]"
+                    animate={{ 
+                      y: [0, -6, 0],
+                      scale: [1, 1.2, 1],
+                    }}
+                    transition={{ 
+                      duration: 0.8, 
+                      repeat: Infinity, 
+                      delay: 0.4,
+                      ease: "easeInOut"
+                    }}
                   />
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
       {/* Input */}
-      <div className="glass-heavy px-4 sm:px-6 py-3 sm:py-4 border-t border-soft-clay/10 flex-shrink-0">
+      <motion.div 
+        className="glass-heavy px-4 sm:px-6 py-3 sm:py-4 border-t border-soft-clay/10 flex-shrink-0"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+      >
         {messages.some(m => m.content.includes("What's the best email")) && !submitSuccess ? (
           <div className="space-y-3">
             <div>
               <label htmlFor="email-input" className="sr-only">Email Address</label>
-              <input
+              <motion.input
                 id="email-input"
                 type="email"
                 value={emailInput}
@@ -360,30 +516,55 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
                 }}
                 onKeyPress={(e) => e.key === 'Enter' && handleEmailSubmit()}
                 placeholder="you@organization.com"
-                className="w-full bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all"
+                className="w-full bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all duration-300"
                 aria-invalid={emailError ? 'true' : 'false'}
                 aria-describedby={emailError ? 'email-error' : undefined}
+                whileFocus={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
               />
               {emailError && (
-                <div id="email-error" className="mt-2 flex items-center gap-2 text-signal-red text-xs sm:text-sm font-mono" role="alert">
-                  <AlertCircle className="w-4 h-4" />
+                <motion.div 
+                  id="email-error" 
+                  className="mt-2 flex items-center gap-2 text-signal-red text-xs sm:text-sm font-mono" 
+                  role="alert"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                >
+                  <motion.div
+                    animate={{ rotate: [0, -10, 10, 0] }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <AlertCircle className="w-4 h-4" />
+                  </motion.div>
                   <span>{emailError}</span>
-                </div>
+                </motion.div>
               )}
             </div>
-            <button
+            <motion.button
               onClick={handleEmailSubmit}
               disabled={isSubmitting}
-              className={`w-full glass-surface rounded-full px-5 sm:px-6 py-2.5 sm:py-3 text-electric-moss hover:bg-electric-moss/10 transition-all font-mono font-bold text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-electric-moss/50 ${isSubmitting ? 'btn-loading opacity-70' : ''}`}
+              className={`w-full glass-surface rounded-full px-5 sm:px-6 py-2.5 sm:py-3 text-electric-moss hover:bg-electric-moss/10 transition-all font-mono font-bold text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-electric-moss/50 relative overflow-hidden group ${isSubmitting ? 'btn-loading opacity-70' : ''}`}
               aria-label="Submit email address"
+              whileHover={{ scale: isSubmitting ? 1 : 1.02, y: -1 }}
+              whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
-              {isSubmitting ? 'Sending...' : 'Submit Email'}
-            </button>
+              <span className="relative z-10">{isSubmitting ? 'Sending...' : 'Submit Email'}</span>
+              {!isSubmitting && (
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-electric-moss/10 to-data-cyan/10 opacity-0 group-hover:opacity-100"
+                  initial={{ x: '-100%' }}
+                  whileHover={{ x: '100%' }}
+                  transition={{ duration: 0.5 }}
+                />
+              )}
+            </motion.button>
           </div>
         ) : (
           <div className="flex gap-2 sm:gap-3">
             <label htmlFor="chat-input" className="sr-only">Type your message</label>
-            <input
+            <motion.input
               id="chat-input"
               type="text"
               value={input}
@@ -391,24 +572,40 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
               onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
               placeholder="Type your message..."
               disabled={isLoading}
-              className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Chat message input"
+              whileFocus={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
             />
-            <button
+            <motion.button
               onClick={handleSendMessage}
               disabled={!input.trim() || isLoading}
-              className={`glass-surface rounded-full p-2.5 sm:p-3 text-electric-moss hover:bg-electric-moss/10 transition-all focus:outline-none focus:ring-2 focus:ring-electric-moss/50 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 ${isLoading ? 'btn-loading' : ''}`}
+              className={`glass-surface rounded-full p-2.5 sm:p-3 text-electric-moss hover:bg-electric-moss/10 transition-all focus:outline-none focus:ring-2 focus:ring-electric-moss/50 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 relative overflow-hidden group ${isLoading ? 'btn-loading' : ''}`}
               aria-label="Send message"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                <Send className="w-5 h-5" />
+                <motion.div
+                  animate={{ x: [0, 2, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <Send className="w-5 h-5" />
+                </motion.div>
               )}
-            </button>
+              <motion.div
+                className="absolute inset-0 bg-electric-moss/10 rounded-full opacity-0 group-hover:opacity-100"
+                initial={{ scale: 0 }}
+                whileHover={{ scale: 1.2 }}
+                transition={{ duration: 0.3 }}
+              />
+            </motion.button>
           </div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
