@@ -45,7 +45,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: https: blob:",
               "font-src 'self' https://fonts.gstatic.com data:",
               "connect-src 'self' https://api.openai.com https://*.openai.com https://raw.githack.com https://raw.githubusercontent.com",
-              "frame-src 'none' https://checkout.stripe.com",
+              "frame-src https://checkout.stripe.com https://js.stripe.com",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
