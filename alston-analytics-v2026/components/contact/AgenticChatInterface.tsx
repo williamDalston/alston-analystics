@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Send, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, AlertCircle } from 'lucide-react';
 
 interface Message {
   id: string;
   role: 'assistant' | 'user';
   content: string;
   options?: string[];
+  isStreaming?: boolean; // Track if message is currently streaming
 }
 
 interface AgenticChatInterfaceProps {
@@ -41,8 +42,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
   const [retryAfter, setRetryAfter] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const lastRequestTimeRef = useRef<number>(0);
-  const requestDebounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const streamingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isLimitReached = messages.length >= MAX_MESSAGES;
 
   const validateEmail = (email: string): boolean => {
@@ -67,16 +67,20 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     }
   }, []);
 
-  // Cleanup debounce timeout on unmount
+  // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
-      if (requestDebounceTimeoutRef.current) {
-        clearTimeout(requestDebounceTimeoutRef.current);
+      if (streamingTimeoutRef.current) {
+        clearTimeout(streamingTimeoutRef.current);
       }
     };
   }, []);
 
-  const callChatAPI = async (userMessage: string, conversationContext: string): Promise<string | null> => {
+  const callChatAPI = async (
+    userMessage: string,
+    conversationContext: string,
+    onStream?: (partial: string) => void
+  ): Promise<string | null> => {
     setApiError(null);
     setIsRateLimited(false);
     setRetryAfter(null);
@@ -132,22 +136,51 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
       // Handle streaming response
       const contentType = response.headers.get('content-type');
       if (contentType?.includes('text/plain') || contentType?.includes('text/event-stream')) {
-        // Stream response
+        // Stream response with timeout fallback
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
         let fullText = '';
+        let hasReceivedData = false;
+        
+        // Set timeout: if no data after 6s, show fallback
+        const timeoutId = setTimeout(() => {
+          if (!hasReceivedData && onStream) {
+            onStream('Checking...');
+          }
+        }, 6000);
         
         if (reader) {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            fullText += decoder.decode(value, { stream: true });
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) {
+                clearTimeout(timeoutId);
+                break;
+              }
+              
+              hasReceivedData = true;
+              clearTimeout(timeoutId);
+              
+              const chunk = decoder.decode(value, { stream: true });
+              fullText += chunk;
+              
+              // Call onStream callback with accumulated text
+              if (onStream) {
+                onStream(fullText);
+              }
+            }
+          } catch (err) {
+            clearTimeout(timeoutId);
+            console.error('Stream read error:', err);
+            if (!hasReceivedData) {
+              return null;
+            }
           }
         }
         
-        return fullText || null;
+        return fullText.trim() || null;
       } else {
-        // JSON response
+        // JSON response (fallback)
         const data = await response.json();
         return data.message || null;
       }
@@ -160,13 +193,14 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
 
   const handleOptionClick = async (option: string) => {
     if (isLimitReached) {
-      setApiError('You’ve reached the chat limit for this session. Please refresh to start a new conversation.');
+      setApiError("You've reached the chat limit for this session. Please refresh to start a new conversation.");
       return;
     }
+    if (isRateLimited) return;
 
     // Add user message
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: `u-${Date.now()}`,
       role: 'user',
       content: option,
     };
@@ -174,52 +208,62 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
 
-    // Simulated local response (no remote API)
-    const aiResponse = await callChatAPI(option, currentStep);
+    // Create placeholder assistant message
+    const assistantId = `a-${Date.now()}`;
+    const placeholderMessage: Message = {
+      id: assistantId,
+      role: 'assistant',
+      content: '...',
+      isStreaming: true,
+    };
+
+    setMessages((prev) => [...prev, placeholderMessage]);
+
+    // Call API with streaming callback
+    const aiResponse = await callChatAPI(option, currentStep, (partial) => {
+      // Update placeholder message as chunks arrive
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantId ? { ...m, content: partial.trim() || '...', isStreaming: true } : m
+        )
+      );
+    });
+
+    setIsLoading(false);
 
     if (!aiResponse) {
-      // Fallback to default responses if API fails
-      setIsLoading(false);
-      let response: Message;
+      // Replace placeholder with fallback response
+      let fallbackContent: string;
+      let fallbackOptions: string[] | undefined;
 
       if (option === 'Strategic Consulting') {
         setCurrentStep('consulting');
-        response = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content:
-            "Excellent. Strategic work is my specialty. What complexity are you facing?",
-        };
+        fallbackContent = "Excellent. Strategic work is my specialty. What complexity are you facing?";
       } else if (option === 'Power BI Dashboard') {
         setCurrentStep('powerbi');
-        response = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content:
-            'Power BI is where chaos becomes clarity. How many data sources need integration?',
-        };
+        fallbackContent = 'Power BI is where chaos becomes clarity. How many data sources need integration?';
       } else {
         setCurrentStep('exploring');
-        response = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content:
-            "No pressure. Would you like to join the Sovereign Mind newsletter for strategic frameworks?",
-          options: ['Yes, sign me up', 'Not now'],
-        };
+        fallbackContent = "No pressure. Would you like to join the Sovereign Mind newsletter for strategic frameworks?";
+        fallbackOptions = ['Yes, sign me up', 'Not now'];
       }
 
-      setMessages((prev) => [...prev, response]);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantId
+            ? { ...m, content: fallbackContent, isStreaming: false, options: fallbackOptions }
+            : m
+        )
+      );
       return;
     }
 
-    // Use AI response
-    setIsLoading(false);
-    const response: Message = {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant',
-      content: aiResponse,
-    };
+    // Finalize streaming message with full response
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === assistantId ? { ...m, content: aiResponse, isStreaming: false } : m
+      )
+    );
 
     // Update step based on option (for flow control)
     if (option === 'Strategic Consulting') {
@@ -229,19 +273,13 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     } else {
       setCurrentStep('exploring');
     }
-
-    setMessages((prev) => [...prev, response]);
   };
 
   const handleSendMessage = useCallback(async () => {
-    if (!input.trim()) return;
-    if (isLimitReached) {
-      setApiError('You’ve reached the chat limit for this session. Please refresh to start a new conversation.');
-      return;
-    }
+    if (!input.trim() || isLimitReached || isRateLimited) return;
 
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: `u-${Date.now()}`,
       role: 'user',
       content: input,
     };
@@ -251,31 +289,47 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     setInput('');
     setIsLoading(true);
 
-    // Simulated local response (no remote API)
-    const aiResponse = await callChatAPI(messageText, currentStep);
+    // Create placeholder assistant message
+    const assistantId = `a-${Date.now()}`;
+    const placeholderMessage: Message = {
+      id: assistantId,
+      role: 'assistant',
+      content: '...',
+      isStreaming: true,
+    };
+
+    setMessages((prev) => [...prev, placeholderMessage]);
+
+    // Call API with streaming callback
+    const aiResponse = await callChatAPI(messageText, currentStep, (partial) => {
+      // Update placeholder message as chunks arrive
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantId ? { ...m, content: partial.trim() || '...', isStreaming: true } : m
+        )
+      );
+    });
 
     setIsLoading(false);
 
     if (!aiResponse) {
-      // Fallback response if API fails
-      const response: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-          content:
-            "Noted. I'm forwarding this to Alston directly. You'll hear back within 24 hours. What email address should we use?",
-      };
-      setMessages((prev) => [...prev, response]);
+      // Replace placeholder with fallback response
+      const fallbackContent = "Noted. I'm forwarding this to Alston directly. You'll hear back within 24 hours. What email address should we use?";
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantId ? { ...m, content: fallbackContent, isStreaming: false } : m
+        )
+      );
       return;
     }
 
-    // Use AI response
-    const response: Message = {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant',
-      content: aiResponse,
-    };
-    setMessages((prev) => [...prev, response]);
-  }, [input, currentStep]);
+    // Finalize streaming message with full response
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === assistantId ? { ...m, content: aiResponse, isStreaming: false } : m
+      )
+    );
+  }, [input, currentStep, isLimitReached, isRateLimited, messages]);
 
   const handleEmailSubmit = () => {
     setEmailError('');
@@ -298,7 +352,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
       setSubmitSuccess(true);
       
       const userMessage: Message = {
-        id: Date.now().toString(),
+        id: `u-${Date.now()}`,
         role: 'user',
         content: emailInput,
       };
@@ -307,7 +361,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
 
       setTimeout(() => {
         const response: Message = {
-          id: (Date.now() + 1).toString(),
+          id: `a-${Date.now()}`,
           role: 'assistant',
           content: `Confirmed. I've forwarded your information to info@alstonanalytics.com. You'll receive a response within 24 hours. Thank you for reaching out.`,
         };
@@ -316,15 +370,16 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     }, 1500);
   };
 
+  const showEmailPrompt = messages.some(m => m.content.includes("What's the best email") || m.content.includes("email address should we use")) && !submitSuccess;
+
   return (
     <motion.div 
       className="glass-surface rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl" 
       style={{ 
-        height: 'calc(100vh - 140px)', // More space on mobile (accounting for removed dock)
+        height: 'calc(100vh - 140px)',
         minHeight: '500px', 
-        maxHeight: 'calc(100vh - 100px)' // Mobile-optimized height
+        maxHeight: 'calc(100vh - 100px)'
       }}
-      // Use CSS for responsive height
       initial={{ opacity: 0, scale: 0.95, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -396,23 +451,48 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
               <motion.div
                 className={`max-w-[85%] sm:max-w-[80%] rounded-xl sm:rounded-2xl px-4 sm:px-5 py-2.5 sm:py-3 relative ${
                   message.role === 'user'
-                    ? 'bg-stellar-white/20 text-soft-clay border border-stellar-white/30 shadow-lg shadow-stellar-white/10'
+                    ? 'bg-star-blue/20 text-soft-clay border border-star-blue/30 shadow-lg shadow-star-blue/10'
                     : 'glass-heavy text-soft-clay shadow-lg shadow-soft-clay/5'
                 }`}
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
+                {/* Live indicator for streaming */}
+                {message.isStreaming && (
+                  <motion.div
+                    className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-star-blue shadow-[0_0_8px_rgba(125,211,252,0.8)]"
+                    animate={{ 
+                      scale: [1, 1.3, 1],
+                      opacity: [0.8, 1, 0.8]
+                    }}
+                    transition={{ 
+                      duration: 1.5, 
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                    aria-label="Streaming"
+                  />
+                )}
+                
                 <motion.p 
-                  className="font-sans leading-relaxed text-sm sm:text-base"
+                  className="font-sans leading-relaxed text-sm sm:text-base whitespace-pre-wrap"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.1, duration: 0.3 }}
                 >
                   {message.content}
+                  {message.isStreaming && message.content === '...' && (
+                    <motion.span
+                      animate={{ opacity: [0.3, 1, 0.3] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                    >
+                      ...
+                    </motion.span>
+                  )}
                 </motion.p>
 
                 {/* Options */}
-                {message.options && (
+                {message.options && !message.isStreaming && (
                   <motion.div 
                     className="mt-3 sm:mt-4 space-y-2" 
                     role="group" 
@@ -425,11 +505,11 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
                       <motion.button
                         key={option}
                         onClick={() => !isRateLimited && handleOptionClick(option)}
-                        disabled={isRateLimited}
-                        className="w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg glass-surface hover:bg-stellar-white/10 transition-all text-xs sm:text-sm font-mono text-soft-clay border border-transparent hover:border-stellar-white/30 focus:outline-none focus:ring-2 focus:ring-stellar-white/50 focus:border-stellar-white/50 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isRateLimited || isLoading}
+                        className="w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg glass-surface hover:bg-star-blue/10 transition-all text-xs sm:text-sm font-mono text-soft-clay border border-transparent hover:border-star-blue/30 focus:outline-none focus:ring-2 focus:ring-star-blue/50 focus:border-star-blue/50 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label={`Select option: ${option}`}
-                        whileHover={!isRateLimited ? { scale: 1.02, x: 4 } : {}}
-                        whileTap={!isRateLimited ? { scale: 0.98 } : {}}
+                        whileHover={!isRateLimited && !isLoading ? { scale: 1.02, x: 4 } : {}}
+                        whileTap={!isRateLimited && !isLoading ? { scale: 0.98 } : {}}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ 
@@ -449,7 +529,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
                           {option}
                         </span>
                         <motion.div
-                          className="absolute inset-0 bg-gradient-to-r from-stellar-white/5 to-transparent opacity-0 group-hover:opacity-100"
+                          className="absolute inset-0 bg-gradient-to-r from-star-blue/5 to-transparent opacity-0 group-hover:opacity-100"
                           initial={{ x: '-100%' }}
                           whileHover={{ x: '100%' }}
                           transition={{ duration: 0.5 }}
@@ -479,20 +559,20 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
               <motion.div 
                 className={`glass-heavy rounded-2xl px-5 py-3 border ${
                   isRateLimited 
-                    ? 'border-yellow-500/30 bg-yellow-500/10' 
+                    ? 'border-deep-amber/30 bg-deep-amber/10' 
                     : 'border-signal-red/30 bg-signal-red/10'
                 }`}
                 animate={{ 
                   boxShadow: [
-                    `0 0 0px rgba(${isRateLimited ? '234, 179, 8' : '255, 77, 77'}, 0.2)`,
-                    `0 0 20px rgba(${isRateLimited ? '234, 179, 8' : '255, 77, 77'}, 0.3)`,
-                    `0 0 0px rgba(${isRateLimited ? '234, 179, 8' : '255, 77, 77'}, 0.2)`,
+                    `0 0 0px rgba(${isRateLimited ? '255, 191, 0' : '255, 77, 77'}, 0.2)`,
+                    `0 0 20px rgba(${isRateLimited ? '255, 191, 0' : '255, 77, 77'}, 0.3)`,
+                    `0 0 0px rgba(${isRateLimited ? '255, 191, 0' : '255, 77, 77'}, 0.2)`,
                   ]
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
                 <div className={`flex items-center gap-2 text-sm font-mono ${
-                  isRateLimited ? 'text-yellow-400' : 'text-signal-red'
+                  isRateLimited ? 'text-deep-amber' : 'text-signal-red'
                 }`}>
                   <motion.div
                     animate={{ rotate: [0, -10, 10, -10, 0] }}
@@ -512,72 +592,6 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
               </motion.div>
             </motion.div>
           )}
-          
-          {/* Typing Indicator */}
-          {isLoading && (
-            <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="flex justify-start"
-              aria-label="AI is typing"
-            >
-              <motion.div 
-                className="glass-heavy rounded-2xl px-5 py-3 shadow-lg"
-                animate={{ 
-                  boxShadow: [
-                    '0 0 0px rgba(224, 242, 254, 0.15)',
-                    '0 0 20px rgba(125, 211, 252, 0.3)',
-                    '0 0 0px rgba(224, 242, 254, 0.15)',
-                  ]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <div className="flex gap-1.5 items-center">
-                  <motion.div
-                    className="w-2.5 h-2.5 rounded-full bg-stellar-white shadow-[0_0_8px_rgba(224,242,254,0.6)]"
-                    animate={{ 
-                      y: [0, -6, 0],
-                      scale: [1, 1.2, 1],
-                    }}
-                    transition={{ 
-                      duration: 0.8, 
-                      repeat: Infinity, 
-                      delay: 0,
-                      ease: "easeInOut"
-                    }}
-                  />
-                  <motion.div
-                    className="w-2.5 h-2.5 rounded-full bg-stellar-white shadow-[0_0_8px_rgba(224,242,254,0.6)]"
-                    animate={{ 
-                      y: [0, -6, 0],
-                      scale: [1, 1.2, 1],
-                    }}
-                    transition={{ 
-                      duration: 0.8, 
-                      repeat: Infinity, 
-                      delay: 0.2,
-                      ease: "easeInOut"
-                    }}
-                  />
-                  <motion.div
-                    className="w-2.5 h-2.5 rounded-full bg-stellar-white shadow-[0_0_8px_rgba(224,242,254,0.6)]"
-                    animate={{ 
-                      y: [0, -6, 0],
-                      scale: [1, 1.2, 1],
-                    }}
-                    transition={{ 
-                      duration: 0.8, 
-                      repeat: Infinity, 
-                      delay: 0.4,
-                      ease: "easeInOut"
-                    }}
-                  />
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
         </AnimatePresence>
       </div>
 
@@ -588,8 +602,8 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.2 }}
       >
-        {messages.some(m => m.content.includes("What's the best email")) && !submitSuccess ? (
-          <div className="space-y-3">
+        {showEmailPrompt && (
+          <div className="mb-4 space-y-3">
             <p className="text-xs sm:text-sm text-soft-clay/70 font-mono mb-2">
               You can provide your email below, or continue chatting:
             </p>
@@ -604,15 +618,15 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
                 }}
                 onKeyPress={(e) => e.key === 'Enter' && !isRateLimited && handleEmailSubmit()}
                 placeholder="you@organization.com (optional)"
-                disabled={isRateLimited}
-                className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-stellar-white/50 border border-transparent focus:border-stellar-white/30 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed chat-input-snappy"
+                disabled={isRateLimited || isSubmitting}
+                className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-star-blue/50 border border-transparent focus:border-star-blue/30 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed chat-input-snappy"
                 aria-invalid={emailError ? 'true' : 'false'}
                 aria-describedby={emailError ? 'email-error' : undefined}
               />
               <motion.button
                 onClick={handleEmailSubmit}
                 disabled={isSubmitting || isRateLimited || !emailInput.trim()}
-                className={`glass-surface rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-stellar-white hover:bg-stellar-white/10 transition-all font-mono font-bold text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-stellar-white/50 relative overflow-hidden group flex-shrink-0 ${isSubmitting ? 'btn-loading opacity-70' : ''} disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`glass-surface rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-star-blue hover:bg-star-blue/10 transition-all font-mono font-bold text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-star-blue/50 relative overflow-hidden group flex-shrink-0 ${isSubmitting ? 'btn-loading opacity-70' : ''} disabled:opacity-50 disabled:cursor-not-allowed`}
                 aria-label="Submit email address"
                 whileHover={!isSubmitting && !isRateLimited && emailInput.trim() ? { scale: 1.05 } : {}}
                 whileTap={!isSubmitting && !isRateLimited && emailInput.trim() ? { scale: 0.95 } : {}}
@@ -643,106 +657,61 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
                 <span>{emailError}</span>
               </motion.div>
             )}
-            <div className="pt-2 border-t border-soft-clay/10">
-              <div className="flex gap-2 sm:gap-3">
-                <label htmlFor="chat-input" className="sr-only">Type your message</label>
-                <input
-                  id="chat-input"
-                  type="text"
-                  value={input}
-                  onChange={(e) => {
-                    // Direct state update for instant typing response
-                    setInput(e.target.value);
-                  }}
-                  onKeyPress={(e) => e.key === 'Enter' && !isLoading && !isRateLimited && handleSendMessage()}
-                  placeholder="Or continue chatting..."
-                  disabled={isLoading || isRateLimited}
-                  className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-stellar-white/50 border border-transparent focus:border-stellar-white/30 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed chat-input-snappy"
-                  aria-label="Chat message input"
-                />
-                <motion.button
-                  onClick={handleSendMessage}
-                  disabled={!input.trim() || isLoading || isRateLimited}
-                  className={`glass-surface rounded-full p-2.5 sm:p-3 text-stellar-white hover:bg-stellar-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-stellar-white/50 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 relative overflow-hidden group ${isLoading ? 'btn-loading' : ''}`}
-                  aria-label={isRateLimited ? "Rate limited - please wait" : "Send message"}
-                  whileHover={!isRateLimited ? { scale: 1.1, rotate: 5 } : {}}
-                  whileTap={!isRateLimited ? { scale: 0.9 } : {}}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <motion.div
-                      animate={{ x: [0, 2, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    >
-                      <Send className="w-5 h-5" />
-                    </motion.div>
-                  )}
-                  <motion.div
-                    className="absolute inset-0 bg-stellar-white/10 rounded-full opacity-0 group-hover:opacity-100"
-                    initial={{ scale: 0 }}
-                    whileHover={{ scale: 1.2 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </motion.button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="flex gap-2 sm:gap-3">
-            <label htmlFor="chat-input" className="sr-only">Type your message</label>
-            <input
-              id="chat-input"
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && !isLoading && !isRateLimited && !isLimitReached && handleSendMessage()}
-              placeholder={
-                isLimitReached
-                  ? "Chat limit reached — refresh to start a new session"
-                  : isRateLimited
-                  ? "Rate limited - please wait..."
-                  : "Type your message..."
-              }
-              disabled={isLoading || isRateLimited || isLimitReached}
-              className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-stellar-white/50 border border-transparent focus:border-stellar-white/30 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed chat-input-snappy"
-              aria-label="Chat message input"
-            />
-            <motion.button
-              onClick={handleSendMessage}
-              disabled={!input.trim() || isLoading || isRateLimited || isLimitReached}
-              className={`glass-surface rounded-full p-2.5 sm:p-3 text-stellar-white hover:bg-stellar-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-stellar-white/50 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 relative overflow-hidden group ${isLoading ? 'btn-loading' : ''}`}
-              aria-label={
-                isLimitReached
-                  ? "Chat limit reached"
-                  : isRateLimited
-                  ? "Rate limited - please wait"
-                  : "Send message"
-              }
-              whileHover={!isRateLimited && !isLimitReached ? { scale: 1.1, rotate: 5 } : {}}
-              whileTap={!isRateLimited && !isLimitReached ? { scale: 0.9 } : {}}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            >
-              {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <motion.div
-                  animate={{ x: [0, 2, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  <Send className="w-5 h-5" />
-                </motion.div>
-              )}
-              <motion.div
-                className="absolute inset-0 bg-stellar-white/10 rounded-full opacity-0 group-hover:opacity-100"
-                initial={{ scale: 0 }}
-                whileHover={{ scale: 1.2 }}
-                transition={{ duration: 0.3 }}
-              />
-            </motion.button>
           </div>
         )}
+        
+        <div className="flex gap-2 sm:gap-3">
+          <label htmlFor="chat-input" className="sr-only">Type your message</label>
+          <input
+            id="chat-input"
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && !isLoading && !isRateLimited && !isLimitReached && handleSendMessage()}
+            placeholder={
+              isLimitReached
+                ? "Chat limit reached — refresh to start a new session"
+                : isRateLimited
+                ? "Rate limited - please wait..."
+                : "Type your message..."
+            }
+            disabled={isLoading || isRateLimited || isLimitReached}
+            className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-star-blue/50 border border-transparent focus:border-star-blue/30 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed chat-input-snappy"
+            aria-label="Chat message input"
+          />
+          <motion.button
+            onClick={handleSendMessage}
+            disabled={!input.trim() || isLoading || isRateLimited || isLimitReached}
+            className={`glass-surface rounded-full p-2.5 sm:p-3 text-star-blue hover:bg-star-blue/10 transition-all focus:outline-none focus:ring-2 focus:ring-star-blue/50 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 relative overflow-hidden group ${isLoading ? 'btn-loading' : ''}`}
+            aria-label={
+              isLimitReached
+                ? "Chat limit reached"
+                : isRateLimited
+                ? "Rate limited - please wait"
+                : "Send message"
+            }
+            whileHover={!isRateLimited && !isLimitReached && input.trim() ? { scale: 1.1, rotate: 5 } : {}}
+            whileTap={!isRateLimited && !isLimitReached && input.trim() ? { scale: 0.9 } : {}}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          >
+            {isLoading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <motion.div
+                animate={{ x: [0, 2, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <Send className="w-5 h-5" />
+              </motion.div>
+            )}
+            <motion.div
+              className="absolute inset-0 bg-star-blue/10 rounded-full opacity-0 group-hover:opacity-100"
+              initial={{ scale: 0 }}
+              whileHover={{ scale: 1.2 }}
+              transition={{ duration: 0.3 }}
+            />
+          </motion.button>
+        </div>
       </motion.div>
     </motion.div>
   );
