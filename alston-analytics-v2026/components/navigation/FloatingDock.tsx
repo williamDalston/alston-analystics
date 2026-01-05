@@ -1,8 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Home, Briefcase, Brain, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -11,19 +9,53 @@ interface DockItem {
   icon: React.ReactNode;
   label: string;
   href: string;
+  id: string;
 }
 
 const dockItems: DockItem[] = [
-  { icon: <Home className="w-5 h-5" />, label: 'Home', href: '/' },
-  { icon: <Briefcase className="w-5 h-5" />, label: 'Work', href: '/portfolio' },
-  { icon: <Brain className="w-5 h-5" />, label: 'The Dojo', href: '/sovereign-mind' },
-  { icon: <Mail className="w-5 h-5" />, label: 'Contact', href: '/contact' },
+  { icon: <Home className="w-5 h-5" />, label: 'Home', href: '#home', id: 'home' },
+  { icon: <Briefcase className="w-5 h-5" />, label: 'Work', href: '#work', id: 'work' },
+  { icon: <Brain className="w-5 h-5" />, label: 'The Dojo', href: '#dojo', id: 'dojo' },
+  { icon: <Mail className="w-5 h-5" />, label: 'Contact', href: '#contact', id: 'contact' },
 ];
 
 export function FloatingDock() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const pathname = usePathname();
-  const isContactPage = pathname === '/contact';
+  const [activeId, setActiveId] = useState('home');
+
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '-50% 0px -50% 0px', // Activate when section is in middle of screen
+      threshold: 0
+    };
+
+    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setActiveId(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(handleIntersect, observerOptions);
+
+    dockItems.forEach(item => {
+      const element = document.getElementById(item.id);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      setActiveId(id);
+    }
+  };
 
   return (
     <motion.nav
@@ -32,19 +64,19 @@ export function FloatingDock() {
       transition={{ delay: 0.5, duration: 0.6 }}
       className={cn(
         "fixed bottom-[20px] left-1/2 -translate-x-1/2 z-50 w-auto max-w-[90vw] pb-safe",
-        "transition-all duration-300",
-        isContactPage && "hidden sm:flex" // Hide on mobile when on contact page
+        "transition-all duration-300"
       )}
       aria-label="Main navigation"
     >
-      <div className="glass-heavy rounded-full px-4 sm:px-6 py-3 flex items-center gap-1 sm:gap-2">
+      <div className="glass-heavy rounded-full px-4 sm:px-6 py-3 flex items-center gap-1 sm:gap-2 shadow-2xl border border-stellar-white/10">
         {dockItems.map((item, index) => {
-          const isActive = pathname === item.href;
+          const isActive = activeId === item.id;
 
           return (
-            <Link
-              key={item.href}
+            <a
+              key={item.id}
               href={item.href}
+              onClick={(e) => handleNavClick(e, item.id)}
               aria-label={`Navigate to ${item.label}`}
               aria-current={isActive ? 'page' : undefined}
               className="focus:outline-none focus:ring-2 focus:ring-stellar-white/50 rounded-full"
@@ -94,7 +126,7 @@ export function FloatingDock() {
                   aria-hidden={hoveredIndex !== index}
                   className="absolute pointer-events-none"
                 >
-                  <div className="glass-surface px-3 py-1 rounded-lg text-xs font-mono text-soft-clay whitespace-nowrap">
+                  <div className="glass-surface px-3 py-1 rounded-lg text-xs font-mono text-soft-clay whitespace-nowrap border border-stellar-white/10">
                     {item.label}
                   </div>
                 </motion.div>
@@ -113,7 +145,7 @@ export function FloatingDock() {
                   />
                 )}
               </motion.div>
-            </Link>
+            </a>
           );
         })}
       </div>

@@ -37,3 +37,4 @@ If you still get "No Next.js version detected":
 - Make sure there are no extra spaces
 - Redeploy after changing the setting
 
+

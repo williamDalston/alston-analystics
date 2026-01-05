@@ -47,31 +47,32 @@ function ServiceCard({ title, description, icon, className }: ServiceCardProps) 
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      whileHover={{ y: -8, scale: 1.02 }}
+      className={`glass-surface rounded-3xl p-8 relative overflow-hidden group cursor-pointer ${className}`}
       style={{
         rotateX,
         rotateY,
         transformStyle: 'preserve-3d',
+        backgroundColor: 'rgba(15, 23, 42, 0.3)', // clearer glass
       }}
-      whileHover={{ y: -8, scale: 1.02 }}
-      className={`glass-surface rounded-3xl p-8 relative overflow-hidden group cursor-pointer ${className}`}
     >
-      {/* Animated gradient background */}
+      {/* Animated gradient background - Holographic Shine */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-stellar-white/10 via-transparent to-data-cyan/10 opacity-0 group-hover:opacity-100"
+        className="absolute inset-0 bg-gradient-to-br from-stellar-white/5 via-transparent to-data-cyan/5 opacity-0 group-hover:opacity-100"
         animate={{
           backgroundPosition: ['0% 0%', '100% 100%'],
         }}
         transition={{ duration: 3, repeat: Infinity, repeatType: 'reverse' }}
       />
 
-      {/* Animated border */}
+      {/* Animated border - Crisper definition */}
       <motion.div
-        className="absolute inset-0 rounded-3xl border-2 border-stellar-white/0 group-hover:border-stellar-white/50"
+        className="absolute inset-0 rounded-3xl border border-stellar-white/10 group-hover:border-stellar-white/40"
         animate={{
           boxShadow: [
-            '0 0 0px rgba(224, 242, 254, 0)',
-            '0 0 30px rgba(125, 211, 252, 0.3)',
-            '0 0 0px rgba(224, 242, 254, 0)',
+            'inset 0 0 0px rgba(224, 242, 254, 0)',
+            'inset 0 0 20px rgba(125, 211, 252, 0.1)',
+            'inset 0 0 0px rgba(224, 242, 254, 0)',
           ],
         }}
         transition={{ duration: 2, repeat: Infinity }}
@@ -134,7 +135,7 @@ export function ServiceBentoGrid() {
             transition={{ duration: 1, delay: 0.3 }}
             viewport={{ once: true }}
           />
-          
+
           <motion.h2
             className="text-5xl font-bold mb-4 relative inline-block"
             initial={{ opacity: 0, scale: 0.9 }}

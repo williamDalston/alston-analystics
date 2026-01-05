@@ -83,7 +83,7 @@ function NodeSphere({
       case 'draft':
         return '#00F0FF';
       case 'speech':
-        return '#E2D1C3';
+        return '#CBD5E1'; // Stardust
       default:
         return '#E0F2FE';
     }
@@ -214,13 +214,12 @@ export function ConstellationGraph() {
 
             <div className="mb-4">
               <span
-                className={`text-xs font-mono px-2 py-1 rounded ${
-                  selectedNode.type === 'model'
+                className={`text-xs font-mono px-2 py-1 rounded ${selectedNode.type === 'model'
                     ? 'bg-stellar-white/20 text-stellar-white'
                     : selectedNode.type === 'draft'
-                    ? 'bg-data-cyan/20 text-data-cyan'
-                    : 'bg-soft-clay/20 text-soft-clay'
-                }`}
+                      ? 'bg-data-cyan/20 text-data-cyan'
+                      : 'bg-soft-clay/20 text-soft-clay'
+                  }`}
               >
                 {selectedNode.type}
               </span>
@@ -234,8 +233,8 @@ export function ConstellationGraph() {
               {selectedNode.type === 'model'
                 ? 'A mental model for sovereign decision-making. This framework distills complexity into actionable principles.'
                 : selectedNode.type === 'draft'
-                ? 'A chapter from the Prometheus manuscript. Exploring creation, leverage, and executive power.'
-                : 'A video essay on transforming chaos into clarity. Watch the full presentation below.'}
+                  ? 'A chapter from the Prometheus manuscript. Exploring creation, leverage, and executive power.'
+                  : 'A video essay on transforming chaos into clarity. Watch the full presentation below.'}
             </p>
 
             <a
