@@ -41,7 +41,7 @@ export default function ContactPage() {
                 className="text-base sm:text-lg md:text-xl text-soft-clay/70 max-w-2xl mx-auto mb-8 sm:mb-12 px-4"
               >
                 We don't do discovery calls. We do strategic dialogues.
-                Tell me what you're building.
+                What are you building?
               </motion.p>
 
               <motion.button
@@ -52,7 +52,7 @@ export default function ContactPage() {
                 aria-label="Start a conversation with Alston Analytics"
               >
                 <span className="relative z-10 flex items-center gap-2">
-                  Initialize Conversation
+                  Begin Dialogue
                   <motion.span
                     animate={{ x: [0, 4, 0] }}
                     transition={{ repeat: Infinity, duration: 1.5 }}

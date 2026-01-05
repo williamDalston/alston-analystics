@@ -68,7 +68,7 @@ export default function SovereignMindPage() {
                 Don't solve problems. Avoid them. The ancient art of thinking backwards.
               </p>
               <span className="text-data-cyan font-mono text-sm opacity-60">
-                Coming Soon →
+                Available Soon →
               </span>
             </motion.div>
 
@@ -86,7 +86,7 @@ export default function SovereignMindPage() {
                 Give me a lever long enough, and I'll move the world. Naval's trinity applied.
               </p>
               <span className="text-data-cyan font-mono text-sm opacity-60">
-                Coming Soon →
+                Available Soon →
               </span>
             </motion.div>
 
@@ -104,7 +104,7 @@ export default function SovereignMindPage() {
                 80% of results from 20% of effort. The mathematics of disproportionate returns.
               </p>
               <span className="text-data-cyan font-mono text-sm opacity-60">
-                Coming Soon →
+                Available Soon →
               </span>
             </motion.div>
           </div>

@@ -21,7 +21,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     {
       id: '1',
       role: 'assistant',
-      content: "Hello. I'm Alston's digital assistant. You can reach us directly at info@alstonanalytics.com, but I'd be happy to chat about anything. What are you looking to build or explore?",
+      content: "Hello. I'm Alston's digital assistant. You can reach us directly at info@alstonanalytics.com, or I can help clarify your needs here. What are you looking to build or explore?",
       options: [
         'Strategic Consulting',
         'Power BI Dashboard',
@@ -102,7 +102,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
           setIsRateLimited(true);
           const retryAfterValue = errorData.retryAfter ? parseInt(errorData.retryAfter, 10) : 30;
           setRetryAfter(retryAfterValue);
-          setApiError('Paused briefly to avoid rate limits. Please try again in a few seconds.');
+          setApiError('Brief pause to manage rate limits. Please try again in a few seconds.');
           return null;
         }
 
@@ -114,7 +114,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
       return data.message || null;
     } catch (error) {
       console.error('Chat API error:', error);
-      setApiError('We hit a snag reaching the assistant. Please try again.');
+      setApiError('Connection interrupted. Please try again.');
       return null;
     }
   };
@@ -149,7 +149,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
           content:
-            "Excellent. Strategic work is my specialty. Tell me: What's the complexity you're facing?",
+            "Excellent. Strategic work is my specialty. What complexity are you facing?",
         };
       } else if (option === 'Power BI Dashboard') {
         setCurrentStep('powerbi');
@@ -157,7 +157,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
           content:
-            'Power BI is where chaos becomes clarity. How many data sources are we integrating?',
+            'Power BI is where chaos becomes clarity. How many data sources need integration?',
         };
       } else {
         setCurrentStep('exploring');
@@ -165,7 +165,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
           content:
-            "No pressure. Let's stay connected. Would you like to join the Sovereign Mind newsletter?",
+            "No pressure. Would you like to join the Sovereign Mind newsletter for strategic frameworks?",
           options: ['Yes, sign me up', 'Not now'],
         };
       }
@@ -222,8 +222,8 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
       const response: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content:
-          "Noted. I'm forwarding this to Alston directly. You'll hear back within 24 hours. What's the best email to reach you?",
+          content:
+            "Noted. I'm forwarding this to Alston directly. You'll hear back within 24 hours. What email address should we use?",
       };
       setMessages((prev) => [...prev, response]);
       return;
@@ -270,7 +270,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
         const response: Message = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: `Perfect. I've sent everything to info@alstonanalytics.com. You'll receive a response within 24 hours. Thank you for reaching out.`,
+          content: `Confirmed. I've forwarded your information to info@alstonanalytics.com. You'll receive a response within 24 hours. Thank you for reaching out.`,
         };
         setMessages((prev) => [...prev, response]);
       }, 500);

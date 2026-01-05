@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -57,12 +58,17 @@ export function BeforeAfterSlider({
     >
       {/* Before Image (Grayscale, Left Side) */}
       <div className="absolute inset-0 z-0">
-        <div className="relative w-full h-full bg-glass-surface/50 flex items-center justify-center">
-          <div className="text-soft-clay/30 text-6xl font-mono">
-            {beforeLabel}
-          </div>
-          {/* In production, replace with actual image */}
-          {/* <Image src={beforeImage} alt="Before" fill className="object-cover grayscale" /> */}
+        <div className="relative w-full h-full bg-glass-surface/50 overflow-hidden">
+          <Image
+            src={beforeImage}
+            alt={beforeLabel}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover grayscale"
+            priority={false}
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-deep-void/50 via-transparent to-deep-void/30 pointer-events-none" />
         </div>
 
         {/* Label */}
@@ -78,12 +84,17 @@ export function BeforeAfterSlider({
           clipPath: `inset(0 ${100 - sliderPosition}% 0 0)`,
         }}
       >
-        <div className="relative w-full h-full bg-gradient-to-br from-stellar-white/20 to-data-cyan/20 flex items-center justify-center">
-          <div className="text-stellar-white text-6xl font-mono glow-electric">
-            {afterLabel}
-          </div>
-          {/* In production, replace with actual image */}
-          {/* <Image src={afterImage} alt="After" fill className="object-cover" /> */}
+        <div className="relative w-full h-full overflow-hidden bg-gradient-to-br from-stellar-white/10 to-data-cyan/15">
+          <Image
+            src={afterImage}
+            alt={afterLabel}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover"
+            priority={false}
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-deep-void/15 pointer-events-none" />
         </div>
 
         {/* Label */}
@@ -130,7 +141,7 @@ export function BeforeAfterSlider({
           className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 glass-surface px-4 py-2 rounded-lg"
         >
           <span className="text-soft-clay/70 font-mono text-xs">
-            Drag to compare
+            Drag slider to compare
           </span>
         </motion.div>
       )}

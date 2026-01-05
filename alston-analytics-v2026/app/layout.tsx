@@ -31,7 +31,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://alstonanalytics.com"),
   title: {
-    default: "Alston Analytics | Data is Organic",
+    default: "Alston Analytics — Data is organic",
     template: "%s | Alston Analytics",
   },
   description: "Transform raw complexity into executive clarity. Strategic consulting, Power BI engineering, and sovereign thinking.",
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
         url: '/og.svg',
         width: 1200,
         height: 630,
-        alt: 'Alston Analytics â€” Data is organic',
+        alt: 'Alston Analytics — Data is organic',
       },
     ],
   },
@@ -124,3 +124,4 @@ export default function RootLayout({
     </html>
   );
 }
+

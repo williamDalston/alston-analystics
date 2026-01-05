@@ -234,7 +234,7 @@ export function ConstellationGraph() {
               {selectedNode.type === 'model'
                 ? 'A mental model for sovereign decision-making. This framework distills complexity into actionable principles.'
                 : selectedNode.type === 'draft'
-                ? 'A chapter from the Prometheus manuscript. Exploring the nature of creation, leverage, and executive power.'
+                ? 'A chapter from the Prometheus manuscript. Exploring creation, leverage, and executive power.'
                 : 'A video essay on transforming chaos into clarity. Watch the full presentation below.'}
             </p>
 

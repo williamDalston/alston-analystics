@@ -1,69 +1,121 @@
-import { NextResponse } from 'next/server';
+export const runtime = 'edge';
 
 type ChatMessage = {
   role: 'assistant' | 'user' | 'system';
   content: string;
 };
 
+function buildSystemPrompt(): ChatMessage {
+  return {
+    role: 'system',
+    content:
+      "You are Alston Analytics' assistant. Be concise, helpful, and curious. Clarify scope, timeline, budget, data sources, and success criteria. If the user shares email or contact info, acknowledge it. Keep replies brief and confident.",
+  };
+}
+
+async function streamOpenAI(messages: ChatMessage[], apiKey: string) {
+  const encoder = new TextEncoder();
+  const body = JSON.stringify({
+    model: 'gpt-4o-mini',
+    stream: true,
+    messages: [buildSystemPrompt(), ...messages],
+    temperature: 0.7,
+    max_tokens: 220,
+  });
+
+  const upstream = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body,
+  });
+
+  if (!upstream.ok || !upstream.body) {
+    return new Response(JSON.stringify({ error: 'Upstream model error' }), { status: upstream.status });
+  }
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      const reader = upstream.body!.getReader();
+      let buffer = '';
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += new TextDecoder().decode(value, { stream: true });
+
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed || !trimmed.startsWith('data:')) continue;
+            const data = trimmed.replace(/^data:\s*/, '');
+            if (data === '[DONE]') {
+              controller.close();
+              return;
+            }
+            try {
+              const json = JSON.parse(data);
+              const delta: string = json?.choices?.[0]?.delta?.content || '';
+              if (delta) {
+                controller.enqueue(encoder.encode(delta));
+              }
+            } catch {
+              // swallow parse errors
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Stream read error', err);
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-cache',
+    },
+  });
+}
+
 export async function POST(req: Request) {
   try {
     const { messages = [], conversationContext = '' } = await req.json();
-
-    const lastUserMessage: string =
-      [...messages].reverse().find((m: ChatMessage) => m.role === 'user')?.content ||
-      'Tell me about your project.';
-
-    const systemPrompt: ChatMessage = {
-      role: 'system',
-      content:
-        "You are Alston Analytics' assistant. Be concise, helpful, and curious. Clarify scope, timeline, budget, data sources, and success criteria. If the user shares email or contact info, acknowledge it. Keep replies brief.",
-    };
-
     const apiKey = process.env.OPENAI_API_KEY;
 
-    // If an API key is available, call OpenAI for a real response
     if (apiKey) {
-      const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [systemPrompt, ...messages, { role: 'user', content: lastUserMessage }],
-          temperature: 0.7,
-          max_tokens: 220,
-        }),
-      });
-
-      if (!openaiResponse.ok) {
-        return NextResponse.json(
-          { error: 'Upstream model error', statusCode: openaiResponse.status },
-          { status: openaiResponse.status },
-        );
-      }
-
-      const data = await openaiResponse.json();
-      const content: string =
-        data?.choices?.[0]?.message?.content ||
-        `Noted. Let's clarify the ask. What does success look like and what's the timeline?`;
-
-      return NextResponse.json({ message: content });
+      const chatMessages: ChatMessage[] = messages.length
+        ? messages
+        : [{ role: 'user', content: 'Tell me about your project.' }];
+      return await streamOpenAI(chatMessages, apiKey);
     }
 
-    // Fallback deterministic response (no API key)
-    const contextNote = conversationContext
-      ? `I see we're in the "${conversationContext}" flow. `
-      : '';
-    const fallback = `${contextNote}Got it: "${lastUserMessage}". Quick next steps: tell me your goal, timeline, data sources, and decision-maker. Want to drop an email so we can follow up?`;
-
-    return NextResponse.json({ message: fallback });
+    // Fallback deterministic streamed response (no API key)
+    const fallbackText = `${conversationContext ? `Context: ${conversationContext}. ` : ''}Got it. Tell me your goal, timeline, data sources, and decision-maker. Want to drop an email for follow-up?`;
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(fallbackText));
+        controller.close();
+      },
+    });
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-cache',
+      },
+    });
   } catch (error) {
     console.error('Chat route error', error);
-    return NextResponse.json(
-      { error: 'Unable to process request right now', statusCode: 500 },
-      { status: 500 },
-    );
+    return new Response(JSON.stringify({ error: 'Unable to process request right now', statusCode: 500 }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }

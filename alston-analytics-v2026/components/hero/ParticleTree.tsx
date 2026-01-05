@@ -9,16 +9,17 @@ import * as THREE from 'three';
 interface ParticleSystemProps {
   mousePosition: { x: number; y: number };
   reduceMotion: boolean;
+  isCoarsePointer: boolean;
 }
 
-function ParticleSystem({ mousePosition, reduceMotion }: ParticleSystemProps) {
+function ParticleSystem({ mousePosition, reduceMotion, isCoarsePointer }: ParticleSystemProps) {
   const particlesRef = useRef<THREE.Points>(null);
   // Adjust particle count by viewport & motion preference to keep frame rate smooth
   const particleCount = useMemo(() => {
     const width = typeof window !== 'undefined' ? window.innerWidth : 1280;
-    const base = width < 640 ? 700 : width < 1024 ? 1100 : 1500;
+    const base = isCoarsePointer ? 500 : width < 640 ? 700 : width < 1024 ? 1100 : 1500;
     return reduceMotion ? Math.max(500, Math.floor(base * 0.6)) : base;
-  }, [reduceMotion]);
+  }, [isCoarsePointer, reduceMotion]);
 
   // Generate particle positions in a tree-like structure
   const positions = useMemo(() => {
@@ -105,6 +106,10 @@ function ParticleSystem({ mousePosition, reduceMotion }: ParticleSystemProps) {
 export function ParticleTree() {
   const mousePositionRef = useRef({ x: 0, y: 0 });
   const prefersReducedMotion = useReducedMotion();
+  const isCoarsePointer =
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(pointer: coarse)').matches;
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -130,6 +135,7 @@ export function ParticleTree() {
         <ParticleSystem
           mousePosition={mousePositionRef.current}
           reduceMotion={!!prefersReducedMotion}
+          isCoarsePointer={isCoarsePointer}
         />
 
         {/* Stellar glow spheres at the base - elegant star-like lighting */}
@@ -146,8 +152,9 @@ export function ParticleTree() {
         <OrbitControls
           enableZoom={false}
           enablePan={false}
-          autoRotate={!prefersReducedMotion}
-          autoRotateSpeed={0.35}
+          enableRotate={!isCoarsePointer && !prefersReducedMotion}
+          autoRotate={!prefersReducedMotion && !isCoarsePointer}
+          autoRotateSpeed={0.3}
           minPolarAngle={Math.PI / 3}
           maxPolarAngle={Math.PI / 1.5}
         />

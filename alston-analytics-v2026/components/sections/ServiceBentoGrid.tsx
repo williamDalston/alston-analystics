@@ -178,7 +178,7 @@ export function ServiceBentoGrid() {
             <ServiceCard
               icon={<Database className="w-full h-full" />}
               title="Power BI Architecture"
-              description="Data without clarity is noise. We build dashboards that executives actually use. Real-time insights. Zero clutter. Maximum impact."
+              description="Data without clarity is noise. We build dashboards executives actually use. Real-time insights. Zero clutter. Maximum impact."
             />
           </motion.div>
 
@@ -192,7 +192,7 @@ export function ServiceBentoGrid() {
             <ServiceCard
               icon={<BookOpen className="w-full h-full" />}
               title="The Sovereign Mind"
-              description="Leadership isn't taught in classrooms. We codify mental models, inversion frameworks, and leverage thinking for the modern executive."
+              description="Leadership isn't taught in classrooms. We codify mental models, inversion frameworks, and leverage principles for modern executives."
             />
           </motion.div>
         </div>

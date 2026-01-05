@@ -27,7 +27,7 @@ class ErrorBoundary extends Component<
     if (this.state.hasError) {
       return this.props.fallback || (
         <div className="w-full h-full bg-deep-void flex items-center justify-center">
-          <div className="text-soft-clay/50 font-mono text-sm">Visualization unavailable</div>
+          <div className="text-soft-clay/50 font-mono text-sm">Scene unavailable</div>
         </div>
       );
     }
@@ -41,7 +41,7 @@ const AdvancedParticleTree = dynamic(() => import('@/components/hero/AdvancedPar
   ssr: false,
   loading: () => (
     <div className="w-full h-full bg-deep-void flex items-center justify-center">
-      <div className="text-stellar-white font-mono glow-electric">Loading stars...</div>
+      <div className="text-stellar-white font-mono glow-electric">Loading visualization...</div>
     </div>
   ),
 });
@@ -125,7 +125,7 @@ export default function HomePage() {
             transition={{ duration: 0.8, delay: 0.7, type: "spring" }}
             className="text-base sm:text-lg md:text-xl text-soft-clay/70 max-w-2xl mx-auto font-sans px-4"
           >
-            Alston Analytics transforms raw complexity into executive clarity.
+            We transform raw complexity into executive clarity.
           </motion.p>
 
           {/* Animated stats or badges */}
@@ -162,7 +162,7 @@ export default function HomePage() {
                 aria-label="Book a strategic audit with Alston Analytics"
               >
                 <span className="relative z-10 flex items-center gap-2">
-                  Book Strategic Audit
+                  Schedule Strategic Audit
                   <motion.span
                     animate={{ x: [0, 4, 0] }}
                     transition={{ repeat: Infinity, duration: 1.5 }}
