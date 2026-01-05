@@ -68,6 +68,18 @@ export default function ContactPage() {
                 />
               </motion.button>
 
+              {/* Contact Guidance */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="mt-8 sm:mt-10 px-4"
+              >
+                <p className="text-soft-clay/60 font-sans text-sm sm:text-base max-w-2xl mx-auto">
+                  <span className="text-soft-clay/80 font-medium">Quick questions?</span> Use the chat below. <span className="text-soft-clay/80 font-medium">Detailed proposals or complex requirements?</span> Email us directly at info@alstonanalytics.com
+                </p>
+              </motion.div>
+
               {/* Alternative Contact Methods */}
               <div className="mt-12 sm:mt-16 pt-6 sm:pt-8 border-t border-soft-clay/10 px-4">
                 <p className="text-soft-clay/50 font-mono text-xs sm:text-sm mb-3 sm:mb-4">

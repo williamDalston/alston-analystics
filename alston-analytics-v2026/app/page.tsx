@@ -111,9 +111,18 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="text-2xl sm:text-3xl md:text-4xl text-soft-clay/80 font-mono tracking-wide mb-10 md:mb-14 max-w-4xl mx-auto"
+                className="text-2xl sm:text-3xl md:text-4xl text-soft-clay/80 font-mono tracking-wide mb-6 md:mb-8 max-w-4xl mx-auto"
               >
                 We prune the chaos.
+              </motion.p>
+
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="text-lg sm:text-xl md:text-2xl text-soft-clay/60 font-sans mb-10 md:mb-14 max-w-3xl mx-auto"
+              >
+                Transform raw complexity into executive clarity. Strategic consulting. Power BI engineering. Sovereign thinking.
               </motion.p>
 
               <motion.div

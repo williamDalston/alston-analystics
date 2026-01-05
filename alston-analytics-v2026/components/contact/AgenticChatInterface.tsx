@@ -281,18 +281,16 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     }, 100);
   };
 
-  const handleSendMessage = useCallback(async () => {
-    if (!input.trim() || isLimitReached || isRateLimited) return;
+  const sendMessageDirect = useCallback(async (messageText: string) => {
+    if (!messageText.trim() || isLimitReached || isRateLimited) return;
 
     const userMessage: Message = {
       id: `u-${Date.now()}`,
       role: 'user',
-      content: input,
+      content: messageText,
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    const messageText = input;
-    setInput('');
     setIsLoading(true);
 
     // Create placeholder assistant message
@@ -335,7 +333,14 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
         m.id === assistantId ? { ...m, content: aiResponse, isStreaming: false } : m
       )
     );
-  }, [input, currentStep, isLimitReached, isRateLimited, messages]);
+  }, [currentStep, isLimitReached, isRateLimited, messages]);
+
+  const handleSendMessage = useCallback(async () => {
+    if (!input.trim() || isLimitReached || isRateLimited) return;
+    const messageText = input;
+    setInput('');
+    await sendMessageDirect(messageText);
+  }, [input, isLimitReached, isRateLimited, sendMessageDirect]);
 
   const handleEmailSubmit = () => {
     setEmailError('');
@@ -502,16 +507,35 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
           {/* Scroll anchor */}
           <div ref={messagesEndRef} className="h-1" />
 
-          {/* Empty State */}
+          {/* Empty State with Example Questions */}
           {messages.length === 1 && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center py-12"
+              className="text-center py-8 px-4"
             >
-              <p className="text-soft-clay/50 font-mono text-sm">
-                Start a conversation above or select an option
+              <p className="text-soft-clay/60 font-sans text-sm mb-4">
+                Try asking:
               </p>
+              <div className="flex flex-wrap gap-2 justify-center max-w-2xl mx-auto">
+                {[
+                  "How much does a Power BI audit cost?",
+                  "What's included in the assessment?",
+                  "How long does a project take?",
+                ].map((question, idx) => (
+                  <motion.button
+                    key={question}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.1 * idx }}
+                    onClick={() => sendMessageDirect(question)}
+                    className="px-4 py-2 rounded-full glass-surface border border-stellar-white/10 hover:border-data-cyan/50 hover:bg-data-cyan/5 transition-all text-xs font-mono text-soft-clay/70 hover:text-data-cyan"
+                    disabled={isRateLimited || isLoading}
+                  >
+                    {question}
+                  </motion.button>
+                ))}
+              </div>
             </motion.div>
           )}
 

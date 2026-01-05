@@ -85,18 +85,47 @@ function SuccessContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="space-y-4 mb-8"
+            className="space-y-4 mb-8 text-left"
           >
-            <div className="flex items-start gap-3 text-left">
-              <Mail className="w-5 h-5 text-star-blue mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-soft-clay font-medium mb-1">
-                  What happens next?
-                </p>
-                <p className="text-soft-clay/70 text-sm">
-                  You'll receive a confirmation email within a few minutes with
-                  next steps and how to schedule your session.
-                </p>
+            <div className="glass-surface rounded-xl p-6 border border-stellar-white/10">
+              <h3 className="text-stellar-white font-bold text-lg mb-4 flex items-center gap-2">
+                <Mail className="w-5 h-5 text-star-blue" />
+                What to Expect
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-star-blue/20 flex items-center justify-center text-xs font-bold text-star-blue mt-0.5">
+                    1
+                  </div>
+                  <div>
+                    <p className="text-soft-clay font-medium mb-1">Confirmation Email</p>
+                    <p className="text-soft-clay/70 text-sm">
+                      You'll receive a confirmation email within 24 hours with your assessment details.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-star-blue/20 flex items-center justify-center text-xs font-bold text-star-blue mt-0.5">
+                    2
+                  </div>
+                  <div>
+                    <p className="text-soft-clay font-medium mb-1">Assessment Scheduled</p>
+                    <p className="text-soft-clay/70 text-sm">
+                      We'll coordinate a 2-hour assessment window that works with your schedule.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-star-blue/20 flex items-center justify-center text-xs font-bold text-star-blue mt-0.5">
+                    3
+                  </div>
+                  <div>
+                    <p className="text-soft-clay font-medium mb-1">Deliverable Report</p>
+                    <p className="text-soft-clay/70 text-sm">
+                      Receive your comprehensive assessment report with actionable recommendations within 7 business days.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>

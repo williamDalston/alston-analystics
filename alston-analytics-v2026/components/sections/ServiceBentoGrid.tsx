@@ -108,7 +108,7 @@ function ServiceCard({ title, description, icon, className, showPurchaseButton, 
             priceId={priceId}
             productName={title}
             amount={price}
-            description="2-hour assessment + deliverable report"
+            description="Includes: 2-hour assessment, architecture review, performance analysis, and actionable deliverable report"
             variant="secondary"
             className="w-full"
           />
