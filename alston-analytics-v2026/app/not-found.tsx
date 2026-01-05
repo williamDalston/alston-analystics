@@ -4,12 +4,12 @@ export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-deep-void text-soft-clay relative overflow-hidden">
       {/* Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-electric-moss/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-stellar-white/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="relative z-10 text-center space-y-6 px-6">
-        <h1 className="text-9xl font-bold text-electric-moss/20 font-mono">404</h1>
+        <h1 className="text-9xl font-bold text-stellar-white/20 font-mono">404</h1>
         
-        <h2 className="text-3xl md:text-4xl font-bold glow-electric text-electric-moss">
+        <h2 className="text-3xl md:text-4xl font-bold glow-electric text-stellar-white">
           Signal Lost
         </h2>
         
@@ -20,7 +20,7 @@ export default function NotFound() {
         <div className="pt-8">
           <Link
             href="/"
-            className="glass-heavy px-8 py-4 rounded-full text-electric-moss font-mono font-bold hover:bg-electric-moss/10 transition-all duration-300 inline-block glow-electric focus:outline-none focus:ring-2 focus:ring-electric-moss/50"
+            className="glass-heavy px-8 py-4 rounded-full text-stellar-white font-mono font-bold hover:bg-stellar-white/10 transition-all duration-300 inline-block glow-electric focus:outline-none focus:ring-2 focus:ring-stellar-white/50"
             aria-label="Return to homepage"
           >
             Return to Source

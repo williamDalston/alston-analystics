@@ -13,7 +13,7 @@ export default function SovereignMindPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-electric-moss glow-electric mb-4 sm:mb-6"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-stellar-white glow-electric mb-4 sm:mb-6"
           >
             The Digital Dojo
           </motion.h1>
@@ -59,9 +59,9 @@ export default function SovereignMindPage() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="glass-surface rounded-2xl p-6 sm:p-8 hover:border-electric-moss/30 transition-all duration-300"
+              className="glass-surface rounded-2xl p-6 sm:p-8 hover:border-stellar-white/30 transition-all duration-300"
             >
-              <h3 className="text-xl sm:text-2xl font-bold text-electric-moss mb-2 sm:mb-3">
+              <h3 className="text-xl sm:text-2xl font-bold text-stellar-white mb-2 sm:mb-3">
                 Inversion
               </h3>
               <p className="text-sm sm:text-base text-soft-clay/70 font-sans mb-3 sm:mb-4">
@@ -79,7 +79,7 @@ export default function SovereignMindPage() {
               viewport={{ once: true }}
               className="glass-surface rounded-2xl p-8 hover:border-electric-moss/30 transition-all duration-300"
             >
-              <h3 className="text-2xl font-bold text-electric-moss mb-3">
+              <h3 className="text-2xl font-bold text-stellar-white mb-3">
                 Leverage
               </h3>
               <p className="text-soft-clay/70 font-sans mb-4">
@@ -97,7 +97,7 @@ export default function SovereignMindPage() {
               viewport={{ once: true }}
               className="glass-surface rounded-2xl p-8 hover:border-electric-moss/30 transition-all duration-300"
             >
-              <h3 className="text-2xl font-bold text-electric-moss mb-3">
+              <h3 className="text-2xl font-bold text-stellar-white mb-3">
                 Pareto
               </h3>
               <p className="text-soft-clay/70 font-sans mb-4">

@@ -27,8 +27,8 @@ export default function ContactPage() {
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 relative inline-block"
               >
                 <span className="relative">
-                  <span className="absolute inset-0 blur-3xl bg-electric-moss/50 opacity-50 animate-pulse" />
-                  <span className="relative bg-gradient-to-r from-electric-moss via-data-cyan to-electric-moss bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient glow-electric">
+                  <span className="absolute inset-0 blur-3xl bg-stellar-white/50 opacity-50 animate-pulse" />
+                  <span className="relative bg-gradient-to-r from-stellar-white via-data-cyan to-stellar-white bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient glow-electric">
                     The Command Line
                   </span>
                 </span>
@@ -48,7 +48,7 @@ export default function ContactPage() {
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setChatStarted(true)}
-                className="group relative btn-primary glass-heavy px-8 sm:px-12 py-4 sm:py-5 rounded-full text-electric-moss font-mono font-bold hover:bg-electric-moss/10 transition-all duration-300 inline-block glow-electric text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-electric-moss/50 overflow-hidden"
+                className="group relative btn-primary glass-heavy px-8 sm:px-12 py-4 sm:py-5 rounded-full text-stellar-white font-mono font-bold hover:bg-stellar-white/10 transition-all duration-300 inline-block glow-electric text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-stellar-white/50 overflow-hidden"
                 aria-label="Start a conversation with Alston Analytics"
               >
                 <span className="relative z-10 flex items-center gap-2">
@@ -61,7 +61,7 @@ export default function ContactPage() {
                   </motion.span>
                 </span>
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-electric-moss/20 to-data-cyan/20 opacity-0 group-hover:opacity-100"
+                  className="absolute inset-0 bg-gradient-to-r from-stellar-white/20 to-data-cyan/20 opacity-0 group-hover:opacity-100"
                   initial={{ x: '-100%' }}
                   whileHover={{ x: '100%' }}
                   transition={{ duration: 0.6 }}

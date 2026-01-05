@@ -76,16 +76,16 @@ function NodeSphere({
   });
 
   const getColor = () => {
-    if (isSelected) return '#CCFF00';
+    if (isSelected) return '#E0F2FE';
     switch (node.type) {
       case 'model':
-        return '#CCFF00';
+        return '#E0F2FE';
       case 'draft':
         return '#00F0FF';
       case 'speech':
         return '#E2D1C3';
       default:
-        return '#CCFF00';
+        return '#E0F2FE';
     }
   };
 
@@ -149,7 +149,7 @@ function ConnectionLines({ nodes }: { nodes: Node[] }) {
                   count={2}
                 />
               </bufferGeometry>
-              <lineBasicMaterial color="#CCFF00" opacity={0.2} transparent />
+              <lineBasicMaterial color="#E0F2FE" opacity={0.25} transparent />
             </line>
           );
         })
@@ -165,7 +165,7 @@ export function ConstellationGraph() {
     <div className="relative w-full h-full glass-surface rounded-3xl overflow-hidden">
       <Canvas camera={{ position: [0, 0, 10], fov: 50 }}>
         <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} intensity={1} color="#CCFF00" />
+        <pointLight position={[10, 10, 10]} intensity={1.2} color="#7DD3FC" />
         <pointLight position={[-10, -10, -10]} intensity={0.5} color="#00F0FF" />
 
         <ConnectionLines nodes={nodes} />
@@ -216,7 +216,7 @@ export function ConstellationGraph() {
               <span
                 className={`text-xs font-mono px-2 py-1 rounded ${
                   selectedNode.type === 'model'
-                    ? 'bg-electric-moss/20 text-electric-moss'
+                    ? 'bg-stellar-white/20 text-stellar-white'
                     : selectedNode.type === 'draft'
                     ? 'bg-data-cyan/20 text-data-cyan'
                     : 'bg-soft-clay/20 text-soft-clay'
@@ -240,7 +240,7 @@ export function ConstellationGraph() {
 
             <a
               href="#"
-              className="glass-surface px-6 py-3 rounded-full text-electric-moss font-mono hover:bg-electric-moss/10 transition-all inline-block"
+              className="glass-surface px-6 py-3 rounded-full text-stellar-white font-mono hover:bg-stellar-white/10 transition-all inline-block"
             >
               {selectedNode.type === 'speech' ? 'Watch Video' : 'Read Full Content'} →
             </a>

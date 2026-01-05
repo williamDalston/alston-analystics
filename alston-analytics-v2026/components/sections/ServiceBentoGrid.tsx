@@ -57,7 +57,7 @@ function ServiceCard({ title, description, icon, className }: ServiceCardProps) 
     >
       {/* Animated gradient background */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-electric-moss/10 via-transparent to-data-cyan/10 opacity-0 group-hover:opacity-100"
+        className="absolute inset-0 bg-gradient-to-br from-stellar-white/10 via-transparent to-data-cyan/10 opacity-0 group-hover:opacity-100"
         animate={{
           backgroundPosition: ['0% 0%', '100% 100%'],
         }}
@@ -66,12 +66,12 @@ function ServiceCard({ title, description, icon, className }: ServiceCardProps) 
 
       {/* Animated border */}
       <motion.div
-        className="absolute inset-0 rounded-3xl border-2 border-electric-moss/0 group-hover:border-electric-moss/50"
+        className="absolute inset-0 rounded-3xl border-2 border-stellar-white/0 group-hover:border-stellar-white/50"
         animate={{
           boxShadow: [
-            '0 0 0px rgba(204, 255, 0, 0)',
-            '0 0 30px rgba(204, 255, 0, 0.3)',
-            '0 0 0px rgba(204, 255, 0, 0)',
+            '0 0 0px rgba(224, 242, 254, 0)',
+            '0 0 30px rgba(125, 211, 252, 0.3)',
+            '0 0 0px rgba(224, 242, 254, 0)',
           ],
         }}
         transition={{ duration: 2, repeat: Infinity }}

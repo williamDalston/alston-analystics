@@ -78,8 +78,8 @@ export function BeforeAfterSlider({
           clipPath: `inset(0 ${100 - sliderPosition}% 0 0)`,
         }}
       >
-        <div className="relative w-full h-full bg-gradient-to-br from-electric-moss/20 to-data-cyan/20 flex items-center justify-center">
-          <div className="text-electric-moss text-6xl font-mono glow-electric">
+        <div className="relative w-full h-full bg-gradient-to-br from-stellar-white/20 to-data-cyan/20 flex items-center justify-center">
+          <div className="text-stellar-white text-6xl font-mono glow-electric">
             {afterLabel}
           </div>
           {/* In production, replace with actual image */}
@@ -87,20 +87,20 @@ export function BeforeAfterSlider({
         </div>
 
         {/* Label */}
-        <div className="absolute top-4 right-4 glass-heavy px-4 py-2 rounded-lg border border-electric-moss/30">
-          <span className="text-electric-moss font-mono text-sm">{afterLabel}</span>
+        <div className="absolute top-4 right-4 glass-heavy px-4 py-2 rounded-lg border border-stellar-white/30">
+          <span className="text-stellar-white font-mono text-sm">{afterLabel}</span>
         </div>
       </div>
 
       {/* Slider Handle */}
       <div
-        className="absolute top-0 bottom-0 z-20 w-1 bg-electric-moss/50"
+        className="absolute top-0 bottom-0 z-20 w-1 bg-stellar-white/50"
         style={{ left: `${sliderPosition}%` }}
       >
         <motion.div
           className={cn(
             'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
-            'w-12 h-12 rounded-full glass-heavy border-2 border-electric-moss',
+            'w-12 h-12 rounded-full glass-heavy border-2 border-stellar-white',
             'flex items-center justify-center cursor-ew-resize',
             isDragging && 'scale-110'
           )}
@@ -111,10 +111,10 @@ export function BeforeAfterSlider({
         >
           {/* Arrows */}
           <div className="flex gap-1">
-            <svg className="w-3 h-3 text-electric-moss" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-3 h-3 text-stellar-white" fill="currentColor" viewBox="0 0 20 20">
               <path d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" />
             </svg>
-            <svg className="w-3 h-3 text-electric-moss" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-3 h-3 text-stellar-white" fill="currentColor" viewBox="0 0 20 20">
               <path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" />
             </svg>
           </div>

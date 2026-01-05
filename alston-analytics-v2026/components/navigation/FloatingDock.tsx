@@ -50,7 +50,7 @@ export function FloatingDock() {
                   "w-10 h-10 sm:w-12 sm:h-12 rounded-full",
                   "transition-colors duration-300",
                   "cursor-pointer group",
-                  isActive ? "text-electric-moss" : "text-soft-clay hover:text-electric-moss"
+                  isActive ? "text-stellar-white" : "text-soft-clay hover:text-stellar-white"
                 )}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
@@ -71,7 +71,7 @@ export function FloatingDock() {
                 {isActive && (
                   <motion.div
                     layoutId="active-page"
-                    className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-electric-moss shadow-[0_0_12px_rgba(79,195,247,0.9)]"
+                    className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-stellar-white shadow-[0_0_12px_rgba(224,242,254,0.9)]"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 600, damping: 30, mass: 0.4 }}
@@ -100,7 +100,7 @@ export function FloatingDock() {
                     layoutId={isActive ? "active-glow" : "dock-glow"}
                     className={cn(
                       "absolute inset-0 rounded-full blur-lg",
-                      isActive ? "bg-cyan-400/25" : "bg-cyan-400/15"
+                      isActive ? "bg-stellar-white/25" : "bg-stellar-white/15"
                     )}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

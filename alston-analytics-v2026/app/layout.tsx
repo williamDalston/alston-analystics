@@ -48,6 +48,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  manifest: "/manifest.webmanifest",
   openGraph: {
     title: "Alston Analytics",
     description: "Data is organic. We prune the chaos.",

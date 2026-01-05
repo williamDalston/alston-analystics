@@ -11,11 +11,11 @@
   --deep-void: #02040A;          /* Deepest Midnight */
   --glass-surface: #0F172A;
 
-  /* Bioluminescent Spectrum */
-  --electric-moss: #CCFF00;      /* The Growth (Foxfire) */
-  --neon-green: #39FF14;         /* Positive metrics */
-  --mint: #98FF98;               /* Growth gradients */
-  --data-cyan: #00F0FF;          /* The Pulse (Jellyfish) */
+  /* Stellar Spectrum - Elegant Space Theme */
+  --stellar-white: #E0F2FE;      /* Primary star color (elegant blue-white) */
+  --star-blue: #7DD3FC;          /* Bright stars (cyan-blue) */
+  --cosmic-blue: #BAE6FD;        /* Soft star glow */
+  --data-cyan: #00F0FF;          /* The Pulse (bright star accents) */
   --teal: #008080;               /* Calm data flow */
   --soft-clay: #E2D1C3;          /* Human warmth */
   --signal-red: #FF4D4D;         /* Critical warnings */
@@ -28,11 +28,11 @@
   /* Semantic Mappings */
   --background: var(--deep-void);
   --foreground: var(--soft-clay);
-  --primary: var(--electric-moss);
+  --primary: var(--stellar-white);
   --accent: var(--data-cyan);
   --error: var(--signal-red);
   --ai-color: var(--blue-violet);
-  --growth-color: var(--neon-green);
+  --growth-color: var(--star-blue);
   --warning-color: var(--deep-amber);
 
   /* Glass Morphism Variables (Glassmorphism 2.0) */
@@ -47,7 +47,10 @@
   /* Color System */
   --color-deep-void: var(--deep-void);
   --color-glass-surface: var(--glass-surface);
-  --color-electric-moss: var(--electric-moss);
+  --color-stellar-white: var(--stellar-white);
+  --color-star-blue: var(--star-blue);
+  --color-cosmic-blue: var(--cosmic-blue);
+  --color-electric-moss: var(--stellar-white); /* Backward compatibility - maps to stellar-white */
   --color-data-cyan: var(--data-cyan);
   --color-soft-clay: var(--soft-clay);
   --color-signal-red: var(--signal-red);
@@ -112,10 +115,10 @@ body {
 
 .glow-electric {
   text-shadow:
-    0 0 10px rgba(204, 255, 0, 0.6),
-    0 0 20px rgba(204, 255, 0, 0.4),
-    0 0 40px rgba(204, 255, 0, 0.2),
-    0 0 60px rgba(204, 255, 0, 0.1);
+    0 0 10px rgba(224, 242, 254, 0.6),
+    0 0 20px rgba(224, 242, 254, 0.4),
+    0 0 40px rgba(125, 211, 252, 0.3),
+    0 0 60px rgba(125, 211, 252, 0.15);
 }
 
 .glow-data {
@@ -141,10 +144,10 @@ body {
 /* Pulsing glow animation for interactive elements */
 @keyframes pulse-glow {
   0%, 100% {
-    filter: drop-shadow(0 0 8px rgba(204, 255, 0, 0.4));
+    filter: drop-shadow(0 0 8px rgba(224, 242, 254, 0.4));
   }
   50% {
-    filter: drop-shadow(0 0 20px rgba(204, 255, 0, 0.8));
+    filter: drop-shadow(0 0 20px rgba(125, 211, 252, 0.6));
   }
 }
 
@@ -243,7 +246,7 @@ body {
   left: 50%;
   margin-left: -8px;
   margin-top: -8px;
-  border: 2px solid var(--electric-moss);
+  border: 2px solid var(--stellar-white);
   border-radius: 50%;
   border-top-color: transparent;
   animation: spin 0.6s linear infinite;
@@ -260,8 +263,8 @@ body {
 
 .form-input:focus {
   outline: none;
-  border-color: var(--electric-moss);
-  box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.1);
+  border-color: var(--stellar-white);
+  box-shadow: 0 0 0 3px rgba(224, 242, 254, 0.15);
 }
 
 .form-input[aria-invalid="true"] {
@@ -271,13 +274,13 @@ body {
 }
 
 .form-input[aria-valid="true"] {
-  border-color: var(--electric-moss);
-  box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.1);
+  border-color: var(--stellar-white);
+  box-shadow: 0 0 0 3px rgba(224, 242, 254, 0.15);
 }
 
 /* Focus-within for form groups */
 .form-group:focus-within .form-label {
-  color: var(--electric-moss);
+  color: var(--stellar-white);
   transform: translateY(-2px);
 }
 
@@ -310,10 +313,10 @@ body {
 /* Success State Animation */
 @keyframes successPulse {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(204, 255, 0, 0.7);
+    box-shadow: 0 0 0 0 rgba(224, 242, 254, 0.7);
   }
   50% {
-    box-shadow: 0 0 0 10px rgba(204, 255, 0, 0);
+    box-shadow: 0 0 0 10px rgba(224, 242, 254, 0);
   }
 }
 
@@ -384,24 +387,24 @@ html.lenis, html.lenis body {
 
 /* Focus States - Visible for keyboard navigation */
 *:focus-visible {
-  outline: 2px solid var(--electric-moss);
+  outline: 2px solid var(--stellar-white);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid var(--electric-moss);
+  outline: 2px solid var(--stellar-white);
   outline-offset: 3px;
 }
 
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid var(--electric-moss);
+  outline: 2px solid var(--stellar-white);
   outline-offset: 2px;
   ring: 2px;
-  ring-color: var(--electric-moss);
+  ring-color: var(--stellar-white);
   ring-opacity: 0.3;
 }
 
@@ -410,7 +413,7 @@ select:focus-visible {
   position: absolute;
   top: -40px;
   left: 0;
-  background: var(--electric-moss);
+  background: var(--stellar-white);
   color: var(--deep-void);
   padding: 8px 16px;
   z-index: 100;
@@ -496,7 +499,7 @@ input[type="button"] {
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: rgba(204, 255, 0, 0.1);
+  background: rgba(224, 242, 254, 0.1);
   transform: translate(-50%, -50%);
   transition: width 0.6s, height 0.6s;
 }
@@ -509,8 +512,8 @@ input[type="button"] {
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 
-    0 10px 30px rgba(204, 255, 0, 0.2),
-    0 0 20px rgba(204, 255, 0, 0.1);
+    0 10px 30px rgba(224, 242, 254, 0.2),
+    0 0 20px rgba(125, 211, 252, 0.15);
 }
 
 .btn-primary:active {
@@ -532,7 +535,7 @@ input[type="button"] {
   width: 20px;
   height: 20px;
   margin: -10px 0 0 -10px;
-  border: 2px solid var(--electric-moss);
+  border: 2px solid var(--stellar-white);
   border-top-color: transparent;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
@@ -574,8 +577,8 @@ input[type="button"] {
 
 .form-input:focus {
   background: rgba(15, 23, 42, 0.7);
-  border-color: var(--electric-moss);
-  box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.1);
+  border-color: var(--stellar-white);
+  box-shadow: 0 0 0 3px rgba(224, 242, 254, 0.15);
 }
 
 .form-input:invalid {
@@ -594,7 +597,7 @@ input[type="button"] {
 .form-success {
   margin-top: 0.5rem;
   font-size: 0.875rem;
-  color: var(--electric-moss);
+  color: var(--stellar-white);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -654,12 +657,12 @@ p {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(204, 255, 0, 0.2);
+  background: rgba(224, 242, 254, 0.2);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(204, 255, 0, 0.3);
+  background: rgba(224, 242, 254, 0.3);
 }
 
 /* Smooth scrolling for chat */
@@ -688,9 +691,9 @@ p {
 input:focus,
 textarea:focus {
   box-shadow: 
-    0 0 0 2px rgba(204, 255, 0, 0.1),
-    0 0 20px rgba(204, 255, 0, 0.15),
-    inset 0 0 10px rgba(204, 255, 0, 0.05);
+    0 0 0 2px rgba(224, 242, 254, 0.15),
+    0 0 20px rgba(125, 211, 252, 0.2),
+    inset 0 0 10px rgba(224, 242, 254, 0.1);
 }
 
 /* Snappy chat input - optimized for instant typing response */
@@ -708,7 +711,7 @@ textarea:focus {
 }
 
 .chat-input-snappy:not(:disabled) {
-  caret-color: var(--electric-moss);
+  caret-color: var(--stellar-white);
 }
 
 /* Optimize input rendering for instant typing */
@@ -775,11 +778,11 @@ button:active:not(:disabled) {
 @keyframes pulse-glow {
   0%, 100% {
     opacity: 0.5;
-    box-shadow: 0 0 20px rgba(204, 255, 0, 0.3);
+    box-shadow: 0 0 20px rgba(224, 242, 254, 0.3);
   }
   50% {
     opacity: 1;
-    box-shadow: 0 0 40px rgba(204, 255, 0, 0.6);
+    box-shadow: 0 0 40px rgba(125, 211, 252, 0.5);
   }
 }
 
@@ -800,7 +803,7 @@ button:active:not(:disabled) {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(204, 255, 0, 0.1),
+    rgba(224, 242, 254, 0.15),
     transparent
   );
   background-size: 1000px 100%;
@@ -815,9 +818,9 @@ button:active:not(:disabled) {
 .text-gradient-animate {
   background: linear-gradient(
     90deg,
-    var(--electric-moss),
+    var(--stellar-white),
     var(--data-cyan),
-    var(--electric-moss)
+    var(--stellar-white)
   );
   background-size: 200% auto;
   background-clip: text;
@@ -833,9 +836,9 @@ button:active:not(:disabled) {
 
 .hover-glow:hover {
   box-shadow:
-    0 0 20px rgba(204, 255, 0, 0.4),
-    0 0 40px rgba(204, 255, 0, 0.2),
-    inset 0 0 20px rgba(204, 255, 0, 0.1);
+    0 0 20px rgba(224, 242, 254, 0.4),
+    0 0 40px rgba(125, 211, 252, 0.3),
+    inset 0 0 20px rgba(224, 242, 254, 0.15);
 }
 
 /* Shimmer effect */

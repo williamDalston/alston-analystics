@@ -31,7 +31,7 @@ export function ModeToggle() {
     >
       <button
         onClick={toggleMode}
-        className="glass-heavy rounded-full p-3 flex items-center gap-2 text-soft-clay hover:text-electric-moss transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-electric-moss/50"
+        className="glass-heavy rounded-full p-3 flex items-center gap-2 text-soft-clay hover:text-stellar-white transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-stellar-white/50"
         aria-label={`Switch to ${mode === 'immersive' ? 'executive' : 'immersive'} mode`}
         aria-pressed={mode === 'executive'}
       >

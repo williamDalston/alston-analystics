@@ -280,14 +280,14 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
       <instancedMesh ref={meshRef} args={[geometry, undefined, particleCount]}>
         {/* Modern glass-like material with depth */}
         <meshStandardMaterial
-          color="#E8F4F8"
-          emissive="#4FC3F7"
-          emissiveIntensity={10}
+          color="#E0F2FE"
+          emissive="#7DD3FC"
+          emissiveIntensity={8}
           toneMapped={false}
           transparent
-          opacity={0.9}
-          metalness={0.5}
-          roughness={0.1}
+          opacity={0.95}
+          metalness={0.6}
+          roughness={0.05}
         />
       </instancedMesh>
     </>
@@ -318,47 +318,47 @@ function BioluminescentSpheres() {
 
   return (
     <>
-      {/* Primary glow sphere - elegant cyan */}
+      {/* Primary stellar glow sphere - elegant blue-white */}
       <mesh ref={sphere1Ref} position={[0, -2, 0]}>
         <sphereGeometry args={[0.8, 32, 32]} />
         <meshStandardMaterial
-          color="#B3E5FC"
-          emissive="#4FC3F7"
-          emissiveIntensity={12}
+          color="#E0F2FE"
+          emissive="#7DD3FC"
+          emissiveIntensity={10}
           toneMapped={false}
           transparent
-          opacity={0.35}
-          metalness={0.3}
-          roughness={0.2}
+          opacity={0.3}
+          metalness={0.4}
+          roughness={0.1}
         />
       </mesh>
 
-      {/* Secondary warm accents */}
+      {/* Secondary star-like accents */}
       <mesh ref={sphere2Ref} position={[-3, -1, 1.5]}>
         <sphereGeometry args={[0.4, 32, 32]} />
         <meshStandardMaterial
-          color="#FFE0B2"
-          emissive="#FFA726"
-          emissiveIntensity={8}
+          color="#BAE6FD"
+          emissive="#4FC3F7"
+          emissiveIntensity={7}
           toneMapped={false}
           transparent
-          opacity={0.25}
-          metalness={0.2}
-          roughness={0.3}
+          opacity={0.2}
+          metalness={0.3}
+          roughness={0.15}
         />
       </mesh>
 
       <mesh ref={sphere3Ref} position={[3, -1, -1.5]}>
         <sphereGeometry args={[0.4, 32, 32]} />
         <meshStandardMaterial
-          color="#E1BEE7"
-          emissive="#AB47BC"
-          emissiveIntensity={8}
+          color="#E0F2FE"
+          emissive="#7DD3FC"
+          emissiveIntensity={7}
           toneMapped={false}
           transparent
-          opacity={0.25}
-          metalness={0.2}
-          roughness={0.3}
+          opacity={0.2}
+          metalness={0.3}
+          roughness={0.15}
         />
       </mesh>
     </>

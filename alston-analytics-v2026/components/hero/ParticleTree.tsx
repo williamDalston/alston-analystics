@@ -89,16 +89,16 @@ function ParticleSystem({ mousePosition, reduceMotion }: ParticleSystemProps) {
   }, [positions]);
 
   return (
-    <points ref={particlesRef} geometry={geometry}>
-      <pointsMaterial
-        size={0.05}
-        color="#CCFF00"
-        transparent
-        opacity={0.7}
-        sizeAttenuation
-        blending={THREE.AdditiveBlending}
-      />
-    </points>
+      <points ref={particlesRef} geometry={geometry}>
+        <pointsMaterial
+          size={0.08}
+          color="#E0F2FE"
+          transparent
+          opacity={0.9}
+          sizeAttenuation
+          blending={THREE.AdditiveBlending}
+        />
+      </points>
   );
 }
 
@@ -124,23 +124,23 @@ export function ParticleTree() {
         style={{ background: 'transparent' }}
       >
         <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} intensity={1} color="#00F0FF" />
-        <pointLight position={[-10, -10, -10]} intensity={0.5} color="#CCFF00" />
+        <pointLight position={[10, 10, 10]} intensity={1.2} color="#7DD3FC" />
+        <pointLight position={[-10, -10, -10]} intensity={0.8} color="#E0F2FE" />
 
         <ParticleSystem
           mousePosition={mousePositionRef.current}
           reduceMotion={!!prefersReducedMotion}
         />
 
-        {/* Enhanced glow spheres at the base */}
+        {/* Stellar glow spheres at the base - elegant star-like lighting */}
         <Sphere args={[0.6, 32, 32]} position={[0, -2, 0]}>
-          <meshBasicMaterial color="#CCFF00" transparent opacity={0.3} />
+          <meshBasicMaterial color="#E0F2FE" transparent opacity={0.25} />
         </Sphere>
-        <Sphere args={[0.3, 32, 32]} position={[-2, -1, 1]}>
-          <meshBasicMaterial color="#00F0FF" transparent opacity={0.2} />
+        <Sphere args={[0.35, 32, 32]} position={[-2, -1, 1]}>
+          <meshBasicMaterial color="#7DD3FC" transparent opacity={0.2} />
         </Sphere>
-        <Sphere args={[0.3, 32, 32]} position={[2, -1, -1]}>
-          <meshBasicMaterial color="#CCFF00" transparent opacity={0.2} />
+        <Sphere args={[0.35, 32, 32]} position={[2, -1, -1]}>
+          <meshBasicMaterial color="#BAE6FD" transparent opacity={0.2} />
         </Sphere>
 
         <OrbitControls

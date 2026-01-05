@@ -41,7 +41,7 @@ const AdvancedParticleTree = dynamic(() => import('@/components/hero/AdvancedPar
   ssr: false,
   loading: () => (
     <div className="w-full h-full bg-deep-void flex items-center justify-center">
-      <div className="text-electric-moss font-mono glow-electric">Loading biosphere...</div>
+      <div className="text-stellar-white font-mono glow-electric">Loading stars...</div>
     </div>
   ),
 });
@@ -72,8 +72,8 @@ export default function HomePage() {
         <div className="absolute inset-0 z-0 opacity-10">
           <div className="absolute inset-0" style={{
             backgroundImage: `
-              linear-gradient(rgba(204, 255, 0, 0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(204, 255, 0, 0.1) 1px, transparent 1px)
+              linear-gradient(rgba(224, 242, 254, 0.08) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(224, 242, 254, 0.08) 1px, transparent 1px)
             `,
             backgroundSize: '50px 50px',
             animation: 'gridMove 20s linear infinite'
@@ -87,10 +87,10 @@ export default function HomePage() {
             className="absolute inset-0 -z-10"
             animate={{
               background: [
-                'radial-gradient(circle at 50% 50%, rgba(204, 255, 0, 0.15) 0%, transparent 50%)',
-                'radial-gradient(circle at 30% 70%, rgba(0, 240, 255, 0.15) 0%, transparent 50%)',
-                'radial-gradient(circle at 70% 30%, rgba(204, 255, 0, 0.15) 0%, transparent 50%)',
-                'radial-gradient(circle at 50% 50%, rgba(204, 255, 0, 0.15) 0%, transparent 50%)',
+                'radial-gradient(circle at 50% 50%, rgba(224, 242, 254, 0.12) 0%, transparent 50%)',
+                'radial-gradient(circle at 30% 70%, rgba(0, 240, 255, 0.12) 0%, transparent 50%)',
+                'radial-gradient(circle at 70% 30%, rgba(125, 211, 252, 0.12) 0%, transparent 50%)',
+                'radial-gradient(circle at 50% 50%, rgba(224, 242, 254, 0.12) 0%, transparent 50%)',
               ],
             }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
@@ -103,8 +103,8 @@ export default function HomePage() {
             className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-4 sm:mb-6 relative"
           >
             <span className="relative inline-block">
-              <span className="absolute inset-0 blur-3xl bg-electric-moss/50 opacity-50 animate-pulse" />
-              <span className="relative bg-gradient-to-r from-electric-moss via-data-cyan to-electric-moss bg-clip-text text-transparent animate-gradient bg-[length:200%_auto] glow-electric">
+              <span className="absolute inset-0 blur-3xl bg-stellar-white/50 opacity-50 animate-pulse" />
+              <span className="relative bg-gradient-to-r from-stellar-white via-data-cyan to-stellar-white bg-clip-text text-transparent animate-gradient bg-[length:200%_auto] glow-electric">
                 Data is organic.
               </span>
             </span>
@@ -142,7 +142,7 @@ export default function HomePage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1 + i * 0.1 }}
                 whileHover={{ scale: 1.1, y: -2 }}
-                className="glass-surface px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-mono text-electric-moss border border-electric-moss/30"
+                className="glass-surface px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-mono text-stellar-white border border-stellar-white/30"
               >
                 {badge}
               </motion.div>
@@ -158,7 +158,7 @@ export default function HomePage() {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href="/contact"
-                className="group relative btn-primary glass-heavy px-6 sm:px-8 py-4 rounded-full text-electric-moss font-mono font-bold hover:bg-electric-moss/10 transition-all duration-300 inline-block glow-electric focus:outline-none focus:ring-2 focus:ring-electric-moss/50 overflow-hidden text-sm sm:text-base"
+                className="group relative btn-primary glass-heavy px-6 sm:px-8 py-4 rounded-full text-stellar-white font-mono font-bold hover:bg-stellar-white/10 transition-all duration-300 inline-block glow-electric focus:outline-none focus:ring-2 focus:ring-stellar-white/50 overflow-hidden text-sm sm:text-base"
                 aria-label="Book a strategic audit with Alston Analytics"
               >
                 <span className="relative z-10 flex items-center gap-2">
@@ -171,7 +171,7 @@ export default function HomePage() {
                   </motion.span>
                 </span>
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-electric-moss/20 to-data-cyan/20 opacity-0 group-hover:opacity-100"
+                  className="absolute inset-0 bg-gradient-to-r from-stellar-white/20 to-data-cyan/20 opacity-0 group-hover:opacity-100"
                   initial={{ x: '-100%' }}
                   whileHover={{ x: '100%' }}
                   transition={{ duration: 0.6 }}
@@ -181,7 +181,7 @@ export default function HomePage() {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href="/portfolio"
-                className="glass-surface px-6 sm:px-8 py-4 rounded-full text-soft-clay font-mono font-bold hover:bg-soft-clay/10 hover:border-electric-moss/30 border border-transparent transition-all duration-300 inline-block focus:outline-none focus:ring-2 focus:ring-electric-moss/50 text-sm sm:text-base"
+                className="glass-surface px-6 sm:px-8 py-4 rounded-full text-soft-clay font-mono font-bold hover:bg-soft-clay/10 hover:border-stellar-white/30 border border-transparent transition-all duration-300 inline-block focus:outline-none focus:ring-2 focus:ring-stellar-white/50 text-sm sm:text-base"
                 aria-label="View our portfolio of work"
               >
                 View Work
