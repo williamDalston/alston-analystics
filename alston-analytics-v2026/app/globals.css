@@ -519,6 +519,31 @@ input[type="button"] {
 }
 
 /* ============================================
+   WCAG CONTRAST UTILITIES
+   ============================================ */
+
+/* Ensure minimum 4.5:1 contrast ratio for body text (WCAG AA) */
+.text-accessible {
+  color: var(--stellar-white); /* WCAG AAA compliant */
+}
+
+/* High contrast variant for glass surfaces */
+.text-accessible-on-glass {
+  color: var(--stellar-white);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Ensure sufficient contrast for secondary text */
+.text-soft-clay-accessible {
+  color: var(--soft-clay); /* Full opacity for WCAG AA */
+}
+
+/* For text that needs to be subtle but still readable (90% opacity) */
+.text-soft-clay-readable {
+  color: rgba(203, 213, 225, 0.9);
+}
+
+/* ============================================
    BUTTON IMPROVEMENTS
    ============================================ */
 

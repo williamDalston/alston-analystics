@@ -2,19 +2,26 @@
 
 import dynamic from 'next/dynamic';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState, Suspense } from 'react';
 import { PortfolioSection } from '@/components/sections/PortfolioSection';
 import { SovereignMindSection } from '@/components/sections/SovereignMindSection';
 import { ContactSection } from '@/components/sections/ContactSection';
+import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
 
 const AdvancedParticleTree = dynamic(
   () => import('@/components/hero/AdvancedParticleTree').then((mod) => mod.AdvancedParticleTree),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => <LoadingSkeleton variant="particle" className="w-full h-full" />
+  }
 );
 
 const ParticleTree = dynamic(
   () => import('@/components/hero/ParticleTree').then((mod) => mod.ParticleTree),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => <LoadingSkeleton variant="particle" className="w-full h-full min-h-[400px]" />
+  }
 );
 
 const ServiceBentoGrid = dynamic(
@@ -44,11 +51,15 @@ export default function Home() {
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(15,23,42,0.4),rgba(2,4,10,0.8))]" />
         <div className="hidden md:block absolute top-0 right-0 w-full h-full opacity-40 mix-blend-screen">
-          <AdvancedParticleTree />
+          <Suspense fallback={<LoadingSkeleton variant="particle" className="w-full h-full" />}>
+            <AdvancedParticleTree />
+          </Suspense>
         </div>
         {/* Mobile simplified background */}
         <div className="md:hidden absolute top-0 right-0 w-full h-full opacity-30 mix-blend-screen">
-          <ParticleTree />
+          <Suspense fallback={<LoadingSkeleton variant="particle" className="w-full h-full min-h-[400px]" />}>
+            <ParticleTree />
+          </Suspense>
         </div>
 
         {/* Subtle noise texture using CSS */}

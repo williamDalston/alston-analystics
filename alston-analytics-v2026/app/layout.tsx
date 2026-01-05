@@ -90,6 +90,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
+        {/* Preload critical fonts to prevent FOIT */}
+        {/* Note: Next.js font optimization handles font preloading automatically */}
+        {/* The display: swap in font config prevents FOIT */}
+        
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

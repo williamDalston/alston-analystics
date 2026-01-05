@@ -124,11 +124,11 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
             setApiError(null);
           }, retryAfterValue * 1000);
 
-          setApiError(`Rate limit exceeded. Please wait ${retryAfterValue} seconds before trying again.`);
+          setApiError(`Taking a brief pause to ensure quality responses. Please try again in ${retryAfterValue} seconds.`);
           return null;
         }
 
-        const errorMessage = errorData.error || 'Failed to get AI response';
+        const errorMessage = errorData.error || 'Unable to process your request right now. Please try again shortly.';
         setApiError(errorMessage);
         return null;
       }
@@ -186,14 +186,14 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
       }
     } catch (error) {
       console.error('Chat API error:', error);
-      setApiError('Connection interrupted. Please try again.');
+      setApiError('Connection interrupted. Please check your internet connection and try again.');
       return null;
     }
   };
 
   const handleOptionClick = async (option: string) => {
     if (isLimitReached) {
-      setApiError("You've reached the chat limit for this session. Please refresh to start a new conversation.");
+      setApiError("You've reached the conversation limit for this session. Please refresh the page to start a new dialogue.");
       return;
     }
     if (isRateLimited) return;
@@ -320,7 +320,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
 
     if (!aiResponse) {
       // Replace placeholder with fallback response
-      const fallbackContent = "I'm having trouble connecting to the neural network right now. You can try again, or if you prefer, provide your email below and we'll contact you directly.";
+      const fallbackContent = "I'm having trouble connecting right now. You can try again, or provide your email below and we'll contact you directly.";
       setMessages((prev) =>
         prev.map((m) =>
           m.id === assistantId ? { ...m, content: fallbackContent, isStreaming: false } : m
@@ -438,6 +438,8 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
         className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scroll-smooth bg-deep-void/30"
         role="log"
         aria-live="polite"
+        aria-atomic="false"
+        aria-label="Chat conversation"
       >
         <AnimatePresence mode="popLayout">
           {messages.map((message, index) => (
@@ -500,14 +502,30 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
           {/* Scroll anchor */}
           <div ref={messagesEndRef} className="h-1" />
 
+          {/* Empty State */}
+          {messages.length === 1 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-12"
+            >
+              <p className="text-soft-clay/50 font-mono text-sm">
+                Start a conversation above or select an option
+              </p>
+            </motion.div>
+          )}
+
           {/* API Error Notification */}
           {apiError && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
+              role="alert"
+              aria-live="assertive"
+              aria-atomic="true"
               className="mx-auto max-w-md bg-signal-red/10 border border-signal-red/30 rounded p-3 flex items-center gap-3 text-signal-red text-xs font-mono"
             >
-              <AlertCircle className="w-4 h-4" />
+              <AlertCircle className="w-4 h-4" aria-hidden="true" />
               <span>{apiError}</span>
             </motion.div>
           )}
