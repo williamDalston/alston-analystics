@@ -44,7 +44,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: https: blob:",
               "font-src 'self' https://fonts.gstatic.com data:",
-              "connect-src 'self' https://api.openai.com https://*.openai.com",
+              "connect-src 'self' https://api.openai.com https://*.openai.com https://raw.githack.com",
               "frame-src 'none'",
               "object-src 'none'",
               "base-uri 'self'",

@@ -51,8 +51,11 @@ export default function Home() {
           <ParticleTree />
         </div>
 
-        {/* Noise overlay */}
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay" />
+        {/* Subtle noise texture using CSS */}
+        <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay pointer-events-none" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`,
+          backgroundSize: '20px 20px'
+        }} />
       </div>
 
       <main className="relative z-10 flex flex-col">
