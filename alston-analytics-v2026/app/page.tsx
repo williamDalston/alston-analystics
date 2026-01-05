@@ -8,12 +8,12 @@ import { SovereignMindSection } from '@/components/sections/SovereignMindSection
 import { ContactSection } from '@/components/sections/ContactSection';
 
 const AdvancedParticleTree = dynamic(
-  () => import('@/components/3d/AdvancedParticleTree').then((mod) => mod.AdvancedParticleTree),
+  () => import('@/components/hero/AdvancedParticleTree').then((mod) => mod.AdvancedParticleTree),
   { ssr: false }
 );
 
 const ParticleTree = dynamic(
-  () => import('@/components/3d/ParticleTree').then((mod) => mod.ParticleTree),
+  () => import('@/components/hero/ParticleTree').then((mod) => mod.ParticleTree),
   { ssr: false }
 );
 
