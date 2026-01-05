@@ -77,7 +77,7 @@ export default function SovereignMindPage() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}
-              className="glass-surface rounded-2xl p-8 hover:border-electric-moss/30 transition-all duration-300"
+              className="glass-surface rounded-2xl p-8 hover:border-stellar-white/30 transition-all duration-300"
             >
               <h3 className="text-2xl font-bold text-stellar-white mb-3">
                 Leverage
@@ -95,7 +95,7 @@ export default function SovereignMindPage() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
-              className="glass-surface rounded-2xl p-8 hover:border-electric-moss/30 transition-all duration-300"
+              className="glass-surface rounded-2xl p-8 hover:border-stellar-white/30 transition-all duration-300"
             >
               <h3 className="text-2xl font-bold text-stellar-white mb-3">
                 Pareto

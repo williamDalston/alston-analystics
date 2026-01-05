@@ -16,7 +16,7 @@ const clients = [
 export function TrustTicker() {
   return (
     <section 
-      className="relative py-16 overflow-hidden border-y border-soft-clay/10 bg-gradient-to-r from-transparent via-electric-moss/5 to-transparent"
+      className="relative py-16 overflow-hidden border-y border-soft-clay/10 bg-gradient-to-r from-transparent via-stellar-white/5 to-transparent"
       aria-label="Trusted by various industries"
     >
       {/* Gradient overlays for fade effect */}
@@ -37,7 +37,7 @@ export function TrustTicker() {
           {[...clients, ...clients, ...clients].map((client, index) => (
             <motion.div
               key={index}
-              className="flex-shrink-0 text-soft-clay/30 font-mono text-xl tracking-wider select-none hover:text-electric-moss/50 transition-colors"
+              className="flex-shrink-0 text-soft-clay/30 font-mono text-xl tracking-wider select-none hover:text-stellar-white/50 transition-colors"
               style={{
                 textShadow: '0 2px 10px rgba(226, 209, 195, 0.1)',
               }}

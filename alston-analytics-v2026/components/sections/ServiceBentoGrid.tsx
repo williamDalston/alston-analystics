@@ -79,7 +79,7 @@ function ServiceCard({ title, description, icon, className }: ServiceCardProps) 
 
       {/* Icon with animation */}
       <motion.div
-        className="relative z-10 mb-6 text-electric-moss w-12 h-12"
+        className="relative z-10 mb-6 text-stellar-white w-12 h-12"
         whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
         transition={{ duration: 0.5 }}
       >
@@ -87,7 +87,7 @@ function ServiceCard({ title, description, icon, className }: ServiceCardProps) 
       </motion.div>
 
       {/* Title with gradient on hover */}
-      <h3 className="relative z-10 text-2xl font-bold text-soft-clay mb-3 transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-electric-moss group-hover:via-data-cyan group-hover:to-electric-moss group-hover:bg-clip-text group-hover:text-transparent">
+      <h3 className="relative z-10 text-2xl font-bold text-soft-clay mb-3 transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-stellar-white group-hover:via-data-cyan group-hover:to-stellar-white group-hover:bg-clip-text group-hover:text-transparent">
         {title}
       </h3>
 
@@ -97,11 +97,11 @@ function ServiceCard({ title, description, icon, className }: ServiceCardProps) 
       </p>
 
       {/* Decorative corner accent */}
-      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-electric-moss/20 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-stellar-white/20 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       {/* Arrow indicator on hover */}
       <motion.div
-        className="absolute bottom-6 right-6 text-electric-moss opacity-0 group-hover:opacity-100"
+        className="absolute bottom-6 right-6 text-stellar-white opacity-0 group-hover:opacity-100"
         initial={{ x: -10, opacity: 0 }}
         whileHover={{ x: 0, opacity: 1 }}
       >
@@ -126,9 +126,9 @@ export function ServiceBentoGrid() {
           className="mb-16 text-center relative"
         >
           {/* Decorative lines */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-0 w-px h-16 bg-gradient-to-b from-electric-moss/50 to-transparent" />
+          <div className="absolute left-1/2 -translate-x-1/2 top-0 w-px h-16 bg-gradient-to-b from-stellar-white/50 to-transparent" />
           <motion.div
-            className="absolute left-1/2 -translate-x-1/2 top-0 w-16 h-px bg-gradient-to-r from-transparent via-electric-moss/50 to-transparent"
+            className="absolute left-1/2 -translate-x-1/2 top-0 w-16 h-px bg-gradient-to-r from-transparent via-stellar-white/50 to-transparent"
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
             transition={{ duration: 1, delay: 0.3 }}
@@ -143,8 +143,8 @@ export function ServiceBentoGrid() {
             viewport={{ once: true }}
           >
             <span className="relative">
-              <span className="absolute inset-0 blur-2xl bg-electric-moss/30" />
-              <span className="relative bg-gradient-to-r from-electric-moss via-data-cyan to-electric-moss bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient glow-electric">
+              <span className="absolute inset-0 blur-2xl bg-stellar-white/30" />
+              <span className="relative bg-gradient-to-r from-stellar-white via-data-cyan to-stellar-white bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient glow-electric">
                 What We Do
               </span>
             </span>

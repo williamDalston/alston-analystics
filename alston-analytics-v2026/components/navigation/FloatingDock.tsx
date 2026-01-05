@@ -42,7 +42,7 @@ export function FloatingDock() {
               href={item.href}
               aria-label={`Navigate to ${item.label}`}
               aria-current={isActive ? 'page' : undefined}
-              className="focus:outline-none focus:ring-2 focus:ring-electric-moss/50 rounded-full"
+              className="focus:outline-none focus:ring-2 focus:ring-stellar-white/50 rounded-full"
             >
               <motion.div
                 className={cn(

@@ -294,7 +294,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
       >
         <motion.button
           onClick={onBack}
-          className="text-soft-clay/70 hover:text-soft-clay transition-colors focus:outline-none focus:ring-2 focus:ring-electric-moss/50 rounded p-1.5"
+          className="text-soft-clay/70 hover:text-soft-clay transition-colors focus:outline-none focus:ring-2 focus:ring-stellar-white/50 rounded p-1.5"
           aria-label="Go back to contact options"
           whileHover={{ scale: 1.1, x: -2 }}
           whileTap={{ scale: 0.95 }}
@@ -668,7 +668,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
             <motion.button
               onClick={handleSendMessage}
               disabled={!input.trim() || isLoading || isRateLimited || isLimitReached}
-              className={`glass-surface rounded-full p-2.5 sm:p-3 text-electric-moss hover:bg-electric-moss/10 transition-all focus:outline-none focus:ring-2 focus:ring-electric-moss/50 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 relative overflow-hidden group ${isLoading ? 'btn-loading' : ''}`}
+              className={`glass-surface rounded-full p-2.5 sm:p-3 text-stellar-white hover:bg-stellar-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-stellar-white/50 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 relative overflow-hidden group ${isLoading ? 'btn-loading' : ''}`}
               aria-label={
                 isLimitReached
                   ? "Chat limit reached"
@@ -691,7 +691,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
                 </motion.div>
               )}
               <motion.div
-                className="absolute inset-0 bg-electric-moss/10 rounded-full opacity-0 group-hover:opacity-100"
+                className="absolute inset-0 bg-stellar-white/10 rounded-full opacity-0 group-hover:opacity-100"
                 initial={{ scale: 0 }}
                 whileHover={{ scale: 1.2 }}
                 transition={{ duration: 0.3 }}
