@@ -106,7 +106,7 @@ export default function RootLayout({
               "@type": "Organization",
               name: "Alston Analytics",
               url: "https://alstonanalytics.com",
-              logo: "https://alstonanalytics.com/icon.png",
+              logo: "https://alstonanalytics.com/favicon.svg",
               sameAs: ["https://twitter.com/AlstonAnalytics"],
               description:
                 "Transform raw complexity into executive clarity. Strategic consulting, Power BI engineering, and sovereign thinking.",
