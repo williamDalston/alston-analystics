@@ -2,9 +2,16 @@
 
 import { useEffect } from 'react';
 import Lenis from 'lenis';
+import { initAnalytics } from '@/lib/analytics';
+import { initErrorTracking } from '@/lib/error-logging';
 
 export function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
+    // Initialize analytics and error tracking
+    initAnalytics();
+    initErrorTracking();
+
+    // Initialize smooth scroll
     const lenis = new Lenis({
       duration: 1.2,
       lerp: 0.12,

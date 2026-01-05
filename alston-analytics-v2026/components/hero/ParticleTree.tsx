@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Sphere } from '@react-three/drei';
@@ -13,8 +13,12 @@ interface ParticleSystemProps {
 
 function ParticleSystem({ mousePosition, reduceMotion }: ParticleSystemProps) {
   const particlesRef = useRef<THREE.Points>(null);
-  // Adjust particle count by viewport to keep frame rate smooth
-  const particleCount = typeof window !== 'undefined' && window.innerWidth < 768 ? 900 : 1600;
+  // Adjust particle count by viewport & motion preference to keep frame rate smooth
+  const particleCount = useMemo(() => {
+    const width = typeof window !== 'undefined' ? window.innerWidth : 1280;
+    const base = width < 640 ? 700 : width < 1024 ? 1100 : 1500;
+    return reduceMotion ? Math.max(500, Math.floor(base * 0.6)) : base;
+  }, [reduceMotion]);
 
   // Generate particle positions in a tree-like structure
   const positions = useMemo(() => {
@@ -38,21 +42,20 @@ function ParticleSystem({ mousePosition, reduceMotion }: ParticleSystemProps) {
 
   // Animate particles with wind effect based on mouse position
   useFrame((state) => {
-    if (!particlesRef.current || !particlesRef.current.geometry) return;
-    if (!particlesRef.current.geometry.attributes.position) return;
-    
-    const time = state.clock.getElapsedTime();
-    const positionAttr = particlesRef.current.geometry.attributes.position;
-    if (!positionAttr || !positionAttr.array) return;
-    
-    const positions = positionAttr.array as Float32Array;
-    if (!positions || positions.length !== particleCount * 3) return;
+    const geo = particlesRef.current?.geometry as THREE.BufferGeometry | undefined;
+    const attr = geo?.getAttribute('position') as THREE.BufferAttribute | undefined;
+    const arr = attr?.array as ArrayLike<number> | undefined;
+    if (!geo || !attr || !arr || typeof arr.length !== 'number' || arr.length < 3) {
+      return;
+    }
 
-    for (let i = 0; i < particleCount; i++) {
-      const i3 = i * 3;
-      const x = positions[i3];
-      const y = positions[i3 + 1];
-      const z = positions[i3 + 2];
+    const time = state.clock.getElapsedTime();
+    const maxLen = Math.min(arr.length, particleCount * 3);
+
+    for (let i = 0; i < maxLen; i += 3) {
+      const x = arr[i];
+      const y = arr[i + 1];
+      const z = arr[i + 2];
 
       // Gentle swaying motion with moderated amplitude for smoothness
       const swayScale = reduceMotion ? 0.5 : 1;
@@ -66,17 +69,17 @@ function ParticleSystem({ mousePosition, reduceMotion }: ParticleSystemProps) {
       const windZ = mousePosition.y * windScale;
       const windY = (mousePosition.x + mousePosition.y) * 0.2 * windScale;
 
-      positions[i3] = x + swayX + windX * 0.02;
-      positions[i3 + 1] = y + swayY + windY * 0.01;
-      positions[i3 + 2] = z + swayZ + windZ * 0.02;
+      (arr as Float32Array)[i] = x + swayX + windX * 0.02;
+      (arr as Float32Array)[i + 1] = y + swayY + windY * 0.01;
+      (arr as Float32Array)[i + 2] = z + swayZ + windZ * 0.02;
     }
 
-    if (positionAttr) {
-      positionAttr.needsUpdate = true;
-    }
+    attr.needsUpdate = true;
 
     // Slow rotation
-    particlesRef.current.rotation.y = time * 0.05;
+    if (particlesRef.current) {
+      particlesRef.current.rotation.y = time * 0.05;
+    }
   });
 
   const geometry = useMemo(() => {

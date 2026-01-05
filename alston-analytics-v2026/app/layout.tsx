@@ -4,6 +4,7 @@ import "./globals.css";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { FloatingDock } from "@/components/navigation/FloatingDock";
 import { ModeToggle } from "@/components/ui/ModeToggle";
+import { FocusManager } from "@/components/providers/FocusManager";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -72,6 +73,7 @@ export const metadata: Metadata = {
     title: "Alston Analytics",
     description: "Data is organic. We prune the chaos.",
     creator: "@AlstonAnalytics",
+    images: ['/og.svg'],
   },
 };
 
@@ -110,8 +112,9 @@ export default function RootLayout({
           Skip to main content
         </a>
         <SmoothScrollProvider>
+          <FocusManager />
           <ModeToggle />
-          <main id="main-content">
+          <main id="main-content" tabIndex={-1}>
             {children}
           </main>
           <FloatingDock />

@@ -67,9 +67,9 @@ export default function SovereignMindPage() {
               <p className="text-sm sm:text-base text-soft-clay/70 font-sans mb-3 sm:mb-4">
                 Don't solve problems. Avoid them. The ancient art of thinking backwards.
               </p>
-              <a href="#" className="text-data-cyan font-mono text-sm hover:glow-data">
-                Read Framework →
-              </a>
+              <span className="text-data-cyan font-mono text-sm opacity-60">
+                Coming Soon →
+              </span>
             </motion.div>
 
             <motion.div
@@ -85,9 +85,9 @@ export default function SovereignMindPage() {
               <p className="text-soft-clay/70 font-sans mb-4">
                 Give me a lever long enough, and I'll move the world. Naval's trinity applied.
               </p>
-              <a href="#" className="text-data-cyan font-mono text-sm hover:glow-data">
-                Read Framework →
-              </a>
+              <span className="text-data-cyan font-mono text-sm opacity-60">
+                Coming Soon →
+              </span>
             </motion.div>
 
             <motion.div
@@ -103,9 +103,9 @@ export default function SovereignMindPage() {
               <p className="text-soft-clay/70 font-sans mb-4">
                 80% of results from 20% of effort. The mathematics of disproportionate returns.
               </p>
-              <a href="#" className="text-data-cyan font-mono text-sm hover:glow-data">
-                Read Framework →
-              </a>
+              <span className="text-data-cyan font-mono text-sm opacity-60">
+                Coming Soon →
+              </span>
             </motion.div>
           </div>
         </div>
