@@ -33,7 +33,37 @@ async function streamOpenAI(messages: ChatMessage[], apiKey: string) {
   });
 
   if (!upstream.ok || !upstream.body) {
-    return new Response(JSON.stringify({ error: 'Upstream model error' }), { status: upstream.status });
+    // Handle rate limiting specifically
+    if (upstream.status === 429) {
+      const retryAfter = upstream.headers.get('retry-after') || '60';
+      return new Response(
+        JSON.stringify({ 
+          error: 'Rate limit exceeded. Please try again in a moment.',
+          statusCode: 429,
+          retryAfter: parseInt(retryAfter, 10)
+        }), 
+        { 
+          status: 429,
+          headers: {
+            'Content-Type': 'application/json',
+            'Retry-After': retryAfter
+          }
+        }
+      );
+    }
+    
+    // Handle other errors
+    const errorText = await upstream.text().catch(() => 'Upstream model error');
+    return new Response(
+      JSON.stringify({ 
+        error: upstream.status >= 500 ? 'Service temporarily unavailable. Please try again.' : 'Upstream model error',
+        statusCode: upstream.status
+      }), 
+      { 
+        status: upstream.status,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
   }
 
   const stream = new ReadableStream({

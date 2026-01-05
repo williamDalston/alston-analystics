@@ -94,24 +94,63 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        // Try to parse error as JSON first
+        let errorData: any = {};
+        const contentType = response.headers.get('content-type');
+        if (contentType?.includes('application/json')) {
+          try {
+            errorData = await response.json();
+          } catch {
+            // If JSON parsing fails, use status code
+          }
+        }
+        
         const statusCode = errorData.statusCode || response.status;
-        const errorMessage = errorData.error || 'Failed to get AI response';
-
+        const retryAfterHeader = response.headers.get('retry-after');
+        const retryAfterValue = errorData.retryAfter || (retryAfterHeader ? parseInt(retryAfterHeader, 10) : 60);
+        
         if (statusCode === 429) {
           setIsRateLimited(true);
-          const retryAfterValue = errorData.retryAfter ? parseInt(errorData.retryAfter, 10) : 30;
           setRetryAfter(retryAfterValue);
-          setApiError('Brief pause to manage rate limits. Please try again in a few seconds.');
+          
+          // Auto-clear rate limit after retry-after period
+          setTimeout(() => {
+            setIsRateLimited(false);
+            setRetryAfter(null);
+            setApiError(null);
+          }, retryAfterValue * 1000);
+          
+          setApiError(`Rate limit exceeded. Please wait ${retryAfterValue} seconds before trying again.`);
           return null;
         }
 
+        const errorMessage = errorData.error || 'Failed to get AI response';
         setApiError(errorMessage);
         return null;
       }
 
-      const data = await response.json();
-      return data.message || null;
+      // Handle streaming response
+      const contentType = response.headers.get('content-type');
+      if (contentType?.includes('text/plain') || contentType?.includes('text/event-stream')) {
+        // Stream response
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let fullText = '';
+        
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            fullText += decoder.decode(value, { stream: true });
+          }
+        }
+        
+        return fullText || null;
+      } else {
+        // JSON response
+        const data = await response.json();
+        return data.message || null;
+      }
     } catch (error) {
       console.error('Chat API error:', error);
       setApiError('Connection interrupted. Please try again.');
@@ -280,7 +319,12 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
   return (
     <motion.div 
       className="glass-surface rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col shadow-2xl" 
-      style={{ height: 'calc(100vh - 200px)', minHeight: '500px', maxHeight: '80vh' }}
+      style={{ 
+        height: 'calc(100vh - 140px)', // More space on mobile (accounting for removed dock)
+        minHeight: '500px', 
+        maxHeight: 'calc(100vh - 100px)' // Mobile-optimized height
+      }}
+      // Use CSS for responsive height
       initial={{ opacity: 0, scale: 0.95, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -561,7 +605,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
                 onKeyPress={(e) => e.key === 'Enter' && !isRateLimited && handleEmailSubmit()}
                 placeholder="you@organization.com (optional)"
                 disabled={isRateLimited}
-                className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed chat-input-snappy"
+                className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-stellar-white/50 border border-transparent focus:border-stellar-white/30 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed chat-input-snappy"
                 aria-invalid={emailError ? 'true' : 'false'}
                 aria-describedby={emailError ? 'email-error' : undefined}
               />
@@ -662,7 +706,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
                   : "Type your message..."
               }
               disabled={isLoading || isRateLimited || isLimitReached}
-              className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-electric-moss/50 border border-transparent focus:border-electric-moss/30 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed chat-input-snappy"
+              className="flex-1 bg-glass-surface/50 rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-soft-clay font-mono text-sm sm:text-base placeholder:text-soft-clay/30 focus:outline-none focus:ring-2 focus:ring-stellar-white/50 border border-transparent focus:border-stellar-white/30 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed chat-input-snappy"
               aria-label="Chat message input"
             />
             <motion.button

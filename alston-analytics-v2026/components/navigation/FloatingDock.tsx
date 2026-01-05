@@ -23,13 +23,18 @@ const dockItems: DockItem[] = [
 export function FloatingDock() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const pathname = usePathname();
+  const isContactPage = pathname === '/contact';
 
   return (
     <motion.nav
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5, duration: 0.6 }}
-      className="fixed bottom-[20px] left-1/2 -translate-x-1/2 z-50 w-auto max-w-[90vw] pb-safe"
+      className={cn(
+        "fixed bottom-[20px] left-1/2 -translate-x-1/2 z-50 w-auto max-w-[90vw] pb-safe",
+        "transition-all duration-300",
+        isContactPage && "hidden sm:flex" // Hide on mobile when on contact page
+      )}
       aria-label="Main navigation"
     >
       <div className="glass-heavy rounded-full px-4 sm:px-6 py-3 flex items-center gap-1 sm:gap-2">
