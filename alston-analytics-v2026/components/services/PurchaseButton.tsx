@@ -1,0 +1,163 @@
+'use client';
+
+import { useState } from 'react';
+import { loadStripe, Stripe as StripeType } from '@stripe/stripe-js';
+import { motion } from 'framer-motion';
+import { CreditCard, Loader2 } from 'lucide-react';
+
+interface PurchaseButtonProps {
+  priceId: string;
+  productName: string;
+  amount: number;
+  description?: string;
+  customerEmail?: string;
+  className?: string;
+  variant?: 'primary' | 'secondary';
+}
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ''
+);
+
+export function PurchaseButton({
+  priceId,
+  productName,
+  amount,
+  description,
+  customerEmail,
+  className = '',
+  variant = 'primary',
+}: PurchaseButtonProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handlePurchase = async () => {
+    if (!priceId) {
+      setError('Price configuration missing. Please contact support.');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Create checkout session
+      const response = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          priceId,
+          productName,
+          customerEmail,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      // Redirect to Stripe Checkout
+      const stripe = await stripePromise;
+      if (!stripe) {
+        throw new Error('Stripe failed to load. Please refresh the page.');
+      }
+
+      // redirectToCheckout redirects or returns an error
+      try {
+        const result = await (stripe as any).redirectToCheckout({
+          sessionId: data.sessionId,
+        });
+
+        // If there's an error, it will be in result.error
+        if (result && result.error) {
+          throw new Error(result.error.message);
+        }
+      } catch (err: any) {
+        // If redirectToCheckout fails, it might be because redirect already happened
+        // or there was an actual error
+        if (err.message && !err.message.includes('redirect')) {
+          throw err;
+        }
+      }
+    } catch (err: any) {
+      console.error('Checkout error:', err);
+      setError(err.message || 'Unable to process payment. Please try again.');
+      setIsLoading(false);
+    }
+  };
+
+  const formatPrice = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const baseClasses =
+    variant === 'primary'
+      ? 'glass-heavy px-6 py-3 rounded-full text-stellar-white font-mono font-bold hover:bg-stellar-white/10 transition-all duration-300 inline-flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-stellar-white/50 glow-electric'
+      : 'glass-surface px-6 py-3 rounded-full text-soft-clay font-mono font-medium hover:bg-star-blue/10 border border-stellar-white/20 hover:border-star-blue/30 transition-all duration-300 inline-flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-star-blue/50';
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <motion.button
+        onClick={handlePurchase}
+        disabled={isLoading || !priceId}
+        className={`${baseClasses} ${className} disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group`}
+        whileHover={!isLoading ? { scale: 1.05, y: -2 } : {}}
+        whileTap={!isLoading ? { scale: 0.95 } : {}}
+        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+        aria-label={`Purchase ${productName} for ${formatPrice(amount)}`}
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>Processing...</span>
+          </>
+        ) : (
+          <>
+            <CreditCard className="w-4 h-4" />
+            <span>
+              {variant === 'primary' ? 'Purchase Now' : 'Get Started'}
+            </span>
+            <span className="font-bold">{formatPrice(amount)}</span>
+          </>
+        )}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-stellar-white/20 to-data-cyan/20 opacity-0 group-hover:opacity-100"
+          initial={{ x: '-100%' }}
+          whileHover={{ x: '100%' }}
+          transition={{ duration: 0.6 }}
+        />
+      </motion.button>
+
+      {description && (
+        <p className="text-xs text-soft-clay/60 font-mono text-center max-w-xs">
+          {description}
+        </p>
+      )}
+
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-xs text-signal-red font-mono text-center mt-2"
+          role="alert"
+        >
+          {error}
+        </motion.div>
+      )}
+
+      <p className="text-[10px] text-soft-clay/40 font-mono text-center mt-1">
+        Secure checkout powered by Stripe
+      </p>
+    </div>
+  );
+}
+

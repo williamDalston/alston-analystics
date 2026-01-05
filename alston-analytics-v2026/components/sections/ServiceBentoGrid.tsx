@@ -3,15 +3,19 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Compass, Database, BookOpen } from 'lucide-react';
 import { useRef } from 'react';
+import { PurchaseButton } from '@/components/services/PurchaseButton';
 
 interface ServiceCardProps {
   title: string;
   description: string;
   icon: React.ReactNode;
   className?: string;
+  showPurchaseButton?: boolean;
+  priceId?: string;
+  price?: number;
 }
 
-function ServiceCard({ title, description, icon, className }: ServiceCardProps) {
+function ServiceCard({ title, description, icon, className, showPurchaseButton, priceId, price }: ServiceCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -48,7 +52,7 @@ function ServiceCard({ title, description, icon, className }: ServiceCardProps) 
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       whileHover={{ y: -8, scale: 1.02 }}
-      className={`glass-surface rounded-3xl p-8 relative overflow-hidden group cursor-pointer ${className}`}
+      className={`glass-surface rounded-3xl p-8 relative overflow-hidden group cursor-pointer flex flex-col ${className}`}
       style={{
         rotateX,
         rotateY,
@@ -93,9 +97,23 @@ function ServiceCard({ title, description, icon, className }: ServiceCardProps) 
       </h3>
 
       {/* Description */}
-      <p className="relative z-10 text-soft-clay/70 font-sans leading-relaxed group-hover:text-soft-clay transition-colors">
+      <p className="relative z-10 text-soft-clay/70 font-sans leading-relaxed group-hover:text-soft-clay transition-colors mb-6">
         {description}
       </p>
+
+      {/* Purchase Button */}
+      {showPurchaseButton && priceId && price && (
+        <div className="relative z-10 mt-auto">
+          <PurchaseButton
+            priceId={priceId}
+            productName={title}
+            amount={price}
+            description="2-hour assessment + deliverable report"
+            variant="secondary"
+            className="w-full"
+          />
+        </div>
+      )}
 
       {/* Decorative corner accent */}
       <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-stellar-white/20 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -180,6 +198,9 @@ export function ServiceBentoGrid() {
               icon={<Database className="w-full h-full" />}
               title="Power BI Architecture"
               description="Data without clarity is noise. We build dashboards executives actually use. Real-time insights. Zero clutter. Maximum impact."
+              showPurchaseButton={!!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+              priceId={process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_POWER_BI_HEALTH_CHECK || ''}
+              price={1000}
             />
           </motion.div>
 
