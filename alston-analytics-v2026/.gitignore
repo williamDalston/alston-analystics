@@ -32,8 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
-# Local setup files with keys
+# Local setup files with keys (keep these out of git)
 YOUR_STRIPE_KEYS.txt
+YOUR_COMPLETE_CONFIG.txt
 
 # vercel
 .vercel

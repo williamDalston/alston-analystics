@@ -102,16 +102,16 @@ export function PurchaseButton({
   const baseClasses =
     variant === 'primary'
       ? 'glass-heavy px-6 py-3 rounded-full text-stellar-white font-mono font-bold hover:bg-stellar-white/10 transition-all duration-300 inline-flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-stellar-white/50 glow-electric'
-      : 'glass-surface px-6 py-3 rounded-full text-soft-clay font-mono font-medium hover:bg-star-blue/10 border border-stellar-white/20 hover:border-star-blue/30 transition-all duration-300 inline-flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-star-blue/50';
+      : 'glass-surface px-6 py-3 rounded-full text-stellar-white font-mono font-semibold hover:bg-stellar-white/10 border border-stellar-white/30 hover:border-stellar-white/60 hover:shadow-[0_0_20px_rgba(224,242,254,0.2)] transition-all duration-300 inline-flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-stellar-white/50 backdrop-blur-sm';
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-stretch gap-2 w-full">
       <motion.button
         onClick={handlePurchase}
         disabled={isLoading || !priceId}
-        className={`${baseClasses} ${className} disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group`}
-        whileHover={!isLoading ? { scale: 1.05, y: -2 } : {}}
-        whileTap={!isLoading ? { scale: 0.95 } : {}}
+        className={`${baseClasses} ${className} disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group w-full`}
+        whileHover={!isLoading ? { scale: 1.02, y: -1 } : {}}
+        whileTap={!isLoading ? { scale: 0.98 } : {}}
         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
         aria-label={`Purchase ${productName} for ${formatPrice(amount)}`}
       >
@@ -123,14 +123,14 @@ export function PurchaseButton({
         ) : (
           <>
             <CreditCard className="w-4 h-4" />
-            <span>
-              {variant === 'primary' ? 'Purchase Now' : 'Get Started'}
+            <span className="flex-1 text-center">
+              {variant === 'primary' ? 'Purchase Now' : 'Start Assessment'}
             </span>
             <span className="font-bold">{formatPrice(amount)}</span>
           </>
         )}
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-stellar-white/20 to-data-cyan/20 opacity-0 group-hover:opacity-100"
+          className="absolute inset-0 bg-gradient-to-r from-stellar-white/20 via-data-cyan/20 to-stellar-white/20 opacity-0 group-hover:opacity-100"
           initial={{ x: '-100%' }}
           whileHover={{ x: '100%' }}
           transition={{ duration: 0.6 }}
@@ -138,7 +138,7 @@ export function PurchaseButton({
       </motion.button>
 
       {description && (
-        <p className="text-xs text-soft-clay/60 font-mono text-center max-w-xs">
+        <p className="text-xs text-soft-clay/70 font-sans text-center leading-relaxed">
           {description}
         </p>
       )}
@@ -147,16 +147,12 @@ export function PurchaseButton({
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-xs text-signal-red font-mono text-center mt-2"
+          className="text-xs text-signal-red font-mono text-center py-2 px-3 rounded-lg bg-signal-red/10 border border-signal-red/20"
           role="alert"
         >
           {error}
         </motion.div>
       )}
-
-      <p className="text-[10px] text-soft-clay/40 font-mono text-center mt-1">
-        Secure checkout powered by Stripe
-      </p>
     </div>
   );
 }

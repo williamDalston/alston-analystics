@@ -97,13 +97,13 @@ function ServiceCard({ title, description, icon, className, showPurchaseButton, 
       </h3>
 
       {/* Description */}
-      <p className="relative z-10 text-soft-clay/70 font-sans leading-relaxed group-hover:text-soft-clay transition-colors mb-6">
+      <p className="relative z-10 text-soft-clay/70 font-sans leading-relaxed group-hover:text-soft-clay transition-colors mb-6 flex-grow">
         {description}
       </p>
 
       {/* Purchase Button */}
       {showPurchaseButton && priceId && price && (
-        <div className="relative z-10 mt-auto">
+        <div className="relative z-10 mt-auto pt-4 border-t border-stellar-white/10 group-hover:border-stellar-white/20 transition-colors">
           <PurchaseButton
             priceId={priceId}
             productName={title}
