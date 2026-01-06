@@ -80,3 +80,5 @@ This is the only event currently required for your checkout flow to work.
 - ❌ Product ID: `prod_TjW3pczYSB83iO` (not used for checkout)
 - ✅ Price ID: `price_...` (needed for checkout - get from product page)
 
+
+

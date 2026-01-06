@@ -293,3 +293,5 @@ Focus on these areas to move from "beautiful and functional" to "beautiful, func
 3. Implement quick wins first
 4. Measure impact and iterate
 
+
+

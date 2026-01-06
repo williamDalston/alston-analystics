@@ -598,7 +598,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && !isLoading && !isRateLimited && !isLimitReached && handleSendMessage()}
-            placeholder={isLimitReached ? "SESSION_LIMIT_REACHED" : "Enter command..."}
+            placeholder={isLimitReached ? "SESSION_LIMIT_REACHED" : messages.length === 0 ? "Type your message or question..." : "Continue the conversation..."}
             disabled={isLoading || isRateLimited || isLimitReached}
             className="flex-1 bg-transparent border-none focus:ring-0 text-stellar-white font-mono text-sm placeholder:text-soft-clay/30"
             autoComplete="off"

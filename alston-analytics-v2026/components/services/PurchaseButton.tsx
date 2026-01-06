@@ -15,9 +15,10 @@ interface PurchaseButtonProps {
   variant?: 'primary' | 'secondary';
 }
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ''
-);
+// Initialize Stripe (will be undefined if key is missing)
+const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+  : null;
 
 export function PurchaseButton({
   priceId,
@@ -34,6 +35,11 @@ export function PurchaseButton({
   const handlePurchase = async () => {
     if (!priceId) {
       setError('Price configuration missing. Please contact support.');
+      return;
+    }
+
+    if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+      setError('Payment processing is currently unavailable. Please contact support at info@alstonanalytics.com');
       return;
     }
 
@@ -61,6 +67,9 @@ export function PurchaseButton({
       }
 
       // Redirect to Stripe Checkout
+      if (!stripePromise) {
+        throw new Error('Payment processing is currently unavailable. Please contact support.');
+      }
       const stripe = await stripePromise;
       if (!stripe) {
         throw new Error('Stripe failed to load. Please refresh the page.');
