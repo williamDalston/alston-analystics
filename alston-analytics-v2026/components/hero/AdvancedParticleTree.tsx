@@ -1,10 +1,48 @@
 'use client';
 
-import { useRef, useMemo, useEffect } from 'react';
+import { useRef, useMemo, useEffect, Component, type ReactNode } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
+
+/**
+ * Error Boundary for WebGL Canvas
+ * Catches React errors and prevents entire page crash
+ */
+class CanvasErrorBoundary extends Component<
+  { children: ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Canvas error caught by boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      // Fallback UI - minimal elegant gradient
+      return (
+        <div
+          className="w-full h-full"
+          style={{
+            background: 'radial-gradient(ellipse at center, #02040A 0%, #000000 100%)',
+          }}
+        />
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 interface ParticleSystemProps {
   mousePosition: { x: number; y: number };
@@ -113,12 +151,12 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
   // Animate particles with physics and update connections
   useFrame((state) => {
     // Early return if refs are invalid or WebGL context is lost
-    if (!meshRef.current || !particleData || !state.gl.domElement) return;
+    if (!meshRef.current || !particleData || !state.gl || !state.gl.domElement) return;
     
-    // Check if WebGL context is still valid
+    // Check if WebGL context is still valid - do this first to prevent errors
     try {
       const gl = state.gl.getContext();
-      if (!gl || gl.isContextLost()) {
+      if (!gl || (gl as WebGLRenderingContext | WebGL2RenderingContext).isContextLost?.()) {
         return;
       }
     } catch (error) {
@@ -208,6 +246,15 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
       if (i % 3 === 0) { // Only check every 3rd particle for performance
         for (let j = i + 1; j < Math.min(i + 50, particleCount); j++) {
           const j3 = j * 3;
+
+          // Bounds check to prevent undefined access
+          if (j3 + 2 >= positions.length) continue;
+
+          // Additional safety: ensure positions exist and are numbers
+          if (typeof positions[j3] !== 'number' ||
+              typeof positions[j3 + 1] !== 'number' ||
+              typeof positions[j3 + 2] !== 'number') continue;
+
           const dx = positions[j3] - x;
           const dy = positions[j3 + 1] - y;
           const dz = positions[j3 + 2] - z;
@@ -254,34 +301,55 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
     // Update connection lines with WebGL context safety checks
     if (linesRef.current && Array.isArray(linePositions) && linePositions.length > 0 && Array.isArray(lineColors) && lineColors.length > 0) {
       try {
+        // Double-check WebGL context before updating geometry
+        const gl = state.gl.getContext();
+        if (!gl || (gl as WebGLRenderingContext | WebGL2RenderingContext).isContextLost?.()) {
+          return;
+        }
+        
+        // Additional validation: ensure geometry ref is still valid
+        if (!linesRef.current || !linesRef.current.geometry) {
+          return;
+        }
+
         const geometry = linesRef.current.geometry;
-        if (!geometry) return;
+        if (!geometry || !geometry.isBufferGeometry) return;
 
-        // Check if geometry is still valid (not destroyed by context loss)
-        if (geometry.isBufferGeometry) {
-          // Create new buffer attributes with proper length validation
-          const positionArray = new Float32Array(linePositions);
-          const colorArray = new Float32Array(lineColors);
+        // Verify geometry is still valid (has attributes object)
+        if (!geometry.attributes) return;
 
-          // Ensure arrays have matching lengths for segments
-          if (positionArray.length > 0 && colorArray.length > 0 && positionArray.length === colorArray.length) {
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positionArray, 3));
-            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colorArray, 3));
+        // Create new buffer attributes with proper length validation
+        const positionArray = new Float32Array(linePositions);
+        const colorArray = new Float32Array(lineColors);
 
-            // Safely update attributes only if they exist
-            if (geometry.attributes.position) {
+        // Ensure arrays have matching lengths for segments (each segment needs 6 values: 2 points * 3 coords)
+        if (positionArray.length > 0 && colorArray.length > 0 && positionArray.length % 6 === 0 && colorArray.length % 6 === 0) {
+          // Only update if we have valid data
+          const positionAttr = new THREE.Float32BufferAttribute(positionArray, 3);
+          const colorAttr = new THREE.Float32BufferAttribute(colorArray, 3);
+          
+          // Verify attributes were created successfully
+          if (positionAttr && colorAttr && positionAttr.array && colorAttr.array.length > 0) {
+            geometry.setAttribute('position', positionAttr);
+            geometry.setAttribute('color', colorAttr);
+
+            // Safely update attributes only if they exist and are valid
+            if (geometry.attributes.position && geometry.attributes.position.array) {
               geometry.attributes.position.needsUpdate = true;
             }
-            if (geometry.attributes.color) {
+            if (geometry.attributes.color && geometry.attributes.color.array) {
               geometry.attributes.color.needsUpdate = true;
             }
           }
         }
       } catch (error) {
         // Silently handle WebGL context loss errors
+        // Don't log in production to avoid console spam
         if (process.env.NODE_ENV === 'development') {
           console.warn('Error updating line geometry (WebGL context may be lost):', error);
         }
+        // Return early to prevent further errors
+        return;
       }
     }
 
@@ -312,14 +380,25 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
   }, []);
 
   const lineGeometry = useMemo(() => {
-    const geo = new THREE.BufferGeometry();
-    // Initialize with placeholder arrays - will be updated in animation loop
-    // Use Float32Array(3) instead of [] to prevent undefined length errors
-    const emptyPositions = new Float32Array(3);
-    const emptyColors = new Float32Array(3);
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(emptyPositions, 3));
-    geo.setAttribute('color', new THREE.Float32BufferAttribute(emptyColors, 3));
-    return geo;
+    try {
+      const geo = new THREE.BufferGeometry();
+      // Initialize with placeholder arrays - will be updated in animation loop
+      // Use Float32Array(6) for minimal line segment (2 points * 3 coords) to prevent undefined length errors
+      const emptyPositions = new Float32Array(6);
+      const emptyColors = new Float32Array(6);
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(emptyPositions, 3));
+      geo.setAttribute('color', new THREE.Float32BufferAttribute(emptyColors, 3));
+      return geo;
+    } catch (error) {
+      // Fallback: return minimal valid geometry
+      console.error('Error creating line geometry:', error);
+      const geo = new THREE.BufferGeometry();
+      const emptyPositions = new Float32Array(6);
+      const emptyColors = new Float32Array(6);
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(emptyPositions, 3));
+      geo.setAttribute('color', new THREE.Float32BufferAttribute(emptyColors, 3));
+      return geo;
+    }
   }, []);
 
   // Cleanup on unmount to prevent memory leaks
@@ -472,14 +551,15 @@ export function AdvancedParticleTree() {
   }, []);
 
   return (
-    <div
-      className="w-full h-full"
-      onMouseMove={handleMouseMove}
-      style={{
-        background: 'radial-gradient(ellipse at center, #02040A 0%, #000000 100%)',
-      }}
-    >
-      <Canvas
+    <CanvasErrorBoundary>
+      <div
+        className="w-full h-full"
+        onMouseMove={handleMouseMove}
+        style={{
+          background: 'radial-gradient(ellipse at center, #02040A 0%, #000000 100%)',
+        }}
+      >
+        <Canvas
         camera={{ position: [0, 3, 15], fov: 50 }}
         gl={{
           antialias: true,
@@ -545,5 +625,6 @@ export function AdvancedParticleTree() {
         </EffectComposer>
       </Canvas>
     </div>
+    </CanvasErrorBoundary>
   );
 }
