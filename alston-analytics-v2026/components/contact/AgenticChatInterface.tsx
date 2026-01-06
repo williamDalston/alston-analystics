@@ -184,9 +184,16 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
         const data = await response.json();
         return data.message || null;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Chat API error:', error);
-      setApiError('Connection interrupted. Please check your internet connection and try again.');
+      // Provide more specific error messages
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        setApiError('Unable to reach the server. Please check your internet connection.');
+      } else if (error.message) {
+        setApiError(error.message);
+      } else {
+        setApiError('Connection interrupted. Please try again or contact us at info@alstonanalytics.com.');
+      }
       return null;
     }
   };
@@ -317,8 +324,12 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     setIsLoading(false);
 
     if (!aiResponse) {
-      // Replace placeholder with fallback response
-      const fallbackContent = "I'm having trouble connecting right now. You can try again, or provide your email below and we'll contact you directly.";
+      // Replace placeholder with helpful fallback response
+      // Use a more helpful message that guides the user
+      const fallbackContent = apiError 
+        ? `${apiError} You can also provide your email below and we'll contact you directly.`
+        : "I'm having trouble connecting right now. You can try again, or provide your email below and we'll contact you directly at info@alstonanalytics.com.";
+      
       setMessages((prev) =>
         prev.map((m) =>
           m.id === assistantId ? { ...m, content: fallbackContent, isStreaming: false } : m
@@ -383,10 +394,13 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     }, 800);
   };
 
-  const showEmailPrompt = messages.length > 0 &&
+  // Always show email form after first message exchange (as backup contact method)
+  // Also show if assistant mentions email
+  const showEmailPrompt = (messages.length > 1 && !submitSuccess) || 
+    (messages.length > 0 &&
     messages[messages.length - 1].role === 'assistant' &&
     messages[messages.length - 1].content.toLowerCase().includes('email') &&
-    !submitSuccess;
+    !submitSuccess);
 
   return (
     <motion.div
@@ -575,15 +589,28 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
                 type="email"
                 value={emailInput}
                 onChange={(e) => { setEmailInput(e.target.value); setEmailError(''); }}
-                onKeyPress={(e) => e.key === 'Enter' && !isRateLimited && handleEmailSubmit()}
-                placeholder="user@network.com"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !isRateLimited && !isSubmitting && emailInput.trim()) {
+                    e.preventDefault();
+                    handleEmailSubmit();
+                  }
+                }}
+                placeholder="your@email.com"
                 disabled={isRateLimited || isSubmitting}
-                className="flex-1 bg-transparent border-none focus:ring-0 text-stellar-white font-mono text-sm placeholder:text-soft-clay/20 py-2 px-2"
+                className="flex-1 bg-transparent border-none focus:ring-0 focus:outline-none text-stellar-white font-mono text-sm placeholder:text-soft-clay/20 py-2 px-2"
+                autoComplete="email"
+                aria-label="Email address"
               />
               <button
-                onClick={handleEmailSubmit}
-                disabled={isSubmitting || !emailInput.trim()}
-                className="bg-stellar-white/10 hover:bg-stellar-white/20 text-stellar-white px-3 py-1 rounded text-xs font-mono uppercase transition-colors disabled:opacity-50"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleEmailSubmit();
+                }}
+                disabled={isSubmitting || !emailInput.trim() || isRateLimited}
+                className="bg-stellar-white/10 hover:bg-stellar-white/20 active:bg-stellar-white/30 text-stellar-white px-3 py-1 rounded text-xs font-mono uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                type="button"
+                aria-label="Submit email"
               >
                 {isSubmitting ? <Loader2 className="w-3 h-3 animate-spin" /> : 'SUBMIT'}
               </button>

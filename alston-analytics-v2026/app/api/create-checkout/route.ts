@@ -47,7 +47,11 @@ export async function POST(req: NextRequest) {
       allow_promotion_codes: true,
     });
 
-    return NextResponse.json({ sessionId: session.id });
+    // Return both sessionId and url for direct redirect
+    return NextResponse.json({ 
+      sessionId: session.id,
+      url: session.url, // Direct checkout URL
+    });
   } catch (error: any) {
     console.error('Stripe checkout error:', error);
     return NextResponse.json(

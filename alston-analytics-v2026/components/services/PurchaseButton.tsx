@@ -66,7 +66,13 @@ export function PurchaseButton({
         throw new Error(data.error || 'Failed to create checkout session');
       }
 
-      // Redirect to Stripe Checkout
+      // Direct redirect to Stripe Checkout URL (more reliable than redirectToCheckout)
+      if (data.url) {
+        window.location.href = data.url;
+        return; // Don't set loading to false, we're redirecting
+      }
+
+      // Fallback to redirectToCheckout if URL not provided
       if (!stripePromise) {
         throw new Error('Payment processing is currently unavailable. Please contact support.');
       }

@@ -1,3 +1,5 @@
+// Try edge runtime first for better performance
+// If you experience issues, switch to 'nodejs'
 export const runtime = 'edge';
 
 type ChatMessage = {
@@ -52,12 +54,39 @@ async function streamOpenAI(messages: ChatMessage[], apiKey: string) {
       );
     }
     
-    // Handle other errors
-    const errorText = await upstream.text().catch(() => 'Upstream model error');
+    // Handle other errors - get detailed error message
+    let errorText = 'Upstream model error';
+    let errorDetails: any = {};
+    
+    try {
+      const errorBody = await upstream.text();
+      errorText = errorBody;
+      
+      // Try to parse as JSON for structured error
+      try {
+        errorDetails = JSON.parse(errorBody);
+        errorText = errorDetails.error?.message || errorDetails.error || errorText;
+      } catch {
+        // Not JSON, use as-is
+      }
+    } catch {
+      // Failed to read error text
+    }
+    
+    console.error('OpenAI API error:', {
+      status: upstream.status,
+      statusText: upstream.statusText,
+      error: errorText,
+      details: errorDetails,
+    });
+    
     return new Response(
       JSON.stringify({ 
-        error: upstream.status >= 500 ? 'Service temporarily unavailable. Please try again.' : 'Upstream model error',
-        statusCode: upstream.status
+        error: upstream.status >= 500 
+          ? 'Service temporarily unavailable. Please try again.' 
+          : errorText || 'OpenAI API error',
+        statusCode: upstream.status,
+        details: process.env.NODE_ENV === 'development' ? errorDetails : undefined
       }), 
       { 
         status: upstream.status,
@@ -100,6 +129,12 @@ async function streamOpenAI(messages: ChatMessage[], apiKey: string) {
         }
       } catch (err) {
         console.error('Stream read error', err);
+        // Try to send error message before closing
+        try {
+          controller.enqueue(encoder.encode('\n\n[Error: Stream interrupted]'));
+        } catch {
+          // Ignore if we can't send error message
+        }
       } finally {
         controller.close();
       }
@@ -119,11 +154,50 @@ export async function POST(req: Request) {
     const { messages = [], conversationContext = '' } = await req.json();
     const apiKey = process.env.OPENAI_API_KEY;
 
+    // Debug logging (remove in production if needed)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Chat API called:', {
+        hasApiKey: !!apiKey,
+        apiKeyLength: apiKey?.length || 0,
+        messagesCount: messages.length,
+      });
+    }
+
     if (apiKey && apiKey.trim() !== '') {
-      const chatMessages: ChatMessage[] = messages.length
-        ? messages
-        : [{ role: 'user', content: 'Tell me about your project.' }];
-      return await streamOpenAI(chatMessages, apiKey);
+      try {
+        const chatMessages: ChatMessage[] = messages.length
+          ? messages
+          : [{ role: 'user', content: 'Tell me about your project.' }];
+        
+        const result = await streamOpenAI(chatMessages, apiKey);
+        
+        // Verify we got a valid response
+        if (!result || !result.body) {
+          console.error('StreamOpenAI returned invalid response');
+          throw new Error('Invalid response from OpenAI');
+        }
+        
+        return result;
+      } catch (openAIError: any) {
+        console.error('OpenAI API error:', {
+          message: openAIError?.message,
+          name: openAIError?.name,
+          stack: openAIError?.stack,
+        });
+        
+        // Return error response instead of falling through to fallback
+        return new Response(
+          JSON.stringify({ 
+            error: openAIError?.message || 'Failed to connect to AI service',
+            statusCode: 500,
+            details: process.env.NODE_ENV === 'development' ? openAIError?.stack : undefined
+          }), 
+          { 
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+          }
+        );
+      }
     }
 
     // Fallback intelligent response (no API key)

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { sendPurchaseNotification, sendCustomerConfirmation } from '@/lib/send-email';
 
 // Note: Webhooks must use Node.js runtime (not edge) due to Stripe SDK requirements
 export const runtime = 'nodejs';
@@ -46,26 +47,48 @@ export async function POST(req: NextRequest) {
       const session = event.data.object as Stripe.Checkout.Session;
       
       // Payment was successful
-      // Here you can:
-      // - Send confirmation email
-      // - Update database
-      // - Trigger service delivery workflow
-      // - Notify team members
-      
-      // Log successful payment (in production, use proper logging service)
+      const productName = session.metadata?.productName || 'Service Purchase';
+      const customerEmail = session.customer_email || session.customer_details?.email;
+      const amount = session.amount_total || 0;
+
+      // Log successful payment
       console.log('Payment successful:', {
         sessionId: session.id,
-        customerEmail: session.customer_email,
-        amountTotal: session.amount_total,
+        customerEmail,
+        amountTotal: amount,
         metadata: session.metadata,
       });
 
-      // TODO: Add your business logic here
-      // Example: 
-      // - Send confirmation email to customer
+      // Send email notifications
+      try {
+        // Send notification to business owner
+        if (customerEmail) {
+          await sendPurchaseNotification(
+            customerEmail,
+            productName,
+            amount,
+            session.id
+          );
+        }
+
+        // Send confirmation email to customer
+        if (customerEmail) {
+          await sendCustomerConfirmation(
+            customerEmail,
+            productName,
+            amount
+          );
+        }
+      } catch (emailError) {
+        // Log email errors but don't fail the webhook
+        console.error('Failed to send email notifications:', emailError);
+      }
+
+      // TODO: Add additional business logic here:
       // - Create order record in database
-      // - Notify team members
       // - Trigger service delivery workflow
+      // - Update CRM
+      // - Send to Slack/Discord
 
       break;
     }
