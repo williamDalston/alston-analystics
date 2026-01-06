@@ -47,3 +47,5 @@ After redeploy, test:
 - `https://your-domain.vercel.app/favicon.svg` - Should return 200 OK
 - Browser tab should show the favicon icon
 
+
+

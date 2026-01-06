@@ -74,3 +74,5 @@ After setting the root directory and redeploying:
 - **Build Command:** Auto-detected (or `npm run build`)
 - **Output Directory:** `.next` (auto-detected)
 
+
+
