@@ -414,6 +414,30 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
     return null;
   }
 
+  // Validate geometry attributes before rendering to prevent React Three Fiber errors
+  // This prevents the "Cannot read properties of undefined (reading 'length')" error
+  try {
+    if (!lineGeometry || !lineGeometry.isBufferGeometry) {
+      return null;
+    }
+    
+    // Check if line geometry attributes exist and have valid arrays
+    const linePosAttr = lineGeometry.attributes.position;
+    if (!linePosAttr || !linePosAttr.array || typeof linePosAttr.array.length !== 'number') {
+      return null;
+    }
+    
+    if (!geometry || !geometry.isBufferGeometry) {
+      return null;
+    }
+  } catch (error) {
+    // If any validation fails, don't render to prevent React Three Fiber errors
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Geometry validation failed, skipping render:', error);
+    }
+    return null;
+  }
+
   return (
     <>
       {/* Connection lines - rendered first for depth sorting */}

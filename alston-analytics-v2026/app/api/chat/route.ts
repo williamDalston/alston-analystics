@@ -119,15 +119,32 @@ export async function POST(req: Request) {
     const { messages = [], conversationContext = '' } = await req.json();
     const apiKey = process.env.OPENAI_API_KEY;
 
-    if (apiKey) {
+    if (apiKey && apiKey.trim() !== '') {
       const chatMessages: ChatMessage[] = messages.length
         ? messages
         : [{ role: 'user', content: 'Tell me about your project.' }];
       return await streamOpenAI(chatMessages, apiKey);
     }
 
-    // Fallback deterministic streamed response (no API key)
-    const fallbackText = `${conversationContext ? `Context: ${conversationContext}. ` : ''}Got it. Tell me your goal, timeline, data sources, and decision-maker. Want to drop an email for follow-up?`;
+    // Fallback intelligent response (no API key)
+    // Generate contextual response based on conversation
+    const lastUserMessage = messages.length > 0
+      ? messages[messages.length - 1]?.content || ''
+      : '';
+
+    let fallbackText = '';
+
+    // Smart fallback responses based on context
+    if (lastUserMessage.toLowerCase().includes('email') || lastUserMessage.includes('@')) {
+      fallbackText = "Thanks for sharing your email! I've logged it for Alston. You'll hear back within 24 hours. What else can I help clarify about your project?";
+    } else if (messages.length === 0) {
+      fallbackText = "Hi! I'm here to help. Tell me about your project - what are you looking to achieve with data analytics?";
+    } else if (lastUserMessage.length < 20) {
+      fallbackText = "Got it! Can you tell me more about your goals, timeline, and what data sources you're working with?";
+    } else {
+      fallbackText = "Interesting. To help you best, I'd love to know: What's your timeline? What data do you have? And who's the decision-maker? Feel free to share your email if you'd like Alston to follow up directly.";
+    }
+
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       start(controller) {

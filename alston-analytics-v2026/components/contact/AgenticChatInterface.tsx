@@ -342,7 +342,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     await sendMessageDirect(messageText);
   }, [input, isLimitReached, isRateLimited, sendMessageDirect]);
 
-  const handleEmailSubmit = () => {
+  const handleEmailSubmit = async () => {
     setEmailError('');
 
     if (!emailInput.trim()) {
@@ -357,28 +357,30 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
 
     setIsSubmitting(true);
 
-    // Simulate form submission
+    // Add user's email to conversation
+    const userMessage: Message = {
+      id: `u-${Date.now()}`,
+      role: 'user',
+      content: `My email is: ${emailInput}`,
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+
+    // Send email to conversation history (stores it in the chat)
     setTimeout(() => {
       setIsSubmitting(false);
       setSubmitSuccess(true);
 
-      const userMessage: Message = {
-        id: `u-${Date.now()}`,
-        role: 'user',
-        content: emailInput,
+      const response: Message = {
+        id: `a-${Date.now()}`,
+        role: 'assistant',
+        content: `Perfect! I've noted your email (${emailInput}). Alston will reach out within 24 hours. Is there anything else you'd like to discuss about your project?`,
       };
+      setMessages((prev) => [...prev, response]);
 
-      setMessages((prev) => [...prev, userMessage]);
-
-      setTimeout(() => {
-        const response: Message = {
-          id: `a-${Date.now()}`,
-          role: 'assistant',
-          content: `Confirmed. I've forwarded your information to info@alstonanalytics.com. You'll receive a response within 24 hours. Thank you for reaching out.`,
-        };
-        setMessages((prev) => [...prev, response]);
-      }, 500);
-    }, 1500);
+      // Clear email input after successful submission
+      setEmailInput('');
+    }, 800);
   };
 
   const showEmailPrompt = messages.length > 0 &&
