@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useMemo, useEffect, Component, type ReactNode } from 'react';
+import { useRef, useMemo, useEffect, useState, Component, type ReactNode } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
@@ -55,6 +55,7 @@ interface ParticleSystemProps {
 function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
+  const [webglContextLost, setWebglContextLost] = useState(false);
 
   // Optimized particle count for network visualization
   // Reduce count for mobile and low-end devices to prevent WebGL context loss
@@ -151,16 +152,18 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
   // Animate particles with physics and update connections
   useFrame((state) => {
     // Early return if refs are invalid or WebGL context is lost
-    if (!meshRef.current || !particleData || !state.gl || !state.gl.domElement) return;
+    if (webglContextLost || !meshRef.current || !particleData || !state.gl || !state.gl.domElement) return;
     
     // Check if WebGL context is still valid - do this first to prevent errors
     try {
       const gl = state.gl.getContext();
       if (!gl || (gl as WebGLRenderingContext | WebGL2RenderingContext).isContextLost?.()) {
+        setWebglContextLost(true);
         return;
       }
     } catch (error) {
-      // Context check failed, skip this frame
+      // Context check failed, mark as lost and skip this frame
+      setWebglContextLost(true);
       return;
     }
 
@@ -304,6 +307,7 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
         // Double-check WebGL context before updating geometry
         const gl = state.gl.getContext();
         if (!gl || (gl as WebGLRenderingContext | WebGL2RenderingContext).isContextLost?.()) {
+          setWebglContextLost(true);
           return;
         }
         
@@ -409,25 +413,44 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
     };
   }, [geometry, lineGeometry]);
 
-  // Don't render if particleData is invalid
-  if (!particleData || !particleData.positions || particleData.positions.length === 0) {
+  // Don't render if particleData is invalid or WebGL context is lost
+  if (webglContextLost || !particleData || !particleData.positions || particleData.positions.length === 0) {
     return null;
   }
 
   // Validate geometry attributes before rendering to prevent React Three Fiber errors
   // This prevents the "Cannot read properties of undefined (reading 'length')" error
   try {
-    if (!lineGeometry || !lineGeometry.isBufferGeometry) {
+    // Check line geometry first
+    if (!lineGeometry || !lineGeometry.isBufferGeometry || lineGeometry.disposed) {
       return null;
     }
     
-    // Check if line geometry attributes exist and have valid arrays
-    const linePosAttr = lineGeometry.attributes.position;
-    if (!linePosAttr || !linePosAttr.array || typeof linePosAttr.array.length !== 'number') {
+    // Validate line geometry attributes exist and are valid
+    const linePosAttr = lineGeometry.attributes?.position;
+    if (!linePosAttr) {
       return null;
     }
     
-    if (!geometry || !geometry.isBufferGeometry) {
+    // Check if attribute has a valid array with length property
+    const linePosArray = linePosAttr.array;
+    if (!linePosArray || typeof linePosArray.length !== 'number' || linePosArray.length === 0) {
+      // Re-initialize with minimal valid array if empty
+      try {
+        const emptyArray = new Float32Array(6);
+        lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(emptyArray, 3));
+      } catch {
+        return null; // Can't fix it, don't render
+      }
+    }
+    
+    // Validate main geometry
+    if (!geometry || !geometry.isBufferGeometry || geometry.disposed) {
+      return null;
+    }
+    
+    // Ensure geometry has valid attributes
+    if (!geometry.attributes || Object.keys(geometry.attributes).length === 0) {
       return null;
     }
   } catch (error) {
@@ -436,6 +459,28 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
       console.warn('Geometry validation failed, skipping render:', error);
     }
     return null;
+  }
+
+  // Final safety check: ensure geometries are valid before passing to React Three Fiber
+  // This prevents React Three Fiber from trying to access undefined properties
+  if (!lineGeometry || !geometry) {
+    return null;
+  }
+
+  // Verify lineGeometry has valid structure that React Three Fiber expects
+  try {
+    // Check if lineGeometry has the required structure
+    if (!lineGeometry.attributes || !lineGeometry.attributes.position) {
+      return null;
+    }
+    const posAttr = lineGeometry.attributes.position;
+    if (!posAttr || !posAttr.array || posAttr.array.length === 0) {
+      // Ensure we have at least a minimal valid array
+      const minArray = new Float32Array(6);
+      lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(minArray, 3));
+    }
+  } catch {
+    return null; // Can't safely render
   }
 
   return (

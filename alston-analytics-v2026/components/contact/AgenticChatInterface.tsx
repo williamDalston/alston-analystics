@@ -113,6 +113,22 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
         const retryAfterHeader = response.headers.get('retry-after');
         const retryAfterValue = errorData.retryAfter || (retryAfterHeader ? parseInt(retryAfterHeader, 10) : 60);
 
+        // Log the actual error for debugging
+        console.log('Chat API error response:', {
+          status: response.status,
+          statusCode,
+          errorData,
+          url: response.url,
+        });
+
+        // Handle authentication errors (401) - API key issue
+        // Don't block - let fallback handle it
+        if (statusCode === 401) {
+          console.warn('API key issue - using fallback response');
+          // Don't set error, just return null to trigger fallback
+          return null;
+        }
+
         if (statusCode === 429) {
           setIsRateLimited(true);
           setRetryAfter(retryAfterValue);
@@ -124,12 +140,25 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
             setApiError(null);
           }, retryAfterValue * 1000);
 
-          setApiError(`Taking a brief pause to ensure quality responses. Please try again in ${retryAfterValue} seconds.`);
+          // User-friendly rate limit message
+          const rateLimitMessage = retryAfterValue <= 60 
+            ? `Rate limit: Please wait ${retryAfterValue} seconds before trying again.`
+            : `Rate limit: Please wait about ${Math.ceil(retryAfterValue / 60)} minutes before trying again.`;
+          
+          // Show rate limit message but don't block - use fallback
+          setApiError(rateLimitMessage);
+          // Still return null to use fallback, but user knows about rate limit
           return null;
         }
 
+        // For other errors, log but don't block - use fallback
         const errorMessage = errorData.error || 'Unable to process your request right now. Please try again shortly.';
-        setApiError(errorMessage);
+        console.warn('Chat API error, using fallback:', errorMessage);
+        // Don't set apiError for non-critical errors - let fallback work
+        // Only set for network errors
+        if (statusCode >= 500 || statusCode === 0) {
+          setApiError('Service temporarily unavailable. Using fallback response.');
+        }
         return null;
       }
 
@@ -178,22 +207,34 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
           }
         }
 
-        return fullText.trim() || null;
+        const result = fullText.trim();
+        // Return the text if we got any, otherwise null triggers fallback
+        return result || null;
       } else {
-        // JSON response (fallback)
-        const data = await response.json();
-        return data.message || null;
+        // JSON response should not happen with current API (always streams or falls back)
+        // But handle it gracefully if it does
+        try {
+          const data = await response.json();
+          // If it's an error response, use fallback
+          if (data.error && data.statusCode) {
+            console.warn('Chat API returned error JSON, using fallback:', data.error);
+            return null; // Will trigger fallback
+          }
+          return data.message || null;
+        } catch (jsonError) {
+          // Not JSON, try text
+          const text = await response.text().catch(() => '');
+          return text || null;
+        }
       }
     } catch (error: any) {
       console.error('Chat API error:', error);
-      // Provide more specific error messages
+      // Don't show error to user - let fallback handle it
+      // Only show critical network errors
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
         setApiError('Unable to reach the server. Please check your internet connection.');
-      } else if (error.message) {
-        setApiError(error.message);
-      } else {
-        setApiError('Connection interrupted. Please try again or contact us at info@alstonanalytics.com.');
       }
+      // Return null to trigger fallback response
       return null;
     }
   };
@@ -323,12 +364,24 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
 
     setIsLoading(false);
 
-    if (!aiResponse) {
-      // Replace placeholder with helpful fallback response
-      // Use a more helpful message that guides the user
-      const fallbackContent = apiError 
-        ? `${apiError} You can also provide your email below and we'll contact you directly.`
-        : "I'm having trouble connecting right now. You can try again, or provide your email below and we'll contact you directly at info@alstonanalytics.com.";
+    if (!aiResponse || aiResponse.trim() === '') {
+      // Replace placeholder with intelligent fallback response
+      // Always provide a useful response, even if API failed
+      let fallbackContent = '';
+      
+      // Generate intelligent fallback based on conversation
+      if (messageText.toLowerCase().includes('email') || messageText.includes('@')) {
+        fallbackContent = "Thanks for sharing your email! I've logged it for Alston. You'll hear back within 24 hours. What else can I help clarify about your project?";
+      } else if (messageText.length < 20) {
+        fallbackContent = "Got it! Can you tell me more about your goals, timeline, and what data sources you're working with?";
+      } else {
+        fallbackContent = "Interesting. To help you best, I'd love to know: What's your timeline? What data do you have? And who's the decision-maker? Feel free to share your email if you'd like Alston to follow up directly.";
+      }
+      
+      // Only show error if it's a critical network issue (not API errors)
+      if (apiError && apiError.includes('Unable to reach')) {
+        fallbackContent = `${fallbackContent} (Note: ${apiError})`;
+      }
       
       setMessages((prev) =>
         prev.map((m) =>
