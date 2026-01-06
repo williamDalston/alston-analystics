@@ -19,7 +19,19 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
   const linesRef = useRef<THREE.LineSegments>(null);
 
   // Optimized particle count for network visualization
-  const particleCount = typeof window !== 'undefined' && window.innerWidth < 768 ? 800 : 1200;
+  // Reduce count for mobile and low-end devices to prevent WebGL context loss
+  const particleCount = useMemo(() => {
+    if (typeof window === 'undefined') return 600;
+
+    const width = window.innerWidth;
+    const isMobile = width < 768;
+    const isTablet = width >= 768 && width < 1024;
+
+    // Further reduce for mobile to prevent context loss
+    if (isMobile) return 600;
+    if (isTablet) return 900;
+    return 1200;
+  }, []);
 
   // Store particle data for physics simulation
   const particleData = useMemo(() => {
@@ -100,7 +112,19 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
 
   // Animate particles with physics and update connections
   useFrame((state) => {
-    if (!meshRef.current || !particleData) return;
+    // Early return if refs are invalid or WebGL context is lost
+    if (!meshRef.current || !particleData || !state.gl.domElement) return;
+    
+    // Check if WebGL context is still valid
+    try {
+      const gl = state.gl.getContext();
+      if (!gl || gl.isContextLost()) {
+        return;
+      }
+    } catch (error) {
+      // Context check failed, skip this frame
+      return;
+    }
 
     const time = state.clock.getElapsedTime();
 
@@ -213,25 +237,62 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
       dummy.updateMatrix();
       if (meshRef.current && typeof meshRef.current.setMatrixAt === 'function') {
         try {
-          meshRef.current.setMatrixAt(i, dummy.matrix);
+          // Additional check for valid instance count
+          if (i < particleCount) {
+            meshRef.current.setMatrixAt(i, dummy.matrix);
+          }
         } catch (error) {
-          // Silently handle any errors during matrix update
-          console.warn('Error setting matrix at index:', i, error);
+          // Silently handle any errors during matrix update (e.g., WebGL context lost)
+          // Don't spam console in production
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Error setting matrix at index:', i, error);
+          }
         }
       }
     }
 
-    // Update connection lines
-    if (linesRef.current && linePositions.length > 0) {
-      const geometry = linesRef.current.geometry;
-      geometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
-      geometry.setAttribute('color', new THREE.Float32BufferAttribute(lineColors, 3));
-      geometry.attributes.position.needsUpdate = true;
-      geometry.attributes.color.needsUpdate = true;
+    // Update connection lines with WebGL context safety checks
+    if (linesRef.current && Array.isArray(linePositions) && linePositions.length > 0 && Array.isArray(lineColors) && lineColors.length > 0) {
+      try {
+        const geometry = linesRef.current.geometry;
+        if (!geometry) return;
+
+        // Check if geometry is still valid (not destroyed by context loss)
+        if (geometry.isBufferGeometry) {
+          // Create new buffer attributes with proper length validation
+          const positionArray = new Float32Array(linePositions);
+          const colorArray = new Float32Array(lineColors);
+
+          // Ensure arrays have matching lengths for segments
+          if (positionArray.length > 0 && colorArray.length > 0 && positionArray.length === colorArray.length) {
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positionArray, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colorArray, 3));
+
+            // Safely update attributes only if they exist
+            if (geometry.attributes.position) {
+              geometry.attributes.position.needsUpdate = true;
+            }
+            if (geometry.attributes.color) {
+              geometry.attributes.color.needsUpdate = true;
+            }
+          }
+        }
+      } catch (error) {
+        // Silently handle WebGL context loss errors
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Error updating line geometry (WebGL context may be lost):', error);
+        }
+      }
     }
 
+    // Safely update instance matrix
     if (meshRef.current && meshRef.current.instanceMatrix) {
-      meshRef.current.instanceMatrix.needsUpdate = true;
+      try {
+        meshRef.current.instanceMatrix.needsUpdate = true;
+      } catch (error) {
+        // Silently handle WebGL context errors
+        console.warn('Error updating instance matrix:', error);
+      }
     }
 
     // Gentle rotation
@@ -252,11 +313,22 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
 
   const lineGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry();
-    // Initialize with empty arrays - will be updated in animation loop
-    geo.setAttribute('position', new THREE.Float32BufferAttribute([], 3));
-    geo.setAttribute('color', new THREE.Float32BufferAttribute([], 3));
+    // Initialize with placeholder arrays - will be updated in animation loop
+    // Use Float32Array(3) instead of [] to prevent undefined length errors
+    const emptyPositions = new Float32Array(3);
+    const emptyColors = new Float32Array(3);
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(emptyPositions, 3));
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(emptyColors, 3));
     return geo;
   }, []);
+
+  // Cleanup on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (geometry) geometry.dispose();
+      if (lineGeometry) lineGeometry.dispose();
+    };
+  }, [geometry, lineGeometry]);
 
   // Don't render if particleData is invalid
   if (!particleData || !particleData.positions || particleData.positions.length === 0) {
