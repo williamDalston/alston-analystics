@@ -1057,6 +1057,85 @@ button:active:not(:disabled) {
 }
 
 /* ============================================
+   HOLOGRAPHIC SHIMMER EFFECT
+   ============================================ */
+
+@keyframes holographic-shimmer {
+  0% {
+    background-position: 200% 50%;
+  }
+  100% {
+    background-position: -200% 50%;
+  }
+}
+
+.holographic-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.holographic-shimmer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(0, 240, 255, 0.03) 30%,
+    rgba(138, 43, 226, 0.05) 40%,
+    rgba(0, 240, 255, 0.08) 50%,
+    rgba(138, 43, 226, 0.05) 60%,
+    rgba(0, 240, 255, 0.03) 70%,
+    transparent 80%
+  );
+  background-size: 200% 100%;
+  animation: holographic-shimmer 8s ease-in-out infinite;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.holographic-shimmer:hover::before {
+  opacity: 1;
+}
+
+/* Iridescent border effect */
+@keyframes iridescent-border {
+  0% {
+    border-color: rgba(0, 240, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+  }
+  33% {
+    border-color: rgba(138, 43, 226, 0.3);
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.1);
+  }
+  66% {
+    border-color: rgba(125, 211, 252, 0.3);
+    box-shadow: 0 0 20px rgba(125, 211, 252, 0.1);
+  }
+  100% {
+    border-color: rgba(0, 240, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+  }
+}
+
+.iridescent-border:hover {
+  animation: iridescent-border 3s ease-in-out infinite;
+}
+
+/* Glowing text on hover */
+.text-glow-hover {
+  transition: text-shadow 0.3s ease;
+}
+
+.text-glow-hover:hover {
+  text-shadow:
+    0 0 10px rgba(224, 242, 254, 0.5),
+    0 0 20px rgba(0, 240, 255, 0.3),
+    0 0 30px rgba(0, 240, 255, 0.2);
+}
+
+/* ============================================
    MOBILE OPTIMIZATIONS
    ============================================ */
 

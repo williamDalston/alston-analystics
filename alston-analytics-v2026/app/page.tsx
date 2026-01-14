@@ -9,6 +9,8 @@ import { ContactSection } from '@/components/sections/ContactSection';
 import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
 import { MetricsCounter } from '@/components/sections/MetricsCounter';
 import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
+import { AuroraBackground } from '@/components/effects/AuroraBackground';
+import { SectionDivider } from '@/components/effects/SectionDivider';
 
 const AdvancedParticleTree = dynamic(
   () => import('@/components/hero/AdvancedParticleTree').then((mod) => mod.AdvancedParticleTree),
@@ -52,6 +54,8 @@ export default function Home() {
       {/* Background Elements */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(15,23,42,0.4),rgba(2,4,10,0.8))]" />
+        {/* Aurora/Nebula effect */}
+        <AuroraBackground />
         <div className="hidden md:block absolute top-0 right-0 w-full h-full opacity-40 mix-blend-screen">
           <Suspense fallback={<LoadingSkeleton variant="particle" className="w-full h-full" />}>
             <AdvancedParticleTree />
@@ -202,11 +206,20 @@ export default function Home() {
           <ServiceBentoGrid />
         </section>
 
+        {/* Divider */}
+        <SectionDivider variant="gradient" className="max-w-4xl mx-auto px-8" />
+
         {/* Work Section */}
         <PortfolioSection />
 
+        {/* Divider */}
+        <SectionDivider variant="pulse" />
+
         {/* Sovereign Mind Section */}
         <SovereignMindSection />
+
+        {/* Divider */}
+        <SectionDivider variant="dots" />
 
         {/* Testimonials Section */}
         <TestimonialsSection />

@@ -60,7 +60,7 @@ function ServiceCard({ title, description, icon, className, showPurchaseButton, 
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       whileHover={{ y: -8, scale: 1.02 }}
-      className={`glass-surface rounded-3xl p-8 relative overflow-hidden group cursor-pointer flex flex-col ${className}`}
+      className={`glass-surface rounded-3xl p-8 relative overflow-hidden group cursor-pointer flex flex-col holographic-shimmer iridescent-border ${className}`}
       style={{
         rotateX,
         rotateY,
