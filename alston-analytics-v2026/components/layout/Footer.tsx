@@ -77,7 +77,7 @@ export function Footer() {
               <li>
                 <a
                   href="#work"
-                  className="text-soft-clay/60 hover:text-data-cyan text-sm transition-colors"
+                  className="text-soft-clay/60 hover:text-data-cyan text-sm transition-colors link-underline"
                 >
                   Case Studies
                 </a>
@@ -85,7 +85,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/privacy"
-                  className="text-soft-clay/60 hover:text-data-cyan text-sm transition-colors"
+                  className="text-soft-clay/60 hover:text-data-cyan text-sm transition-colors link-underline"
                 >
                   Privacy Policy
                 </Link>
@@ -93,7 +93,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/terms"
-                  className="text-soft-clay/60 hover:text-data-cyan text-sm transition-colors"
+                  className="text-soft-clay/60 hover:text-data-cyan text-sm transition-colors link-underline"
                 >
                   Terms of Service
                 </Link>
@@ -113,7 +113,7 @@ export function Footer() {
               <li>
                 <a
                   href="mailto:info@alstonanalytics.com"
-                  className="text-soft-clay/60 hover:text-data-cyan text-sm transition-colors"
+                  className="text-soft-clay/60 hover:text-data-cyan text-sm transition-colors link-underline"
                 >
                   info@alstonanalytics.com
                 </a>
@@ -123,7 +123,7 @@ export function Footer() {
                   href="https://www.linkedin.com/in/william-alston/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-soft-clay/60 hover:text-data-cyan text-sm transition-colors"
+                  className="text-soft-clay/60 hover:text-data-cyan text-sm transition-colors link-underline"
                 >
                   LinkedIn
                 </a>

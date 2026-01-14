@@ -117,7 +117,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="text-2xl sm:text-3xl md:text-4xl text-soft-clay/80 font-mono tracking-wide mb-6 md:mb-8 max-w-4xl mx-auto"
+                className="text-2xl sm:text-3xl md:text-4xl text-soft-clay/90 font-sans font-light tracking-wide mb-6 md:mb-8 max-w-4xl mx-auto"
               >
                 Power BI architecture that speaks your language.
               </motion.p>
@@ -126,7 +126,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
-                className="text-lg sm:text-xl md:text-2xl text-soft-clay/60 font-sans mb-10 md:mb-14 max-w-3xl mx-auto"
+                className="text-lg sm:text-xl md:text-2xl text-soft-clay/60 font-sans font-light mb-10 md:mb-14 max-w-3xl mx-auto leading-relaxed"
               >
                 We build the reporting infrastructure that leadership teams trust. Power BI engineering for organizations that need their data to work.
               </motion.p>
