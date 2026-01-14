@@ -533,6 +533,16 @@ input[type="button"] {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
+/* Text shadow for improved readability on glass */
+.text-shadow-glass {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Subtle text shadow for secondary text */
+.text-shadow-subtle {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 /* Ensure sufficient contrast for secondary text */
 .text-soft-clay-accessible {
   color: var(--soft-clay); /* Full opacity for WCAG AA */
@@ -950,6 +960,100 @@ button:active:not(:disabled) {
 /* Magnetic hover effect */
 .magnetic {
   transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ============================================
+   RIPPLE EFFECT
+   ============================================ */
+
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(224, 242, 254, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.5s ease-out, height 0.5s ease-out, opacity 0.5s ease-out;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.ripple:active::after {
+  width: 300px;
+  height: 300px;
+  opacity: 1;
+  transition: 0s;
+}
+
+/* Cyan ripple variant */
+.ripple-cyan::after {
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.25) 0%, transparent 70%);
+}
+
+/* ============================================
+   COUNTER ANIMATION
+   ============================================ */
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-count-up {
+  animation: countUp 0.6s ease-out forwards;
+}
+
+/* ============================================
+   ENHANCED CARD EFFECTS
+   ============================================ */
+
+.card-glow {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-glow:hover {
+  box-shadow:
+    0 0 30px rgba(0, 240, 255, 0.15),
+    0 20px 50px rgba(0, 0, 0, 0.3),
+    inset 0 0 30px rgba(224, 242, 254, 0.05);
+}
+
+/* Accent border on hover */
+.card-accent-border {
+  position: relative;
+}
+
+.card-accent-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, transparent 40%, rgba(0, 240, 255, 0.5) 50%, transparent 60%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card-accent-border:hover::before {
+  opacity: 1;
 }
 
 /* ============================================

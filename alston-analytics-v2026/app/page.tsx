@@ -7,6 +7,7 @@ import { PortfolioSection } from '@/components/sections/PortfolioSection';
 import { SovereignMindSection } from '@/components/sections/SovereignMindSection';
 import { ContactSection } from '@/components/sections/ContactSection';
 import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
+import { MetricsCounter } from '@/components/sections/MetricsCounter';
 import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
 
 const AdvancedParticleTree = dynamic(
@@ -132,36 +133,59 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.6 }}
                 className="flex flex-col sm:flex-row gap-4 justify-center items-center"
               >
-                <a
+                <motion.a
                   href="#work"
-                  className="group relative px-8 py-4 bg-stellar-white text-deep-void font-bold rounded-full overflow-hidden transition-all hover:scale-105 active:scale-95 text-lg"
+                  className="group relative px-10 py-5 bg-gradient-to-r from-stellar-white via-white to-stellar-white text-deep-void font-bold rounded-full overflow-hidden transition-all text-lg ripple shadow-[0_0_30px_rgba(224,242,254,0.3)] hover:shadow-[0_0_50px_rgba(224,242,254,0.5)]"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     View Our Work
-                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                    <motion.span
+                      className="inline-block"
+                      initial={{ x: 0 }}
+                      whileHover={{ x: 4 }}
+                    >
+                      →
+                    </motion.span>
                   </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-white via-blue-100 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </a>
+                  <div className="absolute inset-0 bg-gradient-to-r from-data-cyan/20 via-transparent to-data-cyan/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </motion.a>
 
-                <a
+                <motion.a
                   href="#contact"
-                  className="group px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 text-stellar-white font-medium rounded-full hover:bg-white/10 transition-all hover:scale-105 active:scale-95 text-lg"
+                  className="group px-10 py-5 glass-surface border border-stellar-white/20 text-stellar-white font-semibold rounded-full transition-all text-lg ripple-cyan hover:border-stellar-white/40"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  Start Dialogue
-                </a>
+                  <span className="flex items-center gap-2">
+                    Start Dialogue
+                    <span className="w-2 h-2 rounded-full bg-data-cyan animate-pulse" />
+                  </span>
+                </motion.a>
               </motion.div>
             </motion.div>
           </div>
 
           {/* Scroll Indicator */}
           <motion.div
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 pointer-events-none"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.5, duration: 1 }}
           >
-            <span className="text-[10px] uppercase tracking-[0.2em] text-soft-clay/40">Scroll to Explore</span>
-            <div className="w-[1px] h-12 bg-gradient-to-b from-stellar-white/50 to-transparent" />
+            <span className="text-[10px] uppercase tracking-[0.3em] text-soft-clay/50 font-mono">Scroll</span>
+            <motion.div
+              className="relative w-6 h-10 rounded-full border border-stellar-white/30 flex justify-center"
+              animate={{ borderColor: ['rgba(224,242,254,0.3)', 'rgba(224,242,254,0.5)', 'rgba(224,242,254,0.3)'] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <motion.div
+                className="w-1 h-2 bg-stellar-white/70 rounded-full mt-2"
+                animate={{ y: [0, 12, 0], opacity: [1, 0.3, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              />
+            </motion.div>
           </motion.div>
         </section>
 
@@ -169,6 +193,9 @@ export default function Home() {
         <section className="relative z-20 py-10 border-y border-white/5 bg-black/20 backdrop-blur-sm">
           <TrustTicker />
         </section>
+
+        {/* Metrics Counter */}
+        <MetricsCounter />
 
         {/* Services Section */}
         <section id="services" className="relative z-20 py-24 sm:py-32 px-4">

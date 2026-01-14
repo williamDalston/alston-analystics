@@ -126,13 +126,21 @@ function ServiceCard({ title, description, icon, className, showPurchaseButton, 
       {/* Contact CTA for non-purchase cards */}
       {ctaAction === 'contact' && ctaText && (
         <div className="relative z-10 mt-auto pt-4 border-t border-stellar-white/10 group-hover:border-stellar-white/20 transition-colors">
-          <button
+          <motion.button
             onClick={scrollToContact}
-            className="w-full py-3 px-4 rounded-lg border border-stellar-white/20 text-stellar-white/80 font-mono text-sm hover:bg-stellar-white/5 hover:border-stellar-white/40 hover:text-stellar-white transition-all flex items-center justify-center gap-2 group/btn"
+            className="w-full py-3.5 px-5 rounded-xl glass-surface border border-stellar-white/20 text-stellar-white font-mono text-sm hover:border-data-cyan/50 transition-all flex items-center justify-center gap-2 group/btn ripple-cyan"
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
           >
             {ctaText}
-            <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
-          </button>
+            <motion.span
+              className="inline-block"
+              initial={{ x: 0 }}
+              whileHover={{ x: 4 }}
+            >
+              →
+            </motion.span>
+          </motion.button>
         </div>
       )}
 
