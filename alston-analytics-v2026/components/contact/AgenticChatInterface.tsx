@@ -113,18 +113,9 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
         const retryAfterHeader = response.headers.get('retry-after');
         const retryAfterValue = errorData.retryAfter || (retryAfterHeader ? parseInt(retryAfterHeader, 10) : 60);
 
-        // Log the actual error for debugging
-        console.log('Chat API error response:', {
-          status: response.status,
-          statusCode,
-          errorData,
-          url: response.url,
-        });
-
         // Handle authentication errors (401) - API key issue
         // Don't block - let fallback handle it
         if (statusCode === 401) {
-          console.warn('API key issue - using fallback response');
           // Don't set error, just return null to trigger fallback
           return null;
         }

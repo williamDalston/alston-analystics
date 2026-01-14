@@ -604,7 +604,7 @@ export function AdvancedParticleTree() {
     };
 
     const handleContextRestored = () => {
-      console.log('WebGL context restored');
+      // WebGL context restored
     };
 
     const canvas = document.querySelector('canvas');
@@ -646,7 +646,7 @@ export function AdvancedParticleTree() {
               console.warn('WebGL context lost');
             }, false);
             canvas.addEventListener('webglcontextrestored', () => {
-              console.log('WebGL context restored');
+              // WebGL context restored
             }, false);
           }
         }}

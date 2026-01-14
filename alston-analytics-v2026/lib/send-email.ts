@@ -31,7 +31,6 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       });
 
       if (response.ok) {
-        console.log('Email sent via Resend');
         return true;
       } else {
         const error = await response.text();
@@ -60,7 +59,6 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       });
 
       if (response.ok) {
-        console.log('Email sent via SendGrid');
         return true;
       } else {
         const error = await response.text();
@@ -71,10 +69,11 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
     }
   }
 
-  // Fallback: Log email (for development/testing)
-  console.log('Email would be sent:', { to, subject, html });
-  console.log('⚠️ No email provider configured. Add RESEND_API_KEY or SENDGRID_API_KEY to send emails.');
-  
+  // Fallback: No email provider configured
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('⚠️ No email provider configured. Add RESEND_API_KEY or SENDGRID_API_KEY to send emails.');
+  }
+
   return false;
 }
 

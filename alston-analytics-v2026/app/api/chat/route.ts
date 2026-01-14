@@ -153,7 +153,6 @@ export async function POST(req: Request) {
         }
         
         // If we get here, API failed - fall through to fallback
-        console.log('OpenAI API unavailable or returned error - using intelligent fallback');
       } catch (openAIError: any) {
         // Catch any unexpected errors and fall through to fallback
         console.error('OpenAI API error - falling back to intelligent response:', {

@@ -95,11 +95,11 @@ export default function ContactPage() {
                   </a>
                   <span className="hidden sm:inline text-soft-clay/30" aria-hidden="true">|</span>
                   <a
-                    href="https://linkedin.com/in/alstonanalytics"
+                    href="https://www.linkedin.com/in/william-alston/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-data-cyan font-mono text-sm hover:glow-data transition-all focus:outline-none focus:ring-2 focus:ring-data-cyan/50 rounded px-2 py-1"
-                    aria-label="Visit Alston Analytics LinkedIn profile (opens in new tab)"
+                    aria-label="Visit William Alston's LinkedIn profile (opens in new tab)"
                   >
                     LinkedIn
                   </a>

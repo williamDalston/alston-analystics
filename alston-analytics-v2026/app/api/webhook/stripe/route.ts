@@ -51,14 +51,6 @@ export async function POST(req: NextRequest) {
       const customerEmail = session.customer_email || session.customer_details?.email;
       const amount = session.amount_total || 0;
 
-      // Log successful payment
-      console.log('Payment successful:', {
-        sessionId: session.id,
-        customerEmail,
-        amountTotal: amount,
-        metadata: session.metadata,
-      });
-
       // Send email notifications
       try {
         // Send notification to business owner
@@ -94,9 +86,7 @@ export async function POST(req: NextRequest) {
     }
 
     case 'payment_intent.succeeded': {
-      const paymentIntent = event.data.object as Stripe.PaymentIntent;
       // Payment intent succeeded (alternative to checkout.session.completed)
-      console.log('PaymentIntent succeeded:', paymentIntent.id);
       // TODO: Add business logic if using Payment Intents directly
       break;
     }
@@ -116,8 +106,8 @@ export async function POST(req: NextRequest) {
     }
 
     default:
-      // Log unhandled events for monitoring
-      console.log(`Unhandled event type: ${event.type}`);
+      // Unhandled event types are ignored
+      break;
   }
 
   return NextResponse.json({ received: true });
