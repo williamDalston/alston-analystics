@@ -113,7 +113,7 @@ function TestimonialCard({ testimonial, index }: { testimonial: Testimonial; ind
 
 export function TestimonialsSection() {
   return (
-    <section className="relative py-20 sm:py-28 px-4 sm:px-6">
+    <section className="relative py-16 sm:py-20 md:py-28 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Background accent */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-data-cyan/[0.02] to-transparent pointer-events-none" />
 

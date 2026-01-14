@@ -83,12 +83,12 @@ export default function Home() {
         <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 py-20 overflow-hidden">
           <div className="max-w-7xl mx-auto w-full text-center relative z-10">
 
-            {/* Ambient Background Glow */}
+            {/* Ambient Background Glow - clamped size for mobile */}
             <motion.div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-star-blue/10 rounded-full blur-[120px] pointer-events-none"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(600px,80vw)] h-[min(600px,80vw)] bg-star-blue/10 rounded-full blur-[80px] sm:blur-[120px] pointer-events-none"
               animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.5, 0.3]
+                scale: [1, 1.1, 1],
+                opacity: [0.3, 0.45, 0.3]
               }}
               transition={{
                 duration: 12,

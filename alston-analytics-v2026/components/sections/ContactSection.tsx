@@ -8,7 +8,7 @@ export function ContactSection() {
     const [chatStarted, setChatStarted] = useState(false);
 
     return (
-        <section id="contact" className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 py-12 sm:pb-32 sm:pt-24 nav-section">
+        <section id="contact" className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 sm:pb-32 sm:pt-24 nav-section overflow-hidden">
             <div className="max-w-4xl w-full">
                 <AnimatePresence mode="wait">
                     {!chatStarted ? (

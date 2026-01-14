@@ -34,7 +34,7 @@ export function SovereignMindSection() {
     };
 
     return (
-        <section id="dojo" className="relative min-h-screen py-12 sm:py-24 nav-section">
+        <section id="dojo" className="relative min-h-screen py-12 sm:py-24 nav-section overflow-hidden">
             {/* Hero Section */}
             <div className="px-4 sm:px-6">
                 <div className="max-w-7xl mx-auto text-center">

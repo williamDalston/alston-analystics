@@ -43,8 +43,8 @@ export function SectionDivider({ variant = 'gradient', className = '' }: Section
 
   if (variant === 'pulse') {
     return (
-      <div className={`relative py-8 flex items-center justify-center ${className}`}>
-        <div className="relative w-full max-w-4xl mx-auto">
+      <div className={`relative py-8 flex items-center justify-center overflow-hidden ${className}`}>
+        <div className="relative w-full max-w-4xl mx-auto px-4">
           {/* Center pulse */}
           <motion.div
             className="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-data-cyan"
@@ -60,15 +60,16 @@ export function SectionDivider({ variant = 'gradient', className = '' }: Section
             transition={{ duration: 2, repeat: Infinity }}
           />
 
-          {/* Expanding rings */}
+          {/* Expanding rings - constrained max size for mobile */}
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
               className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 rounded-full border border-data-cyan/30"
+              style={{ maxWidth: 'min(400px, 90vw)', maxHeight: 'min(400px, 90vw)' }}
               initial={{ width: 16, height: 16, opacity: 0.8 }}
               animate={{
-                width: [16, 200, 400],
-                height: [16, 200, 400],
+                width: [16, 'min(200px, 45vw)', 'min(400px, 90vw)'],
+                height: [16, 'min(200px, 45vw)', 'min(400px, 90vw)'],
                 opacity: [0.6, 0.2, 0],
               }}
               transition={{
@@ -82,7 +83,7 @@ export function SectionDivider({ variant = 'gradient', className = '' }: Section
 
           {/* Side lines */}
           <motion.div
-            className="absolute left-0 right-1/2 top-1/2 h-px mr-8"
+            className="absolute left-4 right-1/2 top-1/2 h-px mr-8"
             style={{
               background: 'linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.5))',
             }}
@@ -90,7 +91,7 @@ export function SectionDivider({ variant = 'gradient', className = '' }: Section
             transition={{ duration: 2, repeat: Infinity }}
           />
           <motion.div
-            className="absolute left-1/2 right-0 top-1/2 h-px ml-8"
+            className="absolute left-1/2 right-4 top-1/2 h-px ml-8"
             style={{
               background: 'linear-gradient(90deg, rgba(0, 240, 255, 0.5), transparent)',
             }}

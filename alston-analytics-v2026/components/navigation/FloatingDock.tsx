@@ -189,7 +189,13 @@ export function FloatingDock() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5, duration: 0.6, type: "spring", stiffness: 100 }}
       className={cn(
-        "fixed bottom-[20px] left-1/2 -translate-x-1/2 z-50 w-auto max-w-[90vw] pb-safe"
+        "fixed z-50 w-auto",
+        // Safe positioning: use calc to account for safe area + comfortable margin
+        "left-1/2 -translate-x-1/2",
+        "bottom-[max(20px,env(safe-area-inset-bottom,20px))]",
+        // Constrain width with safe horizontal margins
+        "max-w-[calc(100vw-2rem)]",
+        "sm:max-w-[90vw]"
       )}
       aria-label="Main navigation"
       onMouseMove={(e) => mouseX.set(e.pageX)}
@@ -205,7 +211,7 @@ export function FloatingDock() {
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      <div className="glass-heavy rounded-full px-3 sm:px-5 py-2.5 flex items-center gap-0.5 sm:gap-1 shadow-2xl border border-stellar-white/10 backdrop-blur-xl">
+      <div className="glass-heavy rounded-full px-4 sm:px-5 py-2.5 flex items-center gap-1 sm:gap-1 shadow-2xl border border-stellar-white/10 backdrop-blur-xl">
         {dockItems.map((item, index) => (
           <DockItemComponent
             key={item.id}

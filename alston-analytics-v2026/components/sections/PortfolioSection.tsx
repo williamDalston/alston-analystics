@@ -5,7 +5,7 @@ import { BeforeAfterSlider } from '@/components/portfolio/BeforeAfterSlider';
 
 export function PortfolioSection() {
     return (
-        <section id="work" className="relative min-h-screen py-12 sm:py-24 px-4 sm:px-6 nav-section">
+        <section id="work" className="relative min-h-screen py-12 sm:py-24 px-4 sm:px-6 lg:px-8 nav-section overflow-hidden">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <motion.div

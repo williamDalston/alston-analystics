@@ -31,8 +31,9 @@ function ServiceCard({ title, description, icon, className, showPurchaseButton, 
   const mouseXSpring = useSpring(x);
   const mouseYSpring = useSpring(y);
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['7.5deg', '-7.5deg']);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-7.5deg', '7.5deg']);
+  // Subtle 3D tilt - reduced for less visual noise
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['4deg', '-4deg']);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-4deg', '4deg']);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current) return;
@@ -59,13 +60,13 @@ function ServiceCard({ title, description, icon, className, showPurchaseButton, 
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      whileHover={{ y: -8, scale: 1.02 }}
-      className={`glass-surface rounded-3xl p-8 relative overflow-hidden group cursor-pointer flex flex-col holographic-shimmer iridescent-border ${className}`}
+      whileHover={{ y: -4, scale: 1.01 }}
+      className={`glass-surface rounded-2xl sm:rounded-3xl p-6 sm:p-8 relative overflow-hidden group cursor-pointer flex flex-col holographic-shimmer iridescent-border ${className}`}
       style={{
         rotateX,
         rotateY,
         transformStyle: 'preserve-3d',
-        backgroundColor: 'rgba(15, 23, 42, 0.3)', // clearer glass
+        backgroundColor: 'rgba(15, 23, 42, 0.3)',
       }}
     >
       {/* Animated gradient background - Holographic Shine */}
@@ -163,7 +164,7 @@ function ServiceCard({ title, description, icon, className, showPurchaseButton, 
 
 export function ServiceBentoGrid() {
   return (
-    <section className="relative py-32 px-6">
+    <section className="relative py-16 sm:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div

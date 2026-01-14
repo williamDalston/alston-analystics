@@ -136,7 +136,7 @@ function MetricCard({ metric, index }: { metric: Metric; index: number }) {
 
 export function MetricsCounter() {
   return (
-    <section className="relative py-16 sm:py-24 px-4 sm:px-6 overflow-hidden">
+    <section className="relative py-16 sm:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-deep-void via-glass-surface/20 to-deep-void pointer-events-none" />
 
