@@ -4,12 +4,23 @@ import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { ImageOff } from 'lucide-react';
 
 interface BeforeAfterSliderProps {
   beforeImage: string;
   afterImage: string;
   beforeLabel?: string;
   afterLabel?: string;
+}
+
+function ImagePlaceholder({ label }: { label: string }) {
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center bg-glass-surface/80">
+      <ImageOff className="w-12 h-12 text-soft-clay/30 mb-3" />
+      <span className="text-soft-clay/50 font-mono text-sm">Case Study Visual</span>
+      <span className="text-soft-clay/30 font-mono text-xs mt-1">{label}</span>
+    </div>
+  );
 }
 
 export function BeforeAfterSlider({
@@ -20,6 +31,8 @@ export function BeforeAfterSlider({
 }: BeforeAfterSliderProps) {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
+  const [beforeError, setBeforeError] = useState(false);
+  const [afterError, setAfterError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleMove = (clientX: number) => {
@@ -59,15 +72,20 @@ export function BeforeAfterSlider({
       {/* Before Image (Grayscale, Left Side) */}
       <div className="absolute inset-0 z-0">
         <div className="relative w-full h-full bg-glass-surface/50 overflow-hidden">
-          <Image
-            src={beforeImage}
-            alt={beforeLabel}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover grayscale"
-            priority={false}
-            loading="lazy"
-          />
+          {beforeError ? (
+            <ImagePlaceholder label={beforeLabel} />
+          ) : (
+            <Image
+              src={beforeImage}
+              alt={beforeLabel}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover grayscale"
+              priority={false}
+              loading="lazy"
+              onError={() => setBeforeError(true)}
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-br from-deep-void/50 via-transparent to-deep-void/30 pointer-events-none" />
         </div>
 
@@ -85,15 +103,20 @@ export function BeforeAfterSlider({
         }}
       >
         <div className="relative w-full h-full overflow-hidden bg-gradient-to-br from-stellar-white/10 to-data-cyan/15">
-          <Image
-            src={afterImage}
-            alt={afterLabel}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover"
-            priority={false}
-            loading="lazy"
-          />
+          {afterError ? (
+            <ImagePlaceholder label={afterLabel} />
+          ) : (
+            <Image
+              src={afterImage}
+              alt={afterLabel}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+              priority={false}
+              loading="lazy"
+              onError={() => setAfterError(true)}
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-br from-transparent to-deep-void/15 pointer-events-none" />
         </div>
 

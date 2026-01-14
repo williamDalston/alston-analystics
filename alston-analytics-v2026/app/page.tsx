@@ -6,6 +6,7 @@ import { useRef, useState, Suspense } from 'react';
 import { PortfolioSection } from '@/components/sections/PortfolioSection';
 import { SovereignMindSection } from '@/components/sections/SovereignMindSection';
 import { ContactSection } from '@/components/sections/ContactSection';
+import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
 import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
 
 const AdvancedParticleTree = dynamic(
@@ -103,7 +104,7 @@ export default function Home() {
               >
                 <div className="absolute inset-0 bg-stellar-white/20 blur-[60px] rounded-full opacity-50" />
                 <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-stellar-white to-gray-400 tracking-tight leading-[0.9] glow-electric relative z-10 mix-blend-lighten">
-                  Data is<br />organic
+                  Data clarity.<br />Executive decisions.
                 </h1>
               </motion.div>
 
@@ -113,7 +114,7 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 className="text-2xl sm:text-3xl md:text-4xl text-soft-clay/80 font-mono tracking-wide mb-6 md:mb-8 max-w-4xl mx-auto"
               >
-                We prune the chaos.
+                Power BI architecture that speaks your language.
               </motion.p>
 
               <motion.p
@@ -179,6 +180,9 @@ export default function Home() {
 
         {/* Sovereign Mind Section */}
         <SovereignMindSection />
+
+        {/* Testimonials Section */}
+        <TestimonialsSection />
 
         {/* Contact Section */}
         <ContactSection />

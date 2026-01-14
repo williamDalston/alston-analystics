@@ -83,8 +83,8 @@ export function FloatingDock() {
             >
               <motion.div
                 className={cn(
-                  "relative flex items-center justify-center",
-                  "w-10 h-10 sm:w-12 sm:h-12 rounded-full",
+                  "relative flex flex-col items-center justify-center",
+                  "w-12 h-12 sm:w-12 sm:h-12 rounded-full",
                   "transition-colors duration-300",
                   "cursor-pointer group",
                   isActive ? "text-stellar-white" : "text-soft-clay hover:text-stellar-white"
@@ -104,11 +104,16 @@ export function FloatingDock() {
               >
                 {item.icon}
 
+                {/* Mobile label - always visible on small screens */}
+                <span className="sm:hidden text-[9px] font-mono mt-0.5 opacity-70">
+                  {item.label === 'The Dojo' ? 'Learn' : item.label === 'Contact' ? 'Talk' : item.label}
+                </span>
+
                 {/* Active page indicator */}
                 {isActive && (
                   <motion.div
                     layoutId="active-page"
-                    className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-stellar-white shadow-[0_0_12px_rgba(224,242,254,0.9)]"
+                    className="absolute -bottom-1 sm:-bottom-1 w-1.5 h-1.5 rounded-full bg-stellar-white shadow-[0_0_12px_rgba(224,242,254,0.9)]"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 600, damping: 30, mass: 0.4 }}

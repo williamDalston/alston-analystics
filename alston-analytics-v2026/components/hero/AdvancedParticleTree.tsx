@@ -422,7 +422,7 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
   // This prevents the "Cannot read properties of undefined (reading 'length')" error
   try {
     // Check line geometry first
-    if (!lineGeometry || !lineGeometry.isBufferGeometry || lineGeometry.disposed) {
+    if (!lineGeometry || !lineGeometry.isBufferGeometry || (lineGeometry as any).disposed) {
       return null;
     }
     
@@ -445,7 +445,7 @@ function AdvancedParticleSystem({ mousePosition }: ParticleSystemProps) {
     }
     
     // Validate main geometry
-    if (!geometry || !geometry.isBufferGeometry || geometry.disposed) {
+    if (!geometry || !geometry.isBufferGeometry || (geometry as any).disposed) {
       return null;
     }
     

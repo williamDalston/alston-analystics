@@ -487,7 +487,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
             whileHover={{ x: -2 }}
           >
             <ArrowLeft className="w-3 h-3" />
-            <span>Terminate_Session</span>
+            <span>End Chat</span>
           </motion.button>
         </div>
 
@@ -525,7 +525,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
             >
               {/* Message Label */}
               <span className={`text-[10px] font-mono tracking-widest mb-1 opacity-40 uppercase ${message.role === 'user' ? 'text-star-blue mr-2' : 'text-data-cyan ml-2'}`}>
-                {message.role === 'user' ? '>> USER_INPUT' : '>> SYSTEM_RESPONSE'}
+                {message.role === 'user' ? 'You' : 'Alston'}
               </span>
 
               <motion.div
@@ -680,7 +680,7 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && !isLoading && !isRateLimited && !isLimitReached && handleSendMessage()}
-            placeholder={isLimitReached ? "SESSION_LIMIT_REACHED" : messages.length === 0 ? "Type your message or question..." : "Continue the conversation..."}
+            placeholder={isLimitReached ? "Chat limit reached - email us at info@alstonanalytics.com" : messages.length === 0 ? "Type your message or question..." : "Continue the conversation..."}
             disabled={isLoading || isRateLimited || isLimitReached}
             className="flex-1 bg-transparent border-none focus:ring-0 text-stellar-white font-mono text-sm placeholder:text-soft-clay/30"
             autoComplete="off"

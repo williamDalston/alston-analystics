@@ -43,8 +43,7 @@ export function ContactSection() {
                                 transition={{ delay: 0.2 }}
                                 className="text-base sm:text-lg md:text-xl text-soft-clay/70 max-w-2xl mx-auto mb-8 sm:mb-12 px-4"
                             >
-                                We don't do discovery calls. We do strategic dialogues.
-                                What are you building?
+                                Let's discuss what you're building.
                             </motion.p>
 
                             <motion.button
@@ -86,11 +85,11 @@ export function ContactSection() {
                                     </a>
                                     <span className="hidden sm:inline text-soft-clay/30" aria-hidden="true">|</span>
                                     <a
-                                        href="https://linkedin.com/in/alstonanalytics"
+                                        href="https://www.linkedin.com/in/william-alston/"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-data-cyan font-mono text-sm hover:glow-data transition-all focus:outline-none focus:ring-2 focus:ring-data-cyan/50 rounded px-2 py-1"
-                                        aria-label="Visit Alston Analytics LinkedIn profile (opens in new tab)"
+                                        aria-label="Visit Will Alston's LinkedIn profile (opens in new tab)"
                                     >
                                         LinkedIn
                                     </a>

@@ -2,15 +2,15 @@
 
 import { motion } from 'framer-motion';
 
-const clients = [
-  'Fortune 500',
-  'Startups',
-  'Healthcare',
-  'Finance',
-  'Technology',
-  'Manufacturing',
-  'Retail',
-  'Government',
+const trustSignals = [
+  'Federal Agencies',
+  'Fortune 500 Supply Chain',
+  'Healthcare Systems',
+  'Financial Services',
+  '50+ Engagements',
+  '98% Client Retention',
+  'Public Sector Certified',
+  'Executive-Ready Delivery',
 ];
 
 export function TrustTicker() {
@@ -34,16 +34,16 @@ export function TrustTicker() {
           className="flex gap-20"
         >
           {/* Duplicate the array for seamless loop */}
-          {[...clients, ...clients, ...clients].map((client, index) => (
+          {[...trustSignals, ...trustSignals, ...trustSignals].map((signal, index) => (
             <motion.div
               key={index}
-              className="relative flex-shrink-0 text-soft-clay/40 font-mono text-2xl font-bold tracking-widest uppercase select-none hover:text-stellar-white transition-colors duration-300"
+              className="relative flex-shrink-0 text-soft-clay/40 font-mono text-xl sm:text-2xl font-bold tracking-widest uppercase select-none hover:text-stellar-white transition-colors duration-300"
               style={{
                 textShadow: '0 0 15px rgba(226, 209, 195, 0.1)',
               }}
               whileHover={{ scale: 1.15, textShadow: '0 0 25px rgba(224, 242, 254, 0.6)' }}
             >
-              {client}
+              {signal}
             </motion.div>
           ))}
         </motion.div>

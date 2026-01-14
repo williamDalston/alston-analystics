@@ -13,9 +13,17 @@ interface ServiceCardProps {
   showPurchaseButton?: boolean;
   priceId?: string;
   price?: number;
+  ctaText?: string;
+  ctaAction?: 'contact' | 'purchase';
 }
 
-function ServiceCard({ title, description, icon, className, showPurchaseButton, priceId, price }: ServiceCardProps) {
+function ServiceCard({ title, description, icon, className, showPurchaseButton, priceId, price, ctaText, ctaAction }: ServiceCardProps) {
+  const scrollToContact = () => {
+    const element = document.getElementById('contact');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -115,6 +123,19 @@ function ServiceCard({ title, description, icon, className, showPurchaseButton, 
         </div>
       )}
 
+      {/* Contact CTA for non-purchase cards */}
+      {ctaAction === 'contact' && ctaText && (
+        <div className="relative z-10 mt-auto pt-4 border-t border-stellar-white/10 group-hover:border-stellar-white/20 transition-colors">
+          <button
+            onClick={scrollToContact}
+            className="w-full py-3 px-4 rounded-lg border border-stellar-white/20 text-stellar-white/80 font-mono text-sm hover:bg-stellar-white/5 hover:border-stellar-white/40 hover:text-stellar-white transition-all flex items-center justify-center gap-2 group/btn"
+          >
+            {ctaText}
+            <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
+          </button>
+        </div>
+      )}
+
       {/* Decorative corner accent */}
       <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-stellar-white/20 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -185,6 +206,8 @@ export function ServiceBentoGrid() {
               icon={<Compass className="w-full h-full" />}
               title="Strategic Foresight"
               description="We don't predict the future. We architect it. From market landscapes to organizational restructuring, we turn complexity into competitive advantage."
+              ctaText="Start Conversation"
+              ctaAction="contact"
             />
           </motion.div>
 
@@ -215,6 +238,8 @@ export function ServiceBentoGrid() {
               icon={<BookOpen className="w-full h-full" />}
               title="The Sovereign Mind"
               description="Leadership isn't taught in classrooms. We codify mental models, inversion frameworks, and leverage principles for modern executives."
+              ctaText="Learn More"
+              ctaAction="contact"
             />
           </motion.div>
         </div>
