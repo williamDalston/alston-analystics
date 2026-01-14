@@ -96,6 +96,12 @@
   box-sizing: border-box;
 }
 
+html {
+  background: var(--background);
+  /* Prevent overscroll bounce showing white */
+  overscroll-behavior: none;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -106,6 +112,30 @@ body {
   text-rendering: optimizeLegibility;
   font-feature-settings: "kern" 1;
   font-kerning: normal;
+  /* Performance optimizations */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* GPU acceleration for animated elements */
+.glass-surface,
+.glass-heavy,
+[class*="animate-"],
+[class*="transition-"] {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* ============================================

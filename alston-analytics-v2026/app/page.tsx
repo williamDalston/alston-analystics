@@ -128,7 +128,7 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.5 }}
                 className="text-lg sm:text-xl md:text-2xl text-soft-clay/60 font-sans mb-10 md:mb-14 max-w-3xl mx-auto"
               >
-                Transform raw complexity into executive clarity. Strategic consulting. Power BI engineering. Sovereign thinking.
+                We build the reporting infrastructure that leadership teams trust. Power BI engineering for organizations that need their data to work.
               </motion.p>
 
               <motion.div

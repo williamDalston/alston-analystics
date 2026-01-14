@@ -15,7 +15,7 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    quote: "Alston transformed our fragmented data into a single source of truth. Our board meetings went from confusion to clarity overnight.",
+    quote: "We had seven different reporting systems before Alston. Now we have one dashboard that the entire C-suite trusts. The difference in our quarterly planning alone was worth it.",
     name: "Sarah Chen",
     title: "VP of Operations",
     company: "Regional Health Network",
@@ -24,7 +24,7 @@ const testimonials: Testimonial[] = [
     accentColor: "from-rose-500/20 to-rose-600/10"
   },
   {
-    quote: "The ROI was immediate. We identified $2.4M in savings within the first dashboard review.",
+    quote: "Within the first review, we found $2.4M in supply chain inefficiencies that had been invisible for years. The data was there—we just couldn't see it until now.",
     name: "Marcus Thompson",
     title: "Director of Analytics",
     company: "Fortune 500 Manufacturing",
@@ -33,7 +33,7 @@ const testimonials: Testimonial[] = [
     accentColor: "from-amber-500/20 to-amber-600/10"
   },
   {
-    quote: "Finally, a consultant who speaks executive, not just technical. Our leadership team actually uses the dashboards now.",
+    quote: "Most consultants hand you a deck and disappear. Will stayed until our team could run the system independently. That handoff made the entire engagement worthwhile.",
     name: "Jennifer Walsh",
     title: "Chief Data Officer",
     company: "Federal Agency",
@@ -136,10 +136,10 @@ export function TestimonialsSection() {
             Testimonials
           </motion.span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-stellar-white glow-electric mb-4">
-            What Leaders Say
+            Client Outcomes
           </h2>
           <p className="text-soft-clay/70 font-sans text-base sm:text-lg max-w-2xl mx-auto text-shadow-subtle">
-            Results that speak for themselves.
+            From the executives we've partnered with.
           </p>
         </motion.div>
 

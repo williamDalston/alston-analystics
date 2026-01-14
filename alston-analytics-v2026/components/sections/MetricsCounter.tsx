@@ -18,8 +18,8 @@ const metrics: Metric[] = [
   {
     value: 50,
     suffix: '+',
-    label: 'Executive Dashboards',
-    description: 'Delivered to leadership teams',
+    label: 'Dashboards Delivered',
+    description: 'Active in production today',
     icon: BarChart3,
     color: 'text-data-cyan',
   },
@@ -28,15 +28,15 @@ const metrics: Metric[] = [
     suffix: 'M+',
     prefix: '$',
     label: 'Identified Savings',
-    description: 'Across all client engagements',
+    description: 'Found in client data',
     icon: DollarSign,
     color: 'text-emerald-400',
   },
   {
     value: 98,
     suffix: '%',
-    label: 'Client Retention',
-    description: 'Long-term partnerships',
+    label: 'Return Engagements',
+    description: 'Clients who come back',
     icon: Users,
     color: 'text-amber-400',
   },
@@ -44,7 +44,7 @@ const metrics: Metric[] = [
     value: 3,
     suffix: 'x',
     label: 'Average ROI',
-    description: 'Return on investment',
+    description: 'First-year returns',
     icon: TrendingUp,
     color: 'text-violet-400',
   },
@@ -171,7 +171,7 @@ export function MetricsCounter() {
             By The Numbers
           </motion.span>
           <h2 className="text-3xl sm:text-4xl font-bold text-stellar-white glow-electric">
-            Proven Results
+            Track Record
           </h2>
         </motion.div>
 

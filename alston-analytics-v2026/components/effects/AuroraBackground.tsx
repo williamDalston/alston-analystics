@@ -1,8 +1,49 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 export function AuroraBackground() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Simplified version for mobile - fewer animations, better performance
+  if (isMobile) {
+    return (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Single static gradient for mobile */}
+        <div
+          className="absolute inset-0 opacity-40"
+          style={{
+            background: `
+              radial-gradient(ellipse 80% 50% at 50% 30%,
+                rgba(0, 240, 255, 0.12) 0%,
+                rgba(125, 211, 252, 0.08) 30%,
+                transparent 60%
+              )
+            `,
+          }}
+        />
+        {/* Simple pulsing glow */}
+        <motion.div
+          className="absolute top-1/4 right-0 w-[50%] h-[50%] opacity-30"
+          style={{
+            background: 'radial-gradient(circle, rgba(0, 240, 255, 0.15) 0%, transparent 60%)',
+            filter: 'blur(40px)',
+          }}
+          animate={{ opacity: [0.2, 0.4, 0.2] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* Primary aurora wave */}

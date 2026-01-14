@@ -22,7 +22,8 @@ const geistMono = Geist_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#050A0E",
+  themeColor: "#02040A",
+  colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5, // Allow zoom for accessibility
@@ -83,16 +84,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="lenis">
+    <html lang="en" className="lenis" style={{ backgroundColor: '#02040A' }}>
       <head>
+        {/* Prevent white flash on initial load */}
+        <style dangerouslySetInnerHTML={{ __html: `html,body{background:#02040A}` }} />
+
         {/* Preconnect to Google Fonts for faster loading */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
-        {/* Preload critical fonts to prevent FOIT */}
-        {/* Note: Next.js font optimization handles font preloading automatically */}
-        {/* The display: swap in font config prevents FOIT */}
-        
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

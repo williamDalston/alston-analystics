@@ -3,14 +3,14 @@
 import { motion } from 'framer-motion';
 
 const trustSignals = [
-  'Federal Agencies',
+  'Federal & State Agencies',
   'Fortune 500 Supply Chain',
-  'Healthcare Systems',
+  'Regional Health Systems',
   'Financial Services',
-  '50+ Engagements',
-  '98% Client Retention',
-  'Public Sector Certified',
-  'Executive-Ready Delivery',
+  '50+ Engagements Delivered',
+  'Zero-Downtime Migrations',
+  'Executive-Ready Reporting',
+  'DAX & Semantic Model Specialists',
 ];
 
 export function TrustTicker() {

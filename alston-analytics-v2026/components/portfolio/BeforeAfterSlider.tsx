@@ -141,22 +141,36 @@ export function BeforeAfterSlider({
     handleMove(e.clientX);
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    // Prevent page scroll when starting to drag the slider
+    setIsDragging(true);
+  };
+
   const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    // Prevent page scroll while dragging
+    e.preventDefault();
+    e.stopPropagation();
     if (e.touches.length > 0) {
       handleMove(e.touches[0].clientX);
     }
   };
 
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
   return (
     <div
       ref={containerRef}
-      className="relative w-full aspect-video rounded-2xl overflow-hidden cursor-ew-resize select-none group"
+      className="relative w-full aspect-video rounded-2xl overflow-hidden cursor-ew-resize select-none group touch-none"
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={() => { handleMouseUp(); setIsHovered(false); }}
       onMouseEnter={() => setIsHovered(true)}
+      onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
-      onTouchEnd={handleMouseUp}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Outer glow on hover */}
       <motion.div
@@ -278,7 +292,7 @@ export function BeforeAfterSlider({
             borderColor: isDragging ? 'rgba(0, 240, 255, 0.8)' : 'rgba(224, 242, 254, 0.8)',
           }}
           onMouseDown={handleMouseDown}
-          onTouchStart={() => setIsDragging(true)}
+          onTouchStart={handleTouchStart}
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.95 }}
           animate={{

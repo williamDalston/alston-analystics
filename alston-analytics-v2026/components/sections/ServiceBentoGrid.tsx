@@ -198,7 +198,7 @@ export function ServiceBentoGrid() {
             </span>
           </motion.h2>
           <p className="text-soft-clay/70 text-lg font-sans max-w-2xl mx-auto">
-            Three pillars of transformation. Each engineered for executive clarity.
+            Three disciplines. One objective: decisions made with confidence.
           </p>
         </motion.div>
 
@@ -212,8 +212,8 @@ export function ServiceBentoGrid() {
           >
             <ServiceCard
               icon={<Compass className="w-full h-full" />}
-              title="Strategic Foresight"
-              description="We don't predict the future. We architect it. From market landscapes to organizational restructuring, we turn complexity into competitive advantage."
+              title="Strategic Advisory"
+              description="Pattern recognition across markets, organizations, and competitive landscapes. We identify the leverage points others miss—then help you act on them."
               ctaText="Start Conversation"
               ctaAction="contact"
             />
@@ -227,8 +227,8 @@ export function ServiceBentoGrid() {
           >
             <ServiceCard
               icon={<Database className="w-full h-full" />}
-              title="Power BI Architecture"
-              description="Data without clarity is noise. We build dashboards executives actually use. Real-time insights. Zero clutter. Maximum impact."
+              title="Power BI Engineering"
+              description="Semantic models, DAX optimization, and visual design that respects executive attention. We build the dashboards your leadership team will actually open."
               showPurchaseButton={!!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
               priceId={process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_POWER_BI_HEALTH_CHECK || ''}
               price={1000}
@@ -245,8 +245,8 @@ export function ServiceBentoGrid() {
             <ServiceCard
               icon={<BookOpen className="w-full h-full" />}
               title="The Sovereign Mind"
-              description="Leadership isn't taught in classrooms. We codify mental models, inversion frameworks, and leverage principles for modern executives."
-              ctaText="Learn More"
+              description="Decision frameworks drawn from first-principles thinking, Stoic philosophy, and systems theory. The intellectual toolkit behind durable leadership."
+              ctaText="Explore"
               ctaAction="contact"
             />
           </motion.div>

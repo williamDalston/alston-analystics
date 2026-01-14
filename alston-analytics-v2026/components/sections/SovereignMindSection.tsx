@@ -26,8 +26,8 @@ export function SovereignMindSection() {
                         viewport={{ once: true }}
                         className="text-base sm:text-lg md:text-xl text-soft-clay/70 font-sans max-w-3xl mx-auto mb-3 sm:mb-4 px-4"
                     >
-                        Leadership is a science, not an art. Explore mental models, frameworks, and
-                        sovereign thinking for the modern executive.
+                        The principles that shaped empires apply to boardrooms. Explore decision
+                        frameworks drawn from Stoic philosophy, systems theory, and behavioral economics.
                     </motion.p>
 
                     <motion.p
@@ -53,7 +53,7 @@ export function SovereignMindSection() {
             <div className="relative py-12 sm:py-24 px-4 sm:px-6">
                 <div className="max-w-7xl mx-auto">
                     <h3 className="text-3xl sm:text-4xl font-bold text-soft-clay mb-8 sm:mb-12 text-center">
-                        Core Frameworks
+                        Foundational Disciplines
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -65,10 +65,11 @@ export function SovereignMindSection() {
                             className="glass-surface rounded-2xl p-6 sm:p-8 hover:border-stellar-white/30 transition-all duration-300"
                         >
                             <h4 className="text-xl sm:text-2xl font-bold text-stellar-white mb-2 sm:mb-3">
-                                Inversion
+                                Via Negativa
                             </h4>
                             <p className="text-sm sm:text-base text-soft-clay/70 font-sans mb-3 sm:mb-4">
-                                Don't solve problems. Avoid them. The ancient art of thinking backwards.
+                                Addition by subtraction. Wisdom lies not in what you add, but what you refuse.
+                                The discipline that built Berkshire and shaped Stoic philosophy.
                             </p>
                             <span className="text-data-cyan font-mono text-sm opacity-60">
                                 Available Soon →
@@ -80,13 +81,14 @@ export function SovereignMindSection() {
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.1 }}
                             viewport={{ once: true }}
-                            className="glass-surface rounded-2xl p-8 hover:border-stellar-white/30 transition-all duration-300"
+                            className="glass-surface rounded-2xl p-6 sm:p-8 hover:border-stellar-white/30 transition-all duration-300"
                         >
-                            <h4 className="text-2xl font-bold text-stellar-white mb-3">
-                                Leverage
+                            <h4 className="text-xl sm:text-2xl font-bold text-stellar-white mb-2 sm:mb-3">
+                                Second-Order Effects
                             </h4>
-                            <p className="text-soft-clay/70 font-sans mb-4">
-                                Give me a lever long enough, and I'll move the world. Naval's trinity applied.
+                            <p className="text-sm sm:text-base text-soft-clay/70 font-sans mb-3 sm:mb-4">
+                                Every action creates ripples. Train yourself to see the consequences of consequences—the
+                                skill that separates strategists from tacticians.
                             </p>
                             <span className="text-data-cyan font-mono text-sm opacity-60">
                                 Available Soon →
@@ -98,13 +100,14 @@ export function SovereignMindSection() {
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.2 }}
                             viewport={{ once: true }}
-                            className="glass-surface rounded-2xl p-8 hover:border-stellar-white/30 transition-all duration-300"
+                            className="glass-surface rounded-2xl p-6 sm:p-8 hover:border-stellar-white/30 transition-all duration-300"
                         >
-                            <h4 className="text-2xl font-bold text-stellar-white mb-3">
-                                Pareto
+                            <h4 className="text-xl sm:text-2xl font-bold text-stellar-white mb-2 sm:mb-3">
+                                Asymmetric Positioning
                             </h4>
-                            <p className="text-soft-clay/70 font-sans mb-4">
-                                80% of results from 20% of effort. The mathematics of disproportionate returns.
+                            <p className="text-sm sm:text-base text-soft-clay/70 font-sans mb-3 sm:mb-4">
+                                Structure decisions where upside dwarfs downside. The operating principle behind
+                                venture capital, options trading, and antifragile organizations.
                             </p>
                             <span className="text-data-cyan font-mono text-sm opacity-60">
                                 Available Soon →
