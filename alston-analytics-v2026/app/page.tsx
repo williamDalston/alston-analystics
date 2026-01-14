@@ -101,14 +101,26 @@ export default function Home() {
               style={{ opacity, scale }}
               className="relative z-10"
             >
+              {/* Premium badge */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mb-6 sm:mb-8"
+              >
+                <span className="badge-refined">
+                  Power BI Engineering
+                </span>
+              </motion.div>
+
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1, ease: "easeOut" }}
-                className="mb-8 relative inline-block"
+                className="mb-6 sm:mb-8 relative inline-block"
               >
                 <div className="absolute inset-0 bg-stellar-white/20 blur-[60px] rounded-full opacity-50" />
-                <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-stellar-white to-gray-400 tracking-tight leading-[0.9] glow-electric relative z-10 mix-blend-lighten">
+                <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-stellar-white to-gray-400 tracking-tight leading-[0.9] glow-electric relative z-10 mix-blend-lighten">
                   Data clarity.<br />Executive decisions.
                 </h1>
               </motion.div>

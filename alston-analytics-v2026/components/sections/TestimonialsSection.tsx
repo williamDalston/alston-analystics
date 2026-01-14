@@ -59,10 +59,13 @@ function TestimonialCard({ testimonial, index }: { testimonial: Testimonial; ind
       transition={{ duration: 0.6, delay: index * 0.15 }}
       viewport={{ once: true }}
       whileHover={{ y: -5, transition: { duration: 0.2 } }}
-      className="glass-surface rounded-2xl p-6 sm:p-8 relative group hover:border-stellar-white/20 transition-all card-glow"
+      className="glass-surface rounded-2xl p-6 sm:p-8 relative group hover:border-stellar-white/20 transition-all card-glow card-corner-accent"
     >
       {/* Accent gradient background */}
       <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${testimonial.accentColor} opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
+
+      {/* Inner glow effect */}
+      <div className="absolute inset-0 rounded-2xl inner-glow opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
       {/* Quote icon with pulse */}
       <motion.div

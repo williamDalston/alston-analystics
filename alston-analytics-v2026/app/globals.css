@@ -1685,3 +1685,349 @@ button:active:not(:disabled) {
   right: 0;
   background: linear-gradient(to left, var(--deep-void), transparent);
 }
+
+/* ============================================
+   FIRST GLANCE PREMIUM POLISH
+   ============================================ */
+
+/* Smooth page fade-in on load */
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+html {
+  animation: page-fade-in 0.6s ease-out;
+}
+
+/* Custom cursor glow effect for interactive elements */
+@media (hover: hover) {
+  .cursor-glow {
+    cursor: pointer;
+    position: relative;
+  }
+
+  .cursor-glow::before {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+  }
+
+  .cursor-glow:hover::before {
+    opacity: 1;
+  }
+}
+
+/* Magnetic text effect for headings */
+.text-magnetic {
+  transition: letter-spacing 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.text-magnetic:hover {
+  letter-spacing: 0.02em;
+}
+
+/* Breathing glow effect for key elements */
+@keyframes breathe-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.2);
+  }
+}
+
+.breathe-glow {
+  animation: breathe-glow 4s ease-in-out infinite;
+}
+
+/* Subtle line decoration for sections */
+.section-line-accent {
+  position: relative;
+}
+
+.section-line-accent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--data-cyan), transparent);
+  opacity: 0.6;
+}
+
+/* Elegant quote styling */
+.quote-elegant {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.quote-elegant::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--data-cyan), transparent);
+}
+
+/* Number/stat highlight effect */
+.stat-highlight {
+  position: relative;
+  display: inline-block;
+}
+
+.stat-highlight::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, var(--data-cyan), transparent);
+  opacity: 0.3;
+  border-radius: 3px;
+}
+
+/* Premium image treatment */
+.image-premium {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+}
+
+.image-premium::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  pointer-events: none;
+}
+
+/* Refined badge/tag styling */
+.badge-refined {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.875rem;
+  background: rgba(0, 240, 255, 0.08);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-family: var(--font-geist-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--data-cyan);
+}
+
+.badge-refined::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--data-cyan);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Scroll progress indicator */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--data-cyan), var(--stellar-white));
+  transform-origin: left;
+  z-index: 100;
+  opacity: 0.8;
+}
+
+/* Elegant divider with icon */
+.divider-icon {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.divider-icon::before,
+.divider-icon::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+/* Soft inner glow for containers */
+.inner-glow {
+  box-shadow: inset 0 0 60px rgba(0, 240, 255, 0.03);
+}
+
+/* Subtle texture overlay */
+.texture-subtle {
+  position: relative;
+}
+
+.texture-subtle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.015;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* Animated underline for nav items */
+.nav-underline {
+  position: relative;
+}
+
+.nav-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--data-cyan);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-50%);
+  border-radius: 1px;
+}
+
+.nav-underline:hover::after,
+.nav-underline[aria-current="page"]::after {
+  width: 100%;
+}
+
+/* Smooth icon transitions */
+.icon-smooth {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.icon-smooth:hover {
+  transform: scale(1.1);
+}
+
+/* Card corner accents */
+.card-corner-accent {
+  position: relative;
+}
+
+.card-corner-accent::before,
+.card-corner-accent::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 240, 255, 0.3);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card-corner-accent::before {
+  top: -1px;
+  left: -1px;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 8px 0 0 0;
+}
+
+.card-corner-accent::after {
+  bottom: -1px;
+  right: -1px;
+  border-left: none;
+  border-top: none;
+  border-radius: 0 0 8px 0;
+}
+
+.card-corner-accent:hover::before,
+.card-corner-accent:hover::after {
+  opacity: 1;
+}
+
+/* Floating label effect */
+.float-label {
+  position: relative;
+}
+
+.float-label input:focus + label,
+.float-label input:not(:placeholder-shown) + label {
+  transform: translateY(-1.5rem) scale(0.85);
+  color: var(--data-cyan);
+}
+
+.float-label label {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: all 0.2s ease;
+  pointer-events: none;
+  color: var(--soft-clay);
+  opacity: 0.6;
+}
+
+/* Smooth number transitions */
+.number-transition {
+  font-variant-numeric: tabular-nums;
+  transition: all 0.3s ease;
+}
+
+/* Glass morphism with depth layers */
+.glass-layered {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+    rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Refined scrollbar for chat/content areas */
+.scrollbar-refined::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-refined::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-refined::-webkit-scrollbar-thumb {
+  background: rgba(224, 242, 254, 0.15);
+  border-radius: 3px;
+}
+
+.scrollbar-refined::-webkit-scrollbar-thumb:hover {
+  background: rgba(224, 242, 254, 0.25);
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}

@@ -7,6 +7,7 @@ import { ModeToggle } from "@/components/ui/ModeToggle";
 import { FocusManager } from "@/components/providers/FocusManager";
 import { Footer } from "@/components/layout/Footer";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { ScrollProgress } from "@/components/effects/ScrollProgress";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -117,6 +118,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <SmoothScrollProvider>
+          <ScrollProgress />
           <FocusManager />
           <ModeToggle />
           <main id="main-content" tabIndex={-1}>
