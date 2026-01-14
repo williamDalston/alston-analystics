@@ -1,9 +1,38 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { ConstellationGraph } from '@/components/sovereign-mind/ConstellationGraph';
+import { Send, Check, Loader2 } from 'lucide-react';
 
 export function SovereignMindSection() {
+    const [email, setEmail] = useState('');
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const handleNewsletterSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!email.trim()) return;
+
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setStatus('error');
+            setErrorMessage('Please enter a valid email address');
+            return;
+        }
+
+        setStatus('loading');
+
+        // Simulate API call - in production, connect to email service
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setStatus('success');
+        setEmail('');
+
+        // Reset after 3 seconds
+        setTimeout(() => setStatus('idle'), 3000);
+    };
+
     return (
         <section id="dojo" className="relative min-h-screen py-12 sm:py-24 nav-section">
             {/* Hero Section */}
@@ -114,6 +143,52 @@ export function SovereignMindSection() {
                             </span>
                         </motion.div>
                     </div>
+
+                    {/* Newsletter Signup */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                        viewport={{ once: true }}
+                        className="mt-12 sm:mt-16 max-w-xl mx-auto"
+                    >
+                        <div className="glass-surface rounded-2xl p-6 sm:p-8 text-center">
+                            <h4 className="text-xl font-bold text-stellar-white mb-2">
+                                Get notified when frameworks launch
+                            </h4>
+                            <p className="text-soft-clay/60 font-sans text-sm mb-6">
+                                Join the list. No spam—just frameworks when they're ready.
+                            </p>
+                            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3">
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => {
+                                        setEmail(e.target.value);
+                                        if (status === 'error') setStatus('idle');
+                                    }}
+                                    placeholder="your@email.com"
+                                    disabled={status === 'loading' || status === 'success'}
+                                    className="flex-1 bg-deep-void/50 border border-stellar-white/10 rounded-lg px-4 py-3 text-stellar-white font-mono text-sm placeholder:text-soft-clay/30 focus:outline-none focus:border-data-cyan/50 focus:ring-1 focus:ring-data-cyan/20 transition-all disabled:opacity-50"
+                                />
+                                <motion.button
+                                    type="submit"
+                                    disabled={status === 'loading' || status === 'success' || !email.trim()}
+                                    className="px-6 py-3 bg-stellar-white/10 border border-stellar-white/20 rounded-lg text-stellar-white font-mono text-sm hover:bg-stellar-white/20 hover:border-stellar-white/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    whileHover={{ scale: status === 'idle' ? 1.02 : 1 }}
+                                    whileTap={{ scale: status === 'idle' ? 0.98 : 1 }}
+                                >
+                                    {status === 'loading' && <Loader2 className="w-4 h-4 animate-spin" />}
+                                    {status === 'success' && <Check className="w-4 h-4 text-emerald-400" />}
+                                    {status === 'idle' && <Send className="w-4 h-4" />}
+                                    {status === 'loading' ? 'Joining...' : status === 'success' ? 'You\'re in' : 'Notify Me'}
+                                </motion.button>
+                            </form>
+                            {status === 'error' && (
+                                <p className="text-signal-red text-xs font-mono mt-2">{errorMessage}</p>
+                            )}
+                        </div>
+                    </motion.div>
                 </div>
             </div>
         </section>

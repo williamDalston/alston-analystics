@@ -22,11 +22,11 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     {
       id: '1',
       role: 'assistant',
-      content: "Hello. I'm Alston's digital assistant. You can reach us directly at info@alstonanalytics.com, or I can help clarify your needs here. What are you looking to build or explore?",
+      content: "Welcome. I'm here to understand what you're building—no forms, no friction. Ask anything about our work, pricing, or process. Or tell me what problem you're trying to solve.",
       options: [
-        'Strategic Consulting',
-        'Power BI Dashboard',
-        'Learn About Alston Analytics',
+        'I need strategic consulting',
+        'I need a Power BI dashboard',
+        'Just exploring for now',
       ],
     },
   ]);
@@ -275,16 +275,15 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
       let fallbackContent: string;
       let fallbackOptions: string[] | undefined;
 
-      if (option === 'Strategic Consulting') {
+      if (option === 'I need strategic consulting') {
         setCurrentStep('consulting');
-        fallbackContent = "Excellent. Strategic work is my specialty. What complexity are you facing?";
-      } else if (option === 'Power BI Dashboard') {
+        fallbackContent = "Good. Tell me about the decision you're trying to make—or the complexity you're navigating. I'll ask clarifying questions to understand the scope.";
+      } else if (option === 'I need a Power BI dashboard') {
         setCurrentStep('powerbi');
-        fallbackContent = 'Power BI is where chaos becomes clarity. How many data sources need integration?';
+        fallbackContent = "Let's scope this out. How many data sources are we integrating? And who's the primary audience—executives, analysts, or operations?";
       } else {
         setCurrentStep('exploring');
-        fallbackContent = "No pressure. Would you like to join the Sovereign Mind newsletter for strategic frameworks?";
-        fallbackOptions = ['Yes, sign me up', 'Not now'];
+        fallbackContent = "Take your time. Feel free to browse the site, or ask me anything about how we work. What caught your interest?";
       }
 
       setMessages((prev) =>
@@ -305,9 +304,9 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
     );
 
     // Update step based on option (for flow control)
-    if (option === 'Strategic Consulting') {
+    if (option === 'I need strategic consulting') {
       setCurrentStep('consulting');
-    } else if (option === 'Power BI Dashboard') {
+    } else if (option === 'I need a Power BI dashboard') {
       setCurrentStep('powerbi');
     } else {
       setCurrentStep('exploring');
@@ -361,12 +360,17 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
       let fallbackContent = '';
       
       // Generate intelligent fallback based on conversation
-      if (messageText.toLowerCase().includes('email') || messageText.includes('@')) {
-        fallbackContent = "Thanks for sharing your email! I've logged it for Alston. You'll hear back within 24 hours. What else can I help clarify about your project?";
+      const lowerMessage = messageText.toLowerCase();
+      if (lowerMessage.includes('email') || messageText.includes('@')) {
+        fallbackContent = "Got it—I've noted your email. Will typically responds within 24 hours. Anything else you'd like to clarify before then?";
+      } else if (lowerMessage.includes('cost') || lowerMessage.includes('price') || lowerMessage.includes('how much')) {
+        fallbackContent = "Our Power BI Health Check starts at $1,000 for a comprehensive 2-hour assessment. Strategic engagements are scoped individually based on complexity. Want to discuss specifics?";
+      } else if (lowerMessage.includes('timeline') || lowerMessage.includes('how long') || lowerMessage.includes('duration')) {
+        fallbackContent = "Most dashboard projects take 4-8 weeks from kickoff to deployment. Strategic engagements vary—some are one-time assessments, others are ongoing advisory relationships.";
       } else if (messageText.length < 20) {
-        fallbackContent = "Got it! Can you tell me more about your goals, timeline, and what data sources you're working with?";
+        fallbackContent = "Tell me more. What's the core problem you're trying to solve? Understanding the context helps me point you in the right direction.";
       } else {
-        fallbackContent = "Interesting. To help you best, I'd love to know: What's your timeline? What data do you have? And who's the decision-maker? Feel free to share your email if you'd like Alston to follow up directly.";
+        fallbackContent = "Understood. A few quick questions to help scope this: What's your timeline? What data sources are involved? And who needs to see the final output?";
       }
       
       // Only show error if it's a critical network issue (not API errors)
@@ -575,13 +579,13 @@ export function AgenticChatInterface({ onBack }: AgenticChatInterfaceProps) {
               className="text-center py-8 px-4"
             >
               <p className="text-soft-clay/60 font-sans text-sm mb-4">
-                Try asking:
+                Or try one of these:
               </p>
               <div className="flex flex-wrap gap-2 justify-center max-w-2xl mx-auto">
                 {[
-                  "How much does a Power BI audit cost?",
-                  "What's included in the assessment?",
-                  "How long does a project take?",
+                  "What does the $1,000 assessment include?",
+                  "How long does a typical project take?",
+                  "What industries do you work with?",
                 ].map((question, idx) => (
                   <motion.button
                     key={question}
