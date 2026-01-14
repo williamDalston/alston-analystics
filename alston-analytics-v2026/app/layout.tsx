@@ -8,6 +8,7 @@ import { FocusManager } from "@/components/providers/FocusManager";
 import { Footer } from "@/components/layout/Footer";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { ScrollProgress } from "@/components/effects/ScrollProgress";
+import { EdgeSparkle } from "@/components/effects/EdgeSparkle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -118,6 +119,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <SmoothScrollProvider>
+          <EdgeSparkle />
           <ScrollProgress />
           <FocusManager />
           <ModeToggle />
